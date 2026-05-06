@@ -4,9 +4,9 @@ import { register, verify_otp, log_in } from '../controller/controller.js'
 const route = express.Router()
 
 // User Routes
-route.post('/user/register', register)
-route.post('/user/verify_otp', verify_otp)
-route.post('/user/log_in', log_in)
+route.post('/register', register)
+route.post('/verify_otp/:id', verify_otp)
+route.post('/log_in', log_in)
 
 
 
