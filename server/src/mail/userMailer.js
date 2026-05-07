@@ -28,3 +28,16 @@ export const user_verification_otp_send = async (email, name, otp) => {
 
 }
 
+export const user_resend_otp=async(email,name,otp)=>{
+     const info = await transporter.sendMail({
+            from: "SMTP_USER",
+            to: email,
+            subject: "Hello",
+            text: "Hello world?",
+            html: `<b>Hello world? ${name} ${otp}</b`,
+            
+        });
+
+        console.log("Message sent: %s", info.messageId);
+
+}
