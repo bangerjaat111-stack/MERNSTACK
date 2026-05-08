@@ -75,7 +75,7 @@ export const resend_otp = async (req, res) => {
         const {id} =req.params
         const randomotp=crypto.randomInt(1000,9999)
         const expiretime=Date.now()+1000*60*5
-        const updatedotp=await user_model.findOneAndUpdate({_id:id,'verification.user.isVerify':false},
+        const updatedotp=await user_model.findOneAndUpdate({_id:id,'verification.user.isVerify':true},
             {$set:{'verification.user.otp':randomotp,'verification.user.otpExpireTime':expiretime}}
         )
         if(!updatedotp) return res.status(404).send({status:false, message:'user not found'})

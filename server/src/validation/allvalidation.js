@@ -12,4 +12,3 @@ export const validPassword  = (password)=>{
     return passwordRegex.test(password)
 }
 
-

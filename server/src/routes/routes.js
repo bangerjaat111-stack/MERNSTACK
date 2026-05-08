@@ -6,7 +6,7 @@ const route = express.Router()
 // User Routes
 route.post('/register', register)
 route.post('/verify_otp/:id', verify_otp)
-route.post('/resend_otp',resend_otp)
+route.get('/resend_otp/:id',resend_otp)
 route.post('/log_in', log_in)
 
 
