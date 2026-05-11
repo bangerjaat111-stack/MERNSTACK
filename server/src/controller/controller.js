@@ -24,7 +24,7 @@ export const register = async (req, res) => {
                     { 'verification.user.otp': randomotp, 'verification.user.otpExpireTime': expiretime }
             })
         if (checkuser) {
-            if (checkuser.verification.user.isVerify) return res.status(400).send({ status: true, msg: 'Account Already verify pls log In' })
+            if (checkuser.verification.user.isVerify) return res.status(400).send({ status: false, msg: 'Account Already verify pls log In' })
             user_verification_otp_send(email, checkuser.name, randomotp)
 
             return res.status(200).send({ status: true, msg: "resent Otp Send" })
@@ -56,9 +56,10 @@ export const verify_otp = async (req, res) => {
 
         if (!(Date.now() <= otpExpireTime)) { return res.status(404).send({ status: false, msg: "otp time is expire please resent otp" }) }
 
-        if (otp != userotp) { res.status(400).send({ status: true, message: "otp is not match" }) }
+        if (otp != userotp)return res.status(400).send({ status: false, message: "otp is not match" }) 
 
-        await user_model.findByIdAndUpdate({ _id: id },
+        await user_model.findByIdAndUpdate({_id : id}
+            ,
             {
                 $set:
                     { 'verification.user.isVerify': true }
@@ -66,7 +67,7 @@ export const verify_otp = async (req, res) => {
         )
         return res.status(200).send({ status: true, msg: "account verified succesfully please login ..." })
     }
-    catch (err) { res.status(500).send({ status: false, msg: err.message }) }
+    catch(err){return error(err,res)}
 }
 
 
@@ -75,7 +76,7 @@ export const resend_otp = async (req, res) => {
         const {id} =req.params
         const randomotp=crypto.randomInt(1000,9999)
         const expiretime=Date.now()+1000*60*5
-        const updatedotp=await user_model.findOneAndUpdate({_id:id,'verification.user.isVerify':true},
+        const updatedotp=await user_model.findOneAndUpdate({_id:id,'verification.user.isVerify':false},
             {$set:{'verification.user.otp':randomotp,'verification.user.otpExpireTime':expiretime}}
         )
         if(!updatedotp) return res.status(404).send({status:false, message:'user not found'})
