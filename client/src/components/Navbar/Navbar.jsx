@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import logo from '../../assets/logo.png';
+import { Link } from "react-router-dom";
 
 import {
   FaSearch,
@@ -13,7 +14,6 @@ import {
   FaBars,
   FaTimes,
   FaRegHeart,
-  FaArrowRight,
   FaMoon,
   FaSun
 } from "react-icons/fa";
@@ -26,11 +26,16 @@ export default function Navbar() {
   // DARK MODE STATE
   const [darkMode, setDarkMode] = useState(false);
 
+  // MENU LINKS
   const MENUDATA = [
     { icon: <FaCar />, name: 'NEW CARS', slug: '/new-cars' },
+
     { icon: <FaTags />, name: 'USED CARS', slug: '/used-cars' },
+
     { icon: <FaRegNewspaper />, name: 'NEWS & REVIEWS', slug: '/news' },
+
     { icon: <FaVideo />, name: 'VIDEOS', slug: '/videos' },
+
     { icon: <FaHandHoldingUsd />, name: 'SELL CAR', slug: '/sell' },
   ];
 
@@ -82,7 +87,13 @@ export default function Navbar() {
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
-          <img src={logo} alt="AutoSyntax" className="h-20 w-auto" />
+          <Link to="/">
+            <img
+              src={logo}
+              alt="AutoSyntax"
+              className="h-20 w-auto object-contain"
+            />
+          </Link>
         </motion.div>
 
         {/* SEARCH BAR */}
@@ -180,18 +191,25 @@ export default function Navbar() {
           </motion.button>
 
           {/* LOGIN BUTTON */}
-          <motion.button
-            className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full font-semibold border-2 transition-all duration-300 hover:shadow-md
-            ${darkMode
-                ? 'border-white text-white hover:bg-white hover:text-black'
-                : 'border-[#0a2342] text-[#0a2342] hover:bg-[#0a2342] hover:text-white'
-              }`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <FaRegUserCircle className="text-xl" />
-            <span>Login / Register</span>
-          </motion.button>
+          <Link to="/login">
+
+            <motion.button
+              className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full font-semibold border-2 transition-all duration-300 hover:shadow-md
+              ${darkMode
+                  ? 'border-white text-white hover:bg-white hover:text-black'
+                  : 'border-[#0a2342] text-[#0a2342] hover:bg-[#0a2342] hover:text-white'
+                }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+
+              <FaRegUserCircle className="text-xl" />
+
+              <span>Login</span>
+
+            </motion.button>
+
+          </Link>
 
           {/* MOBILE SEARCH ICON */}
           <button
@@ -245,8 +263,8 @@ export default function Navbar() {
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
 
-                <a
-                  href={item.slug}
+                <Link
+                  to={item.slug}
                   className="flex items-center gap-2 px-2 py-1 text-sm font-semibold tracking-wide transition-colors duration-200 group-hover:text-blue-200"
                 >
                   <span className="text-lg transition-transform duration-200 group-hover:scale-110">
@@ -254,7 +272,7 @@ export default function Navbar() {
                   </span>
 
                   <span>{item.name}</span>
-                </a>
+                </Link>
 
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-300 transition-all duration-300 group-hover:w-full"></span>
 
@@ -302,8 +320,8 @@ export default function Navbar() {
                     className="border-b border-blue-800/40 last:border-0"
                   >
 
-                    <a
-                      href={item.slug}
+                    <Link
+                      to={item.slug}
                       className="flex items-center gap-4 py-4 text-base font-medium text-white/90 hover:text-white hover:pl-2 transition-all duration-200"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -314,7 +332,7 @@ export default function Navbar() {
 
                       <span>{item.name}</span>
 
-                    </a>
+                    </Link>
 
                   </motion.li>
 
@@ -332,7 +350,7 @@ export default function Navbar() {
 
                     <FaRegHeart className="text-xl w-8" />
 
-                    <span>My Wishlist</span>
+                    <span>Wishlist</span>
 
                   </button>
 
@@ -348,19 +366,23 @@ export default function Navbar() {
                   className="pt-4 pb-2"
                 >
 
-                  <button
-                    className={`flex items-center justify-center w-full gap-2 py-3 rounded-xl font-bold shadow-lg transition-all duration-300
-                    ${darkMode
-                        ? 'bg-white text-black'
-                        : 'bg-white text-[#0a2342]'
-                      }`}
-                  >
+                  <Link to="/login">
 
-                    <FaRegUserCircle className="text-xl" />
+                    <button
+                      className={`flex items-center justify-center w-full gap-2 py-3 rounded-xl font-bold shadow-lg transition-all duration-300
+                      ${darkMode
+                          ? 'bg-white text-black'
+                          : 'bg-white text-[#0a2342]'
+                        }`}
+                    >
 
-                    <span>Login / Register</span>
+                      <FaRegUserCircle className="text-xl" />
 
-                  </button>
+                      <span>Login / Register</span>
+
+                    </button>
+
+                  </Link>
 
                 </motion.li>
 
