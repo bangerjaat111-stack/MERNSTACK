@@ -3,8 +3,8 @@ import React from 'react'
 
 import Navbar from './components/Navbar/Navbar.jsx'
 import Footer from './components/Footer.jsx'
-import Login from './components/Auth/Login.jsx'
 import Signup from './components/Auth/Signup.jsx'
+import Signin from './components/Auth/Signin.jsx'
 
 
 import NewCars from './components/Menu/Newcar.jsx'
@@ -12,6 +12,7 @@ import UsedCars from './components/Menu/Usedcars.jsx'
 import News from './components/Menu/News.jsx'
 import Videos from './components/Menu/Videos.jsx'
 import Sell from './components/Menu/Sellcar.jsx'
+import Hotdeals from './components/Menu/Hotdeals.jsx'
 
 export default function App() {
 
@@ -27,17 +28,10 @@ export default function App() {
         {/* ROUTES */}
         <Routes>
 
-          {/* MAIN ROUTES */}
-        
-
-        
-
-
-
           {/* AUTH ROUTES */}
-          <Route path='/login' element={<Login />} />
-
           <Route path='/signup' element={<Signup />} />
+
+          <Route path='/signin' element={<Signin />} />
 
           {/* NAVBAR MENU ROUTES */}
           <Route path='/' element={<NewCars />} />
@@ -49,6 +43,7 @@ export default function App() {
           <Route path='/videos' element={<Videos />} />
 
           <Route path='/sell' element={<Sell />} />
+          <Route path='/deals' element={<Hotdeals/>}/>
 
         </Routes>
 
