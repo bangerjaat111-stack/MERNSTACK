@@ -81,7 +81,7 @@ export default function Signin() {
       <div className="absolute inset-0 bg-black/45"></div>
 
       {/* ================= MAIN LAYOUT ================= */}
-      <div className="relative z-10 min-h-screen flex items-center justify-end px-4 sm:px-8 lg:px-16 py-10">
+      <div className="relative z-10 min-h-screen flex items-center justify-end px-4 sm:px-8 lg:px-16 py-2">
 
         {/* ================= LOGIN PANEL ================= */}
         <motion.div
@@ -103,19 +103,19 @@ export default function Signin() {
         >
 
           {/* ================= LOGO ================= */}
-          <div className="text-center mb-8">
+          <div className="text-center ">
 
             {/* Oval Logo */}
             <div className="relative inline-block px-8 py-3">
               <div className="absolute inset-0 border border-[#d8a066] rounded-full"></div>
               <div className="absolute inset-2 border border-[#d8a066]/60 rounded-full"></div>
 
-              <h1 className="relative text-[34px] font-light tracking-wide text-[#d8a066]">
+              <h1 className="relative text-[20px] font-light tracking-wide text-[#d8a066]">
                 AUTOSYNTAX
               </h1>
             </div>
 
-            <h2 className="mt-8 text-[#d8a066] text-2xl tracking-[4px] font-light">
+            <h2 className="mt-2 text-[#d8a066] text-xl tracking-[2px] font-light">
               SIGN IN
             </h2>
           </div>
@@ -125,7 +125,7 @@ export default function Signin() {
 
             {/* EMAIL */}
             <div>
-              <label className="block text-[#d8a066] text-sm mb-2 uppercase tracking-wider">
+              <label className="block text-[#d8a066] text-sm mb-1 uppercase tracking-wider">
                 Email
               </label>
 
@@ -143,7 +143,7 @@ export default function Signin() {
                   border-[#d8a066]/60
                   rounded-lg
                   px-4
-                  py-3
+                  py-2
                   text-white
                   placeholder:text-gray-400
                   outline-none
@@ -161,7 +161,7 @@ export default function Signin() {
 
             {/* PASSWORD */}
             <div>
-              <label className="block text-[#d8a066] text-sm mb-2 uppercase tracking-wider">
+              <label className="block text-[#d8a066] text-sm mb-1 uppercase tracking-wider">
                 Password
               </label>
 
@@ -180,7 +180,7 @@ export default function Signin() {
                     border-[#d8a066]/60
                     rounded-lg
                     px-4
-                    py-3
+                    py-2
                     pr-12
                     text-white
                     placeholder:text-gray-400
@@ -219,15 +219,15 @@ export default function Signin() {
               type="submit"
               className="
                 w-full
-                mt-2
+                mt-0
                 bg-gradient-to-r
                 from-[#c6844c]
                 to-[#e1b07a]
                 text-black
                 font-semibold
-                py-3.5
+                py-2
                 rounded-lg
-                text-lg
+                text-x
                 tracking-wide
                 shadow-lg
               "
@@ -256,13 +256,13 @@ export default function Signin() {
                 to-[#e1b07a]
                 text-black
                 font-semibold
-                py-3
+                py-1
                 rounded-lg
                 flex
                 items-center
                 justify-center
                 gap-3
-                text-lg
+                text-x
                 hover:scale-[1.01]
                 transition-all
               "
@@ -281,13 +281,13 @@ export default function Signin() {
                 to-[#e1b07a]
                 text-black
                 font-semibold
-                py-3
+                py-1
                 rounded-lg
                 flex
                 items-center
                 justify-center
                 gap-3
-                text-lg
+                text-x
                 hover:scale-[1.01]
                 transition-all
               "
