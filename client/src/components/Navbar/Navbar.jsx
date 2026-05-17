@@ -94,7 +94,7 @@ export default function Navbar() {
                 src={logo}
                 alt="AutoSyntax Logo"
                 className={[
-                  'w-[48px] h-[48px] object-contain',
+                  'w-[60px] h-[60px] object-contain',
                   dark
                     ? 'drop-shadow-[0_0_10px_rgba(255,40,60,0.35)]'
                     : 'drop-shadow-[0_0_8px_rgba(245,158,11,0.25)]',
@@ -379,7 +379,7 @@ export default function Navbar() {
                 <RiFireLine size={13} /> Hot Deals <RiArrowRightLine size={12} />
               </motion.button>
             </Link>
-          </motion.div>
+          </motion.div> 
         </div>
       </div>
 

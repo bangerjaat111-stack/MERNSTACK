@@ -4,7 +4,8 @@ import React from 'react'
 import Navbar from './components/Navbar/Navbar.jsx'
 import Footer from './components/Footer.jsx'
 import Signup from './components/Auth/Signup.jsx'
-import Signin from './components/Auth/Signin.jsx'
+import Signin from './components/Auth/Signin.jsx'     
+import Otp from '../src/components/Otp.jsx'
 
 
 import NewCars from './components/Menu/Newcar.jsx'
@@ -32,6 +33,7 @@ export default function App() {
           <Route path='/signup' element={<Signup />} />
 
           <Route path='/signin' element={<Signin />} />
+          <Route path='/verify_otp/:id' element={<Otp/>}/>
 
           {/* NAVBAR MENU ROUTES */}
           <Route path='/' element={<NewCars />} />

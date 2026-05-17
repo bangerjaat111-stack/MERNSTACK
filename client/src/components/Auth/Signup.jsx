@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { useFormik } from 'formik';
-import { Link } from 'react-router-dom';
+import { useFormik } from 'formik'; 
 import { motion, AnimatePresence } from 'framer-motion';
 import { validationSchema } from './Validation.jsx';
 import car from '../../assets/car.png';
 import { useTheme } from '../../Context/ThemeContext.jsx';
+import axios from 'axios';
+import {Link, useNavigate } from 'react-router-dom';
+import {showSuccessToast,showErrorToast} from '../Notification/Tost.jsx'
+
 
 import {
   FaEye, FaEyeSlash, FaUser, FaEnvelope, FaLock, FaChevronDown,
@@ -20,16 +23,43 @@ const rise = {
   show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 140, damping: 16 } },
 };
 
+
 export default function Signup() {
   const { dark } = useTheme();
+  const navigate = useNavigate();
   const [showPw, setShowPw] = useState(false);
   const [showCpw, setShowCpw] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const formik = useFormik({
     initialValues: { name: '', email: '', password: '', confirmPassword: '', gender: '' },
-    validationSchema,
-    onSubmit: (values) => { console.log(values); setSubmitted(true); },
+    validationSchema:validationSchema,
+    onSubmit: async (values) => {
+      
+      
+      try {
+        
+        setSubmitError('');
+        setIsLoading(true);
+   const response = await axios.post(
+      'http://localhost:8080/register',
+      values
+   );
+
+   const id = response?.data?.db?.id;
+
+   if (response.status === 200 || response.status === 201) {
+      ShowSuccessTost(response?.data?.msg || 'Successful Create Account')
+      Navigate(`/verify_otp/${id}`)
+      }}
+       catch (error) {
+        showSuccessToast('server')
+      } finally {
+        setIsLoading(false);
+      }
+    },
   });
 
   // Tailwind class helpers based on theme
@@ -40,7 +70,7 @@ export default function Signup() {
   const inputText   = dark ? 'text-white'          : 'text-[#0A0A0C]';
   const inputPh     = dark ? 'placeholder-white/30' : 'placeholder-[rgba(60,60,80,0.38)]';
   const heading     = dark ? 'text-white'          : 'text-[#0A0A0C]';
-  const subtext     = dark ? 'text-white/50'       : 'text-[rgba(30,30,55,0.55)]';
+  const subtext     = dark ? 'text-red-400'       : 'bg-gradient-to-r from-amber-700 via-amber-500 to-amber-400';
   const label       = dark ? 'text-white/50'       : 'text-[rgba(30,30,60,0.62)]';
   const cardBorder  = dark ? 'border-[rgba(232,0,29,0.22)]' : 'border-[rgba(232,0,29,0.28)]';
   const divider     = dark ? 'bg-white/[0.07]'    : 'bg-black/[0.09]';
@@ -60,7 +90,7 @@ export default function Signup() {
       ? 'border-red-500'
       : dark ? 'border-white/[0.14]' : 'border-black/[0.16]';
 
-  const baseInput = `w-full border rounded-sm py-3 pl-10 pr-4 text-sm outline-none
+  const baseInput = `w-full border rounded-sm py-1 pl-10 pr-4 text-sm outline-none
     focus:ring-2 focus:ring-[#E8001D]/35 focus:shadow-[0_0_0_2px_rgba(232,0,29,0.32)]
     transition-all duration-300 font-[Rajdhani] font-semibold tracking-wide
     caret-[#E8001D]`;
@@ -79,13 +109,13 @@ export default function Signup() {
         initial={{ opacity: 0, y: 32, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ type: 'spring', stiffness: 80, damping: 18 }}
-        className={`relative w-full max-w-[1040px] flex flex-col md:flex-row overflow-hidden transition-all duration-500
+        className={`relative w-full max-w-[1040px] h-142 flex flex-col md:flex-row overflow-hidden transition-all duration-500
           ${cardBg} ${cardBorder} ${cardShadow} border
           [clip-path:polygon(0_0,100%_0,100%_calc(100%_-_20px),calc(100%_-_20px)_100%,0_100%)]
           backdrop-blur-2xl`}
       >
         {/* Red top accent line */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] z-10 bg-gradient-to-r from-transparent via-[#E8001D] to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-[4px] z-10 bg-gradient-to-r from-transparent via-[#E8001D] to-transparent" />
 
         {/* ══ LEFT PANEL ═══════════════════════════════════════════════════ */}
         <motion.div
@@ -102,7 +132,7 @@ export default function Signup() {
         {/* ══ RIGHT PANEL — FORM ════════════════════════════════════════════ */}
         <div className="w-full md:w-[54%] flex flex-col justify-center p-8 md:p-10 lg:p-12">
           <AnimatePresence mode="wait">
-            {submitted ? (
+            {submitted ? (  
               <motion.div
                 key="success"
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -136,13 +166,14 @@ export default function Signup() {
                 <div className="mb-6">
                   <div className="flex items-center gap-2 mb-1">
                     <FaFire className="text-[#E8001D] text-[13px]" />
-                    <span className="text-[10px] tracking-[4px] text-[#E8001D] uppercase font-bold">New Account</span>
+                    <span className="text-[10px] tracking-[4px] text-[#E8001D] uppercase font-bold">WELCOME DRIVER
+                    </span>
                   </div>
-                  <h2 className={`font-['Exo_2'] text-[26px] font-extrabold tracking-[2px] uppercase ${heading}`}>
-                    Create Account
+                  <h2 className={`font-['Exo_2']   text-[22px] font-extrabold tracking-[2px] uppercase ${heading}`}>
+                  JOIN AUTOSYNTAX
                   </h2>
                   <p className={`text-[11px] tracking-[1.5px] uppercase mt-1 ${subtext}`}>
-                    Join AutoSyntax — it's free
+                   START YOUR JOURNEY and Experience the future of luxury
                   </p>
                 </div>
 
@@ -159,7 +190,7 @@ export default function Signup() {
                         type="button"
                         whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.97 }}
-                        className={`flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-bold uppercase
+                        className={`flex items-center justify-center gap-2 py-1 px-4 text-sm font-bold uppercase
                           tracking-[2px] transition-all duration-300 border
                           [clip-path:polygon(6px_0%,100%_0%,calc(100%_-_6px)_100%,0%_100%)]
                           ${socialBg} ${socialBorder} ${socialText}`}
@@ -173,13 +204,13 @@ export default function Signup() {
                   {/* Divider */}
                   <motion.div variants={rise} className="flex items-center mb-5">
                     <div className={`flex-grow h-px ${divider}`} />
-                    <span className={`mx-4 text-[10px] font-bold tracking-[3px] uppercase ${subtext}`}>or with email</span>
+                    <span className={`mx-2 text-[10px] font-bold tracking-[3px] uppercase ${subtext}`}>or with email</span>
                     <div className={`flex-grow h-px ${divider}`} />
                   </motion.div>
 
                   {/* Name */}
-                  <motion.div variants={rise} className="mb-4">
-                    <label className={`block text-[10px] font-bold tracking-[3px] uppercase mb-1.5 ${label}`}>
+                  <motion.div variants={rise} className="mb-2">
+                    <label className={`block text-[11px] font-bold tracking-[3px] uppercase mb-1.5 ${label}`}>
                       Full Name
                     </label>
                     <div className="relative">
@@ -284,23 +315,41 @@ export default function Signup() {
                     )}
                   </motion.div>
 
+                  {/* Submit Error Message */}
+                  {submitError && (
+                    <motion.div
+                      variants={rise}
+                      className="mb-4 text-center text-[12px] font-bold text-red-500 bg-red-500/10 py-2 rounded-sm"
+                    >
+                      {submitError}
+                    </motion.div>
+                  )}
+
                   {/* Submit */}
+                 
                   <motion.div variants={rise}>
+                    
                     <motion.button
-                      whileHover={{ y: -2, boxShadow: '0 14px 32px -6px rgba(232,0,29,0.48)' }}
-                      whileTap={{ scale: 0.97 }}
+                      whileHover={!isLoading ? { y: -2, boxShadow: '0 14px 32px -6px rgba(232,0,29,0.48)' } : {}}
+                      whileTap={!isLoading ? { scale: 0.97 } : {}}
                       type="submit"
-                      className="w-full py-3.5 font-bold uppercase text-sm text-white flex items-center justify-center gap-3
+                      disabled={isLoading}
+                      className={`w-full py-2 font-bold uppercase text-sm text-white flex items-center justify-center gap-3
                         transition-all duration-300 tracking-[3px] font-[Rajdhani]
                         bg-gradient-to-r from-[#C8001A] via-[#E8001D] to-[#FF3020]
-                        [clip-path:polygon(10px_0%,100%_0%,calc(100%_-_10px)_100%,0%_100%)]"
+                        [clip-path:polygon(10px_0%,100%_0%,calc(100%_-_10px)_100%,0%_100%)]
+                        ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-xl'}`}
                     >
-                      Create Account
-                      <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}>
-                        <FaArrowRight className="text-[13px]" />
-                      </motion.span>
+                      {isLoading ? 'Creating Account...' : 'Create Account'}
+                      {!isLoading && (
+                        <motion.span animate={{ x: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}>
+                          <FaArrowRight className="text-[13px]" />
+                        </motion.span>
+                      )}
                     </motion.button>
+    
                   </motion.div>
+                  
 
                 </motion.form>
 
