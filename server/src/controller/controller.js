@@ -106,7 +106,7 @@ export const log_in = async (req, res) => {
         const checkpass = await bcrypt.compare(password, checkuser.password)
         if (!checkpass) return res.status(404).send({ status: false, msg: 'wrong password' })
         const token=jwt.sign({id:checkuser.id},process.env.usertokenkey,{expiresIn:'1d'})
-        res.status(200).send({status:true,msg:'login successfully',token,id:checkuser._id})
+        return res.status(200).send({status:true,msg:'login successfully',token,id:checkuser._id})
 
     }
     catch (err) { res.status(500).send({ status: false, msg: err.message }) }
