@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import sign from '../../assets/sign.png';
 import axios from 'axios';
 import { useTheme } from '../../Context/ThemeContext.jsx';
+import {showSuccessToast,showErrorToast} from '../Notification/Tost.jsx'
+import {useAuth} from '../../Context/DataContext.jsx'
 
 // ================= ICONS =================
 const EyeIcon = () => (
@@ -138,22 +140,53 @@ const L = {
 export default function Signin() {
   const { dark } = useTheme();
   const t = dark ? D : L;
+  const Navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading]       = useState(false);
-  const [submitError, setSubmitError]   = useState(null);
+
+  const {setlogin}= useAuth()
+  
 
   const formik = useFormik({
     initialValues: { email: '', password: '' },
     validationSchema: signinSchema,
     onSubmit: async (values) => {
       setIsLoading(true);
-      setSubmitError(null);
+    
+      
+      
       try {
-        await axios.post('http://localhost:8080/auth/signin', values);
+        const response = await axios.post('http://localhost:8080/log_in', values);
+        const message = response?.data?.msg|| 'Login successful!';
+        const token = response?.data?.token 
+        const id = response?.data?.id
+        if (response.status === 200 || response.status === 201) {
+
+          showSuccessToast(message);
+          
+          // Store token and user data if needed
+            localStorage.setItem('usertoken', token);
+            localStorage.setItem('userid',id);
+            setlogin(true)
+          // Redirect to dashboard or home page after 1 seconds
+          setTimeout(() => {
+            Navigate('/'); 
+          }, 1000);
+        }
       } catch (error) {
-        console.error('Authentication Failure:', error);
-        setSubmitError(error?.response?.data?.message || 'Invalid credentials. Please try again.');
+      
+        if((error?.response?.data?.msg)=='please verify otp'){
+          showErrorToast(error?.response?.data?.msg || 'server error')
+          Navigate(`/verify_otp/${error?.response?.data?.id}`)
+         }
+         
+         else if((error?.response?.data?.msg)=="user not found"){
+          showErrorToast(error.response.data.msg || "server error")
+          Navigate('/signup')
+         }
+         else {showErrorToast(error?.response?.data?.msg || 'servor error')}
+       
       } finally {
         setIsLoading(false);
       }
@@ -206,20 +239,6 @@ export default function Signin() {
               Welcome Back
             </h1>
           </div>
-
-          {/* ERROR */}
-          <AnimatePresence>
-            {submitError && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2"
-              >
-                <p className="text-red-400 text-[11px] text-center font-medium">{submitError}</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* FORM */}
           <form onSubmit={formik.handleSubmit} className="flex flex-col gap-3">

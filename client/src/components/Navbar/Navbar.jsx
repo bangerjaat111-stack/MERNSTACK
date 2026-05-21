@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../../Context/ThemeContext.jsx';
 import logo from '../../assets/logo.png';
+import Profile from './Profile.jsx';
+import {useAuth} from '../../Context/DataContext.jsx'
 import {
   RiCarLine, RiPriceTag3Line, RiNewspaperLine, RiVideoLine,
   RiAuctionLine, RiFireLine, RiMoonLine, RiSunLine,
@@ -42,6 +44,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [searchVal, setSearchVal] = useState('');
   const searchRef = useRef(null);
+  const {signin}=useAuth()
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 10);
@@ -222,6 +225,33 @@ export default function Navbar() {
             <RiHeartLine size={17} />
           </motion.button>
 
+          {/* sign in */}
+          {
+            signin? <Profile/>:
+              <Link to="/signin" className="no-underline">
+                <motion.button
+                  whileTap={{ scale: .96 }}
+                  whileHover={{ scale: 1.04 }}
+                  className={[
+                    'relative p-[1.5px] rounded-[11px] border-none cursor-pointer',
+                    dark ? 'bg-gradient-to-br from-red-600 to-red-500' : 'bg-gradient-to-br from-amber-600 to-amber-400',
+                  ].join(' ')}
+                >
+                  <span
+                    className={[
+                      'flex items-center gap-[7px] px-4 h-[34px] rounded-[10px] text-[12px] font-semibold tracking-[0.1em] uppercase whitespace-nowrap transition-all duration-300',
+                      'hover:bg-transparent hover:text-white',
+                      dark ? 'bg-[#080A0D] text-gray-50' : 'bg-white text-amber-950',
+                    ].join(' ')}
+                  >
+                    <RiUserLine size={14} />
+                    <span className="hidden sm:inline">sign in</span>
+                  </span>
+                </motion.button>
+              </Link>
+
+          }
+
           {/* Sign Up */}
           <Link to="/signup" className="no-underline">
             <motion.button
@@ -379,7 +409,7 @@ export default function Navbar() {
                 <RiFireLine size={13} /> Hot Deals <RiArrowRightLine size={12} />
               </motion.button>
             </Link>
-          </motion.div> 
+          </motion.div>
         </div>
       </div>
 

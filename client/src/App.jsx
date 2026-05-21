@@ -6,9 +6,8 @@ import Footer from './components/Footer.jsx'
 import Signup from './components/Auth/Signup.jsx'
 import Signin from './components/Auth/Signin.jsx'     
 import Otp from '../src/components/Otp.jsx'
-
-
-import NewCars from './components/Menu/Newcar.jsx'
+import Home from '../src/components/Menu/Home.jsx'
+import NewCar from './components/Menu/Newcar.jsx'
 import UsedCars from './components/Menu/Usedcars.jsx'
 import News from './components/Menu/News.jsx'
 import Videos from './components/Menu/Videos.jsx'
@@ -36,7 +35,8 @@ export default function App() {
           <Route path='/verify_otp/:id' element={<Otp/>}/>
 
           {/* NAVBAR MENU ROUTES */}
-          <Route path='/' element={<NewCars />} />
+          <Route path='/' element={<Home/>}></Route>
+          <Route path='/new-car' element={<NewCar />} />
 
           <Route path='/used-cars' element={<UsedCars />} />
 

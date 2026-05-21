@@ -27,14 +27,14 @@ export const register = async (req, res) => {
             if (checkuser.verification.user.isVerify) return res.status(400).send({ status: false, msg: 'Account Already verify pls log In' })
             user_verification_otp_send(email, checkuser.name, randomotp)
 
-            return res.status(200).send({ status: true, msg: "resent Otp Send" })
+            return res.status(200).send({ status: true, msg: "resent Otp Send",id:checkuser._id })
         }
         const DBData = {
             name, email, gender, password, verification: { user: { otp: randomotp, otpExpireTime: expiretime } }
         }
         const DB = await user_model.create(DBData)
         user_verification_otp_send(email, name, randomotp)
-        res.status(200).send({ status: true, success: true, message: 'user created successfully', data: DB })
+        res.status(200).send({ status: true, success: true, msg: 'user created successfully',id:DB._id, data: DB })
     }
     catch (err) { res.status(500).send({ status: false, msg: err.message }) }
 }
@@ -56,7 +56,7 @@ export const verify_otp = async (req, res) => {
 
         if (!(Date.now() <= otpExpireTime)) { return res.status(404).send({ status: false, msg: "otp time is expire please resent otp" }) }
 
-        if (otp != userotp)return res.status(400).send({ status: false, message: "otp is not match" }) 
+        if (otp != userotp)return res.status(400).send({ status: false, msg: "wrong otp" }) 
 
         await user_model.findByIdAndUpdate({_id : id}
             ,
@@ -79,13 +79,13 @@ export const resend_otp = async (req, res) => {
         const updatedotp=await user_model.findOneAndUpdate({_id:id,'verification.user.isVerify':false},
             {$set:{'verification.user.otp':randomotp,'verification.user.otpExpireTime':expiretime}}
         )
-        if(!updatedotp) return res.status(404).send({status:false, message:'user not found'})
+        if(!updatedotp) return res.status(404).send({status:false, msg:'user not found'})
         user_resend_otp(updatedotp.email,updatedotp.name,randomotp)
         res.status(200).send({status:true , msg:'resend otp send'})
         
 
     }
-    catch (err) { res.status(400).send({ status: false, message: err.message }) }
+    catch (err) { res.status(400).send({ status: false, msg: err.message }) }
 }
 
 
@@ -98,7 +98,7 @@ export const log_in = async (req, res) => {
         if (!checkuser) return res.status(404).send({ status: false, msg: 'user not found' })
         if (checkuser) {
             const { isVerify, isDelete, block } = checkuser.verification.user
-            if (!isVerify) return res.status(404).send({ status: false, msg: 'please verify otp' })
+            if (!isVerify) return res.status(404).send({ status: false, msg: 'please verify otp',id:checkuser._id })
             if (isDelete) return res.status(404).send({ status: false, msg: 'account is delete' })
             if (block) return res.status(404).send({ status: false, msg: 'your account is block' })
         }
