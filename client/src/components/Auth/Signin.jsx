@@ -177,18 +177,18 @@ export default function Signin() {
       } catch (error) {
       console.log(error)
         if((error?.response?.data?.msg)=='please verify otp'){
-          showErrorToast(error?.response?.data?.msg || 'server aaa error')
+          showErrorToast(error?.response?.data?.msg || 'verify otp')
           Navigate(`/verify_otp/${error?.response?.data?.id}`)
          }
          
          else if((error?.response?.data?.msg)=="user not found"){
-          showErrorToast(error.response.data.msg || "server bbb error")
+          showErrorToast(error.response.data.msg || "user does not exist")
           Navigate('/signup')
          }
          else if ((error?.response?.data?.msg)=="account is delete"){
           showErrorToast(error?.response?.data?.msg || "account is delete")
          }
-         else {showErrorToast(error?.response?.data?.msg || 'servor cccc error')}
+         else {showErrorToast(error?.response?.data?.msg || 'server error')}
        
       } finally {
         setIsLoading(false);
