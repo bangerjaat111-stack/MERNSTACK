@@ -11,6 +11,8 @@ import {
   RiHeartLine, RiMenuLine, RiCloseLine, RiArrowRightLine,
   RiUserLine, RiShieldCheckLine,
 } from 'react-icons/ri';
+import { FiLogIn } from "react-icons/fi";
+
 
 const MENU = [
   { icon: RiCarLine, name: 'New Cars', slug: '/new-cars' },
@@ -227,7 +229,7 @@ export default function Navbar() {
 
           {/* sign in */}
           {
-            signin? <Profile/>:
+            signin? <FiLogIn  />:
               <Link to="/signin" className="no-underline">
                 <motion.button
                   whileTap={{ scale: .96 }}
@@ -244,7 +246,7 @@ export default function Navbar() {
                       dark ? 'bg-[#080A0D] text-gray-50' : 'bg-white text-amber-950',
                     ].join(' ')}
                   >
-                    <RiUserLine size={14} />
+                    <FiLogIn   size={14} />
                     <span className="hidden sm:inline">sign in</span>
                   </span>
                 </motion.button>
