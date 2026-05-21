@@ -145,7 +145,7 @@ export default function Signin() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading]       = useState(false);
 
-  const {setlogin}= useAuth()
+  const {setsignin}= useAuth()
   
 
   const formik = useFormik({
@@ -168,24 +168,27 @@ export default function Signin() {
           // Store token and user data if needed
             localStorage.setItem('usertoken', token);
             localStorage.setItem('userid',id);
-            setlogin(true)
+            setsignin(true)
           // Redirect to dashboard or home page after 1 seconds
           setTimeout(() => {
             Navigate('/'); 
           }, 1000);
         }
       } catch (error) {
-      
+      console.log(error)
         if((error?.response?.data?.msg)=='please verify otp'){
-          showErrorToast(error?.response?.data?.msg || 'server error')
+          showErrorToast(error?.response?.data?.msg || 'server aaa error')
           Navigate(`/verify_otp/${error?.response?.data?.id}`)
          }
          
          else if((error?.response?.data?.msg)=="user not found"){
-          showErrorToast(error.response.data.msg || "server error")
+          showErrorToast(error.response.data.msg || "server bbb error")
           Navigate('/signup')
          }
-         else {showErrorToast(error?.response?.data?.msg || 'servor error')}
+         else if ((error?.response?.data?.msg)=="account is delete"){
+          showErrorToast(error?.response?.data?.msg || "account is delete")
+         }
+         else {showErrorToast(error?.response?.data?.msg || 'servor cccc error')}
        
       } finally {
         setIsLoading(false);

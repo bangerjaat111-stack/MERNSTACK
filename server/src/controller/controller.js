@@ -52,7 +52,7 @@ export const verify_otp = async (req, res) => {
 
         const { otp, otpExpireTime, isVerify } = user.verification.user;
 
-        if (isVerify) { return res.status(409).send({ status: false, msg: "user already verified please login ..." }) }
+        if (isVerify) { return res.status(400).send({ status: false, msg: "user already verified please login ..." }) }
 
         if (!(Date.now() <= otpExpireTime)) { return res.status(404).send({ status: false, msg: "otp time is expire please resent otp" }) }
 
@@ -69,6 +69,7 @@ export const verify_otp = async (req, res) => {
     }
     catch(err){return error(err,res)}
 }
+
 
 
 export const resend_otp = async (req, res) => {
@@ -89,7 +90,7 @@ export const resend_otp = async (req, res) => {
 }
 
 
-
+ 
 
 export const log_in = async (req, res) => {
     try {
