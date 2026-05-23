@@ -25,7 +25,7 @@ const POPULAR_CARS = [
   { 
     name: 'Tata Punch',          
     price: '₹5.65 – 10.60 L', 
-    tag: 'Best Seller', 
+    tag: 'Top Selling', 
     fuel: 'Petrol / CNG',  
     km: '18.97 kmpl',
     image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/172825/punch-facelift-exterior-right-front-three-quarter.png?isig=0&q=80'  // Real SUV image
@@ -44,7 +44,7 @@ const POPULAR_CARS = [
     tag: 'Hot Deal',    
     fuel: 'Petrol / Diesel',
     km: '16.80 kmpl',
-    image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7fa0ac7?w=500&h=300&fit=crop'
+    image: 'https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/Creta/8667/1751535724464/exterior-image-166.jpg'
   },
   { 
     name: 'Mahindra XUV 3XO',   
@@ -52,7 +52,7 @@ const POPULAR_CARS = [
     tag: 'New Launch',  
     fuel: 'Petrol / Diesel',
     km: '20.11 kmpl',
-    image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=500&h=300&fit=crop'
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJf515PddNnEAY5MrtqKHlREy7yRKHCt_Zfw&s'
   },
   { 
     name: 'Tata Nexon EV',       
@@ -60,7 +60,7 @@ const POPULAR_CARS = [
     tag: 'Electric',    
     fuel: 'Electric',       
     km: '465 km range',
-    image: 'https://images.unsplash.com/photo-1593941707882-5c149f6c7e67?w=500&h=300&fit=crop'
+    image: 'https://static.caronphone.com/public/brands/32/53/3209/3209_1759154859.webp'
   },
   { 
     name: 'Kia Seltos',          
@@ -68,7 +68,7 @@ const POPULAR_CARS = [
     tag: 'Popular',     
     fuel: 'Petrol / Diesel',
     km: '16.10 kmpl',
-    image: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?w=500&h=300&fit=crop'
+    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/192817/seltos-exterior-right-front-three-quarter-50.png?isig=0&q=80'
   },
 ];
 
@@ -227,8 +227,8 @@ export default function Home() {
             <div className={`w-full grid grid-cols-3 gap-px rounded-2xl overflow-hidden border ${border}`}>
               
               {[
-                { n: '10K+', label: 'Cars Listed' },
-                { n: '500+', label: 'Brands & Models' },
+                { n: 'RANGE ROVER' },
+                { n: 'AUTO BIOGRAPHY' },
                 { n: '2L+',  label: 'Happy Buyers' },
               ].map((s, i) => (
                 <div key={i} className={`${bgCard} px-4 py-3 text-center`}>

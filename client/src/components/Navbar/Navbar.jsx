@@ -94,7 +94,8 @@ export default function Navbar() {
               whileHover={{ scale: 1.08 }}
               transition={{ duration: 0.3 }}
               className="relative flex items-center justify-center"
-            >
+            > 
+                          
               <img
                 src={logo}
                 alt="AutoSyntax Logo"
@@ -125,7 +126,7 @@ export default function Navbar() {
               <span className={dark ? 'bg-gradient-to-br from-red-500 to-red-400 bg-clip-text text-transparent' : 'bg-gradient-to-br from-amber-600 to-amber-400 bg-clip-text text-transparent'}>
                 Auto
               </span>
-              <span className={dark ? 'text-gray-50' : 'text-amber-950'}>Syn</span>
+              <span className={dark ? 'text-gray-50' : 'text-amber-950'}>Syntax</span>
             </div>
           </Link>
         </motion.div>
@@ -229,7 +230,7 @@ export default function Navbar() {
 
           {/* sign in */}
           {
-            signin? <FiLogIn  />:
+            signin? <Profile  />:
               <Link to="/signin" className="no-underline">
                 <motion.button
                   whileTap={{ scale: .96 }}
