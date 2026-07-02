@@ -47,7 +47,7 @@ export default function Signup() {
   const [showPw, setShowPw] = useState(false);
   const [showCpw, setShowCpw] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState('');
 
   const formik = useFormik({
@@ -69,7 +69,7 @@ export default function Signup() {
           setSubmitted(true);
           setTimeout(() => {
             if (id) Navigate(`/verify_otp/${response.data.id}`);
-            else if (!verify) Navigate(`/verify_otp/${response.data.id}`);
+            else if (!verify) Navigate(`/verify_otp/${response.data.id}`); 
             else {
               showErrorToast(error?.response?.data?.msg || 'server error')
             }
@@ -80,12 +80,12 @@ export default function Signup() {
       
       catch (error) {
         if( (error?.response?.data?.msg )=='Account Already verify pls log In'){
-          showErrorToast(error?.response?.data?.msg)
+          showErrorToast(error?.response?.data?.msg  || 'internal server error')
           Navigate('/signin')
         }
-        
-        showErrorToast(error?.response?.data?.msg || error?.response?.data?.data?.msg  || 'internal server error')
-      
+        else{
+        showErrorToast(error?.response?.data?.msg || error?.response?.data?.data?.msg || "internal server error")
+      }
       } finally {
         setIsLoading(false);
       }

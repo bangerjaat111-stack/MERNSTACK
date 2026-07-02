@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latest News & Upcoming Batches</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f4fbff;
+    padding:50px 20px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    display:flex;
+    gap:30px;
+}
+
+.news-section,
+.batch-section{
+    background:#fff;
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.news-section{
+    width:45%;
+}
+
+.batch-section{
+    width:55%;
+}
+
+.section-title{
+    font-size:28px;
+    font-weight:700;
+    color:#0b5ed7;
+    margin-bottom:20px;
+}
+
+.news-box{
+    height:450px;
+    overflow:hidden;
+    position:relative;
+}
+
+.news-scroll{
+    animation:scrollNews 10s linear infinite;
+}
+
+.news-item{
+    padding:18px;
+    margin-bottom:15px;
+    border-left:5px solid #0d6efd;
+    background:#f8fcff;
+    border-radius:10px;
+    transition:.3s;
+}
+
+.news-item:hover{
+    transform:translateX(5px);
+    background:#eaf6ff;
+}
+
+.news-date{
+    color:#0d6efd;
+    font-size:14px;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.news-title{
+    font-size:16px;
+    color:#333;
+    font-weight:500;
+}
+
+.view-btn{
+    display:inline-block;
+    margin-top:15px;
+    background:#0d6efd;
+    color:#fff;
+    text-decoration:none;
+    padding:12px 25px;
+    border-radius:50px;
+    font-weight:600;
+}
+
+.view-btn:hover{
+    background:#084298;
+}
+
+@keyframes scrollNews{
+    0%{
+        transform:translateY(100%);
+    }
+    100%{
+        transform:translateY(-100%);
+    }
+}
+
+.batch-grid{
+    display:grid;
+    gap:20px;
+}
+
+.batch-card{
+    background:linear-gradient(135deg,#e9f7ff,#ffffff);
+    border-radius:15px;
+    padding:25px;
+    border:1px solid #d8edff;
+    transition:.4s;
+}
+
+.batch-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 15px 25px rgba(13,110,253,0.15);
+}
+
+.batch-icon{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+.batch-card h3{
+    color:#0b5ed7;
+    margin-bottom:10px;
+}
+
+.batch-card p{
+    color:#555;
+    line-height:1.6;
+}
+
+.start-date{
+    margin-top:15px;
+    display:inline-block;
+    background:#0d6efd;
+    color:#fff;
+    padding:8px 15px;
+    border-radius:50px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.admission{
+    background:#198754;
+    color:white;
+    padding:10px 20px;
+    border-radius:50px;
+    display:inline-block;
+    margin-bottom:20px;
+    font-weight:600;
+}
+
+@media(max-width:991px){
+
+.container{
+    flex-direction:column;
+}
+
+.news-section,
+.batch-section{
+    width:100%;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- LEFT NEWS SECTION -->
+    <div class="news-section">
+
+        <h2 class="section-title">📰 Latest News & Updates</h2>
+
+        <div class="news-box">
+            <div class="news-scroll">
+
+                <div class="news-item">
+                    <div class="news-date">05 June 2026</div>
+                    <div class="news-title">Admissions Open for Web Development & Digital Marketing Courses</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-date">04 June 2026</div>
+                    <div class="news-title">New Batch Started for Cyber Security Professional Training</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-date">03 June 2026</div>
+                    <div class="news-title">AI Tools Workshop Registration Open for Students</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-date">02 June 2026</div>
+                    <div class="news-title">Government Certified Computer Courses Available Now</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-date">01 June 2026</div>
+                    <div class="news-title">Summer Internship Program Applications Started</div>
+                </div>
+
+                <!-- Duplicate for smooth loop -->
+                <div class="news-item">
+                    <div class="news-date">05 June 2026</div>
+                    <div class="news-title">Admissions Open for Web Development & Digital Marketing Courses</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-date">04 June 2026</div>
+                    <div class="news-title">New Batch Started for Cyber Security Professional Training</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-date">03 June 2026</div>
+                    <div class="news-title">AI Tools Workshop Registration Open for Students</div>
+                </div>
+
+            </div>
+        </div>
+
+        <a class="view-btn">View All News →</a>
+
+    </div>
+
+    <!-- RIGHT BATCH SECTION -->
+    <div class="batch-section">
+
+        <span class="admission">🎓 Admissions Open</span>
+
+        <h2 class="section-title">Upcoming Batches</h2>
+
+        <div class="batch-grid">
+
+            <div class="batch-card">
+                <div class="batch-icon">💻</div>
+                <h3>Web Development</h3>
+                <p>
+                    Learn HTML, CSS, JavaScript, React, WordPress and
+                    live project development.
+                </p>
+                <span class="start-date">Starts: 15 June 2026</span>
+            </div>
+
+            <div class="batch-card">
+                <div class="batch-icon">📈</div>
+                <h3>Digital Marketing</h3>
+                <p>
+                    SEO, Google Ads, Social Media Marketing,
+                    Content Marketing and AI Tools.
+                </p>
+                <span class="start-date">Starts: 18 June 2026</span>
+            </div>
+
+            <div class="batch-card">
+                <div class="batch-icon">🔒</div>
+                <h3>Cyber Security</h3>
+                <p>
+                    Ethical Hacking, Network Security, Cyber Defense
+                    and Security Testing.
+                </p>
+                <span class="start-date">Starts: 20 June 2026</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
