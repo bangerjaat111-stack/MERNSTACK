@@ -89,6 +89,7 @@ export default function Navbar() {
           transition={{ duration: .45, ease: 'easeOut' }}
           className="shrink-0"
         >
+          
           <Link to="/" className="flex items-center gap-[11px] no-underline">
             <motion.div
               whileHover={{ scale: 1.08 }}
