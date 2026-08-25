@@ -13,6 +13,8 @@ import News from './components/Menu/News.jsx'
 import Videos from './components/Menu/Videos.jsx'
 import Sell from './components/Menu/Sellcar.jsx'
 import Hotdeals from './components/Menu/Hotdeals.jsx'
+import ProfilePage from './components/Navbar/ProfilePage.jsx'
+import SettingPage from './components/Navbar/SettingPage.jsx'
 
 export default function App() {
 
@@ -35,18 +37,17 @@ export default function App() {
           <Route path='/verify_otp/:id' element={<Otp/>}/>
 
           {/* NAVBAR MENU ROUTES */}
-          <Route path='/' element={<Home/>}></Route>
-          
-
+          <Route path='/' element={<Home/>}/>
           <Route path='/new-cars' element={<Newcars />} />
           <Route path='/used-cars' element={<UsedCars />} />
-
           <Route path='/news' element={<News />} />
-
           <Route path='/videos' element={<Videos />} />
-
           <Route path='/sell' element={<Sell />} />
           <Route path='/deals' element={<Hotdeals/>}/>
+
+          {/* USER PROFILE & SETTING ROUTES */}
+          <Route path='/profile' element={<ProfilePage />} />
+          <Route path='/setting' element={<SettingPage />} />
 
         </Routes>
 

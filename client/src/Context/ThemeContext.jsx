@@ -10,7 +10,7 @@ export function ThemeProvider({ children }) {
       {children}
     </ThemeContext.Provider>
   );
-}
+}  
 
 export function useTheme() {
   return useContext(ThemeContext);
