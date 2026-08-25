@@ -7,7 +7,7 @@ import Signup from './components/Auth/Signup.jsx'
 import Signin from './components/Auth/Signin.jsx'     
 import Otp from '../src/components/Otp.jsx'
 import Home from '../src/components/Menu/Home.jsx'
-import NewCar from './components/Menu/Newcar.jsx'
+import Newcars from './components/Menu/Newcars.jsx'
 import UsedCars from './components/Menu/Usedcars.jsx'
 import News from './components/Menu/News.jsx'
 import Videos from './components/Menu/Videos.jsx'
@@ -36,8 +36,9 @@ export default function App() {
 
           {/* NAVBAR MENU ROUTES */}
           <Route path='/' element={<Home/>}></Route>
-          <Route path='/new-car' element={<NewCar />} />
+          
 
+          <Route path='/new-cars' element={<Newcars />} />
           <Route path='/used-cars' element={<UsedCars />} />
 
           <Route path='/news' element={<News />} />
