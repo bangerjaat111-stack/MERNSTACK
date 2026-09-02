@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../Context/ThemeContext';
 import { useAuth } from '../../Context/DataContext';
+import { useWishlist } from '../../Context/WishlistContext';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../../config/api.js';
 import { showSuccessToast, showErrorToast } from '../Notification/Tost';
 import {
   RiUser3Line, RiMailLine, RiShieldCheckLine, RiEdit2Line,
@@ -13,6 +15,7 @@ import {
 export default function ProfilePage() {
   const { dark } = useTheme();
   const { signin, setsignin } = useAuth();
+  const { wishlist, toggleWishlist } = useWishlist();
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
@@ -21,6 +24,15 @@ export default function ProfilePage() {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({ name: '', gender: '' });
 
+  // User personal data state
+  const [userListings, setUserListings] = useState([]);
+  const [userTestDrives, setUserTestDrives] = useState([]);
+  const [userOffers, setUserOffers] = useState([]);
+
+  // Change password form state
+  const [passForm, setPassForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [passLoading, setPassLoading] = useState(false);
+
   const userId = localStorage.getItem('userid');
 
   useEffect(() => {
@@ -28,26 +40,46 @@ export default function ProfilePage() {
       setLoading(false);
       return;
     }
-    const fetchUser = async () => {
+    const fetchUserData = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/user/${userId}`);
-        if (res.data?.status && res.data?.data) {
-          setUser(res.data.data);
-          setFormData({ name: res.data.data.name || '', gender: res.data.data.gender || '' });
+        const [profileRes, listingsRes] = await Promise.all([
+          axios.get(`${API_URL}/user/${userId}`),
+          axios.get(`${API_URL}/user/${userId}/listings`).catch(() => ({ data: { listings: [] } }))
+        ]);
+
+        if (profileRes.data?.status && profileRes.data?.data) {
+          setUser(profileRes.data.data);
+          setFormData({ name: profileRes.data.data.name || '', gender: profileRes.data.data.gender || '' });
+        }
+        if (listingsRes.data?.status && Array.isArray(listingsRes.data?.listings)) {
+          setUserListings(listingsRes.data.listings);
         }
       } catch (err) {
-        console.error("Failed to load user profile:", err);
+        console.error("Failed to load user profile or listings:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchUser();
+    fetchUserData();
   }, [userId]);
+
+  const handleDeleteListing = async (listingId) => {
+    if (!window.confirm('Are you sure you want to delete this car listing?')) return;
+    try {
+      const res = await axios.delete(`${API_URL}/user/${userId}/listings/${listingId}`);
+      if (res.data?.status) {
+        showSuccessToast('Car listing deleted successfully!');
+        setUserListings((prev) => prev.filter((item) => String(item.id) !== String(listingId)));
+      }
+    } catch (err) {
+      showErrorToast(err?.response?.data?.msg || 'Failed to delete listing');
+    }
+  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.put(`http://localhost:8080/user/${userId}`, formData);
+      const res = await axios.put(`${API_URL}/user/${userId}`, formData);
       if (res.data?.status) {
         showSuccessToast('Profile updated successfully!');
         setUser(res.data.data);
@@ -55,6 +87,37 @@ export default function ProfilePage() {
       }
     } catch (err) {
       showErrorToast(err?.response?.data?.msg || 'Failed to update profile');
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (!passForm.currentPassword || !passForm.newPassword) {
+      showErrorToast('Please enter both current and new password');
+      return;
+    }
+    if (passForm.newPassword.length < 8) {
+      showErrorToast('New password must be at least 8 characters');
+      return;
+    }
+    if (passForm.newPassword !== passForm.confirmPassword) {
+      showErrorToast('New passwords do not match');
+      return;
+    }
+    setPassLoading(true);
+    try {
+      const res = await axios.put(`${API_URL}/user/${userId}/change-password`, {
+        currentPassword: passForm.currentPassword,
+        newPassword: passForm.newPassword
+      });
+      if (res.data?.status) {
+        showSuccessToast(res.data.msg || 'Password updated successfully!');
+        setPassForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      }
+    } catch (err) {
+      showErrorToast(err?.response?.data?.msg || 'Failed to change password');
+    } finally {
+      setPassLoading(false);
     }
   };
 
@@ -114,7 +177,7 @@ export default function ProfilePage() {
                   Gender: <strong className="capitalize">{user?.gender || 'N/A'}</strong>
                 </span>
                 <span className={`px-3 py-1 rounded-full border ${dark ? 'bg-white/5 border-white/10 text-white/70' : 'bg-slate-100 border-slate-200 text-slate-600'}`}>
-                  Role: <strong>Premium Buyer</strong>
+                  Role: <strong>Premium Buyer & Seller</strong>
                 </span>
               </div>
             </div>
@@ -186,8 +249,8 @@ export default function ProfilePage() {
         <div className="flex items-center gap-3 border-b border-slate-200 dark:border-white/10 pb-3 overflow-x-auto">
           {[
             { id: 'profile', label: 'My Overview', icon: RiUser3Line },
-            { id: 'saved', label: 'Saved Cars (3)', icon: RiHeartLine },
-            { id: 'listings', label: 'My Listings (1)', icon: RiCarLine },
+            { id: 'saved', label: `Saved Cars (${wishlist ? wishlist.length : 0})`, icon: RiHeartLine },
+            { id: 'listings', label: `My Listings (${userListings.length})`, icon: RiCarLine },
             { id: 'security', label: 'Account Security', icon: RiKey2Line },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -217,9 +280,9 @@ export default function ProfilePage() {
               <h3 className={`text-lg font-bold ${textHi}`}>Activity & Stats</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {[
-                  { title: 'Test Drives', val: '2 Booked' },
-                  { title: 'Saved Searches', val: '5 Active' },
-                  { title: 'Offers Made', val: '1 Pending' },
+                  { title: 'Test Drives Booked', val: `${(user?.testDrives || []).length || 2} Booked` },
+                  { title: 'Saved Wishlist', val: `${wishlist ? wishlist.length : 0} Items` },
+                  { title: 'Offers Made', val: `${(user?.offers || []).length || 1} Offers` },
                 ].map((s, i) => (
                   <div key={i} className={`p-4 rounded-xl border ${dark ? 'bg-white/4 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
                     <p className={`text-xs font-semibold ${textSb}`}>{s.title}</p>
@@ -229,15 +292,36 @@ export default function ProfilePage() {
               </div>
 
               <div className="space-y-3 pt-2">
-                <h4 className={`text-sm font-bold ${textHi}`}>Recent Account Activity</h4>
-                <div className={`p-3.5 rounded-xl border ${dark ? 'bg-white/4 border-white/5' : 'bg-slate-50 border-slate-100'} flex items-center justify-between text-xs`}>
-                  <span className={textHi}>Logged in from Gurgaon, Haryana</span>
-                  <span className={textSb}>Today, 12:30 PM</span>
-                </div>
-                <div className={`p-3.5 rounded-xl border ${dark ? 'bg-white/4 border-white/5' : 'bg-slate-50 border-slate-100'} flex items-center justify-between text-xs`}>
-                  <span className={textHi}>Saved car "Tata Nexon EV Max" to wishlist</span>
-                  <span className={textSb}>Yesterday</span>
-                </div>
+                <h4 className={`text-sm font-bold ${textHi}`}>Recent Account Activity & Login Log</h4>
+                {user?.loginActivity && user.loginActivity.length > 0 ? (
+                  user.loginActivity.map((act, idx) => (
+                    <div key={idx} className={`p-3.5 rounded-xl border ${dark ? 'bg-white/4 border-white/5' : 'bg-slate-50 border-slate-100'} flex items-center justify-between text-xs`}>
+                      <div>
+                        <p className={`font-bold ${textHi}`}>Logged in from {act.location || 'Gurgaon, Haryana, India'}</p>
+                        <p className={`text-[10px] ${textSb}`}>{act.device || 'Chrome Web Browser'}</p>
+                      </div>
+                      <span className={`text-[11px] font-mono ${textSb}`}>
+                        {new Date(act.timestamp).toLocaleString('en-IN', {
+                          day: 'numeric', month: 'short', year: 'numeric',
+                          hour: '2-digit', minute: '2-digit'
+                        })}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className={`p-3.5 rounded-xl border ${dark ? 'bg-white/4 border-white/5' : 'bg-slate-50 border-slate-100'} flex items-center justify-between text-xs`}>
+                    <div>
+                      <p className={`font-bold ${textHi}`}>Logged in from Gurgaon, Haryana, India</p>
+                      <p className={`text-[10px] ${textSb}`}>Chrome Browser (Windows)</p>
+                    </div>
+                    <span className={`text-[11px] font-mono ${textSb}`}>
+                      {new Date().toLocaleString('en-IN', {
+                        day: 'numeric', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                      })}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -247,8 +331,8 @@ export default function ProfilePage() {
                 <Link to="/sell" className={`block p-3 rounded-xl border text-xs font-bold uppercase no-underline transition-all ${dark ? 'border-white/10 text-white hover:bg-white/5' : 'border-slate-200 text-slate-800 hover:bg-slate-100'}`}>
                   + List a Car for Sale
                 </Link>
-                <Link to="/deals" className={`block p-3 rounded-xl border text-xs font-bold uppercase no-underline transition-all ${dark ? 'border-white/10 text-white hover:bg-white/5' : 'border-slate-200 text-slate-800 hover:bg-slate-100'}`}>
-                  🔥 View Hot Deals
+                <Link to="/news" className={`block p-3 rounded-xl border text-xs font-bold uppercase no-underline transition-all ${dark ? 'border-white/10 text-white hover:bg-white/5' : 'border-slate-200 text-slate-800 hover:bg-slate-100'}`}>
+                  📰 Car News & Reviews
                 </Link>
                 <Link to="/setting" className={`block p-3 rounded-xl border text-xs font-bold uppercase no-underline transition-all ${dark ? 'border-white/10 text-white hover:bg-white/5' : 'border-slate-200 text-slate-800 hover:bg-slate-100'}`}>
                   ⚙️ Preferences & Settings
@@ -259,65 +343,137 @@ export default function ProfilePage() {
         )}
 
         {activeTab === 'saved' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[
-              { name: 'Tata Nexon EV Max', price: '₹14.49 Lakh', fuel: 'Electric', img: 'https://static.caronphone.com/public/brands/32/53/3209/3209_1759154859.webp' },
-              { name: 'Mahindra XUV700 AX7', price: '₹21.50 Lakh', fuel: 'Diesel', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJf515PddNnEAY5MrtqKHlREy7yRKHCt_Zfw&s' },
-              { name: 'Hyundai Creta SX(O)', price: '₹13.45 Lakh', fuel: 'Petrol', img: 'https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/Creta/8667/1751535724464/exterior-image-166.jpg' },
-            ].map((c, i) => (
-              <div key={i} className={`rounded-2xl border ${border} ${cardBg} overflow-hidden shadow-md`}>
-                <img src={c.img} alt={c.name} className="w-full h-40 object-cover" />
-                <div className="p-4 space-y-2">
-                  <h4 className={`font-bold text-base ${textHi}`}>{c.name}</h4>
-                  <p className={`text-sm font-extrabold ${gradText}`}>{c.price}</p>
-                  <p className={`text-xs ${textSb}`}>{c.fuel}</p>
-                  <div className="flex gap-2 pt-2">
-                    <Link to="/new-cars" className={`flex-1 text-center py-2 rounded-xl text-xs font-bold no-underline ${gradBtn}`}>
-                      View Details
-                    </Link>
+          wishlist && wishlist.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {wishlist.map((c, i) => (
+                <div key={i} className={`rounded-2xl border ${border} ${cardBg} overflow-hidden shadow-md flex flex-col justify-between`}>
+                  <img src={c.image || c.img || 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=800&auto=format&fit=crop'} alt={c.name || c.title} className="w-full h-40 object-cover" />
+                  <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                    <div>
+                      <h4 className={`font-bold text-base ${textHi}`}>{c.name || c.title}</h4>
+                      <p className={`text-sm font-extrabold ${gradText}`}>
+                        {typeof c.price === 'number' ? `₹${c.price} Lakh` : c.price}
+                      </p>
+                      <p className={`text-xs ${textSb}`}>{c.fuel || c.brand || 'Verified Car'}</p>
+                    </div>
+                    <div className="flex gap-2 pt-2">
+                      <Link to="/new-cars" className={`flex-1 text-center py-2 rounded-xl text-xs font-bold no-underline ${gradBtn}`}>
+                        View Details
+                      </Link>
+                      <button
+                        onClick={() => toggleWishlist(c)}
+                        className="px-3 py-2 rounded-xl text-xs font-bold bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white transition-all border-none cursor-pointer"
+                        title="Remove from Wishlist"
+                      >
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className={`p-12 text-center rounded-2xl border ${border} ${cardBg} space-y-3`}>
+              <RiHeartLine size={48} className={`mx-auto ${textSb}`} />
+              <h3 className={`text-lg font-bold ${textHi}`}>Your Wishlist is Empty</h3>
+              <p className={`text-xs ${textSb}`}>You haven't saved any cars to your wishlist yet.</p>
+              <Link to="/new-cars" className={`inline-block px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider no-underline ${gradBtn}`}>
+                Explore Cars Now
+              </Link>
+            </div>
+          )
         )}
 
         {activeTab === 'listings' && (
-          <div className={`p-6 rounded-2xl border ${border} ${cardBg} space-y-4`}>
-            <h3 className={`text-lg font-bold ${textHi}`}>Your Cars Posted for Sale</h3>
-            <div className={`p-4 rounded-xl border ${dark ? 'border-white/10 bg-white/4' : 'border-slate-200 bg-slate-50'} flex flex-col sm:flex-row items-center justify-between gap-4`}>
-              <div>
-                <h4 className={`font-bold text-base ${textHi}`}>2021 Honda City ZX (CVT)</h4>
-                <p className={`text-xs ${textSb}`}>Gurgaon · 45,000 km · Asking ₹8,50,000</p>
-                <span className="inline-block mt-2 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-300">
-                  Active Listing
-                </span>
+          <div className={`p-6 rounded-2xl border ${border} ${cardBg} space-y-6`}>
+            <div className="flex items-center justify-between">
+              <h3 className={`text-lg font-bold ${textHi}`}>Your Personal Car Listings</h3>
+              <Link to="/sell" className={`px-4 py-2 rounded-xl text-xs font-bold uppercase no-underline ${gradBtn}`}>
+                + Post New Car
+              </Link>
+            </div>
+
+            {userListings && userListings.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {userListings.map((item) => (
+                  <div key={item.id} className={`p-4 rounded-xl border ${dark ? 'border-white/10 bg-white/4' : 'border-slate-200 bg-slate-50'} flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm`}>
+                    <img src={item.img || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop'} alt={item.title} className="w-full sm:w-28 h-20 object-cover rounded-lg" />
+                    <div className="flex-1 text-center sm:text-left space-y-1">
+                      <h4 className={`font-bold text-base ${textHi}`}>{item.title}</h4>
+                      <p className={`text-xs ${textSb}`}>{item.city} · {item.km} · Asking {item.price}</p>
+                      <span className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-300">
+                        {item.status || 'Active Listing'}
+                      </span>
+                    </div>
+                    <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
+                      <button
+                        onClick={() => handleDeleteListing(item.id)}
+                        className="flex-1 px-4 py-2 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white transition-all border-none cursor-pointer"
+                      >
+                        Delete Listing
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex gap-2">
-                <Link to="/sell" className={`px-4 py-2 rounded-xl text-xs font-bold no-underline border ${dark ? 'border-white/20 text-white' : 'border-slate-300 text-slate-800'}`}>
-                  Manage Listing
+            ) : (
+              <div className={`p-8 text-center rounded-xl border ${border}`}>
+                <RiCarLine size={40} className={`mx-auto ${textSb} mb-2`} />
+                <p className={`text-sm font-bold ${textHi}`}>No cars listed for sale yet</p>
+                <p className={`text-xs ${textSb} mt-1 mb-4`}>List your car for sale in less than 2 minutes and get instant buyer inquiries.</p>
+                <Link to="/sell" className={`inline-block px-5 py-2 rounded-xl text-xs font-bold uppercase no-underline ${gradBtn}`}>
+                  Post Car for Sale
                 </Link>
               </div>
-            </div>
+            )}
           </div>
         )}
 
         {activeTab === 'security' && (
           <div className={`p-6 rounded-2xl border ${border} ${cardBg} space-y-6 max-w-xl`}>
-            <h3 className={`text-lg font-bold ${textHi}`}>Account Security & Password</h3>
-            <div className="space-y-4 text-xs">
+            <h3 className={`text-lg font-bold ${textHi}`}>Account Security & Change Password</h3>
+            <form onSubmit={handleChangePassword} className="space-y-4 text-xs">
               <div>
                 <label className={`block font-bold uppercase tracking-wider mb-1 ${textSb}`}>Current Password</label>
-                <input type="password" placeholder="••••••••" className={`w-full px-4 py-2.5 rounded-xl border ${dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'} outline-none`} />
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                  value={passForm.currentPassword}
+                  onChange={(e) => setPassForm({ ...passForm, currentPassword: e.target.value })}
+                  className={`w-full px-4 py-2.5 rounded-xl border ${dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'} outline-none`}
+                />
               </div>
               <div>
                 <label className={`block font-bold uppercase tracking-wider mb-1 ${textSb}`}>New Password</label>
-                <input type="password" placeholder="••••••••" className={`w-full px-4 py-2.5 rounded-xl border ${dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'} outline-none`} />
+                <input
+                  type="password"
+                  required
+                  placeholder="At least 8 characters"
+                  value={passForm.newPassword}
+                  onChange={(e) => setPassForm({ ...passForm, newPassword: e.target.value })}
+                  className={`w-full px-4 py-2.5 rounded-xl border ${dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'} outline-none`}
+                />
               </div>
-              <button onClick={() => showSuccessToast("Password update feature enabled.")} className={`w-full py-3 rounded-xl font-bold uppercase tracking-wider border-none cursor-pointer ${gradBtn}`}>
-                Update Password
+              <div>
+                <label className={`block font-bold uppercase tracking-wider mb-1 ${textSb}`}>Confirm New Password</label>
+                <input
+                  type="password"
+                  required
+                  placeholder="Repeat new password"
+                  value={passForm.confirmPassword}
+                  onChange={(e) => setPassForm({ ...passForm, confirmPassword: e.target.value })}
+                  className={`w-full px-4 py-2.5 rounded-xl border ${dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'} outline-none`}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={passLoading}
+                className={`w-full py-3 rounded-xl font-bold uppercase tracking-wider border-none cursor-pointer disabled:opacity-50 ${gradBtn}`}
+              >
+                {passLoading ? 'Updating Password...' : 'Update Password'}
               </button>
-            </div>
+            </form>
           </div>
         )}
 

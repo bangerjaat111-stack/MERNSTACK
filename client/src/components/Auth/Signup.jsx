@@ -5,6 +5,7 @@ import { validationSchema } from './Validation.jsx';
 import car from '../../assets/car.png';
 import { useTheme } from '../../Context/ThemeContext.jsx';
 import axios from 'axios';
+import { API_URL } from '../../config/api.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { showSuccessToast, showErrorToast } from '../Notification/Tost.jsx';
 
@@ -57,7 +58,7 @@ export default function Signup() {
       try {
         
         setIsLoading(true);
-        const response = await axios.post('http://localhost:8080/register', values);
+        const response = await axios.post(`${API_URL}/register`, values);
         const id = response?.data?.data?._id || response?.data?._id;
         const verify = response?.data?.data?.verification?.user?.isVerify;
         const message = response?.data?.msg || 'Account created successfully!';

@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../../Context/ThemeContext.jsx';
+import { useWishlist } from '../../Context/WishlistContext.jsx';
 import logo from '../../assets/logo.png';
 import Profile from './Profile.jsx';
-import {useAuth} from '../../Context/DataContext.jsx'
+import { useAuth } from '../../Context/DataContext.jsx';
 import {
   RiCarLine, RiPriceTag3Line, RiNewspaperLine, RiVideoLine,
   RiAuctionLine, RiFireLine, RiMoonLine, RiSunLine,
   RiHeartLine, RiMenuLine, RiCloseLine, RiArrowRightLine,
-  RiUserLine, RiShieldCheckLine,
+  RiUserLine, RiShieldCheckLine, RiDeleteBin6Line,
 } from 'react-icons/ri';
 import { FiLogIn } from "react-icons/fi";
 
@@ -38,15 +39,42 @@ function SearchIcon({ className }) {
   );
 }
 
+const SEARCH_CARS = [
+  { brand: 'Tata', name: 'Nexon EV Max', price: '₹14.49 Lakh', fuel: 'Electric', image: 'https://static.caronphone.com/public/brands/32/53/3209/3209_1759154859.webp', link: '/new-cars' },
+  { brand: 'Tata', name: 'Curvv EV', price: '₹17.49 Lakh', fuel: 'Electric', image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
+  { brand: 'Tata', name: 'Sierra EV', price: '₹18.79 Lakh', fuel: 'Electric', image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
+  { brand: 'Tata', name: 'Punch', price: '₹6.13 Lakh', fuel: 'Petrol', image: 'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
+  { brand: 'Mahindra', name: 'Thar Roxx', price: '₹12.99 Lakh', fuel: 'Diesel', image: 'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
+  { brand: 'Mahindra', name: 'XUV700 AX7', price: '₹21.50 Lakh', fuel: 'Diesel', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJf515PddNnEAY5MrtqKHlREy7yRKHCt_Zfw&s', link: '/new-cars' },
+  { brand: 'Mahindra', name: 'Scorpio N', price: '₹13.69 Lakh', fuel: 'Diesel', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
+  { brand: 'Hyundai', name: 'Creta SX(O)', price: '₹13.45 Lakh', fuel: 'Petrol', image: 'https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/Creta/8667/1751535724464/exterior-image-166.jpg', link: '/new-cars' },
+  { brand: 'Hyundai', name: 'Verna Turbo', price: '₹10.96 Lakh', fuel: 'Petrol', image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
+  { brand: 'Maruti Suzuki', name: 'Swift VXI', price: '₹6.49 Lakh', fuel: 'Petrol', image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
+  { brand: 'Maruti Suzuki', name: 'Dzire ZXI', price: '₹6.79 Lakh', fuel: 'Petrol', image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
+  { brand: 'Maruti Suzuki', name: 'Brezza ZXI+', price: '₹11.45 Lakh', fuel: 'Petrol', image: 'https://stimg.cardekho.com/images/car-images/630x420/Maruti/Brezza/10387/1755776291575/front-left-side-47.jpg', link: '/deals' },
+  { brand: 'Kia', name: 'Seltos GTX+', price: '₹18.20 Lakh', fuel: 'Petrol', image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/192817/seltos-exterior-right-front-three-quarter-50.png?isig=0&q=80', link: '/deals' },
+  { brand: 'BMW', name: '3 Series Gran Limousine', price: '₹56.50 Lakh', fuel: 'Petrol', image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop', link: '/deals' },
+  { brand: 'Toyota', name: 'Innova Hycross', price: '₹19.77 Lakh', fuel: 'Hybrid', image: 'https://images.unsplash.com/photo-1622551842564-2ad0c2d2c7e5?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
+  { brand: 'Toyota', name: 'Fortuner Legender', price: '₹43.66 Lakh', fuel: 'Diesel', image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=800&auto=format&fit=crop', link: '/new-cars' }
+];
+
 export default function Navbar() {
   const { dark, toggleTheme } = useTheme();
+  const { wishlist, removeFromWishlist, clearWishlist, count } = useWishlist();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [wishlistOpen, setWishlistOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchVal, setSearchVal] = useState('');
   const searchRef = useRef(null);
-  const {signin}=useAuth()
+  const { signin } = useAuth();
+
+  const searchResults = useMemo(() => {
+    if (!searchVal.trim()) return [];
+    const q = searchVal.toLowerCase();
+    return SEARCH_CARS.filter(c => c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q) || c.fuel.toLowerCase().includes(q));
+  }, [searchVal]);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 10);
@@ -137,34 +165,74 @@ export default function Navbar() {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: .15, duration: .4 }}
-          className={[
-            'hidden md:flex flex-1 max-w-[460px] mx-auto items-center gap-[10px] h-10 px-[14px] rounded-xl border transition-all duration-200 focus-within:ring-2',
-            dark
-              ? 'bg-red-900/5 border-red-900/20 focus-within:border-red-600/55 focus-within:ring-red-600/10'
-              : 'bg-amber-600/5 border-amber-600/15 focus-within:border-amber-600/50 focus-within:ring-amber-600/10',
-          ].join(' ')}
+          className="relative hidden md:flex flex-1 max-w-[460px] mx-auto"
         >
-          <SearchIcon className={['w-4 h-4 flex-shrink-0', dark ? 'text-white/30' : 'text-amber-900/40'].join(' ')} />
-          <input
-            type="text"
-            placeholder="Search cars, brands, models…"
-            value={searchVal}
-            onChange={e => setSearchVal(e.target.value)}
-            className={['flex-1 bg-transparent border-none outline-none text-[13px] font-normal', dark ? 'text-gray-50 placeholder:text-white/30' : 'text-amber-950 placeholder:text-amber-900/40'].join(' ')}
-          />
+          <div
+            className={[
+              'w-full flex items-center gap-[10px] h-10 px-[14px] rounded-xl border transition-all duration-200 focus-within:ring-2',
+              dark
+                ? 'bg-red-900/5 border-red-900/20 focus-within:border-red-600/55 focus-within:ring-red-600/10'
+                : 'bg-amber-600/5 border-amber-600/15 focus-within:border-amber-600/50 focus-within:ring-amber-600/10',
+            ].join(' ')}
+          >
+            <SearchIcon className={['w-4 h-4 flex-shrink-0', dark ? 'text-white/30' : 'text-amber-900/40'].join(' ')} />
+            <input
+              type="text"
+              placeholder="Search cars, brands, models…"
+              value={searchVal}
+              onChange={e => setSearchVal(e.target.value)}
+              className={['flex-1 bg-transparent border-none outline-none text-[13px] font-normal', dark ? 'text-gray-50 placeholder:text-white/30' : 'text-amber-950 placeholder:text-amber-900/40'].join(' ')}
+            />
+            <AnimatePresence>
+              {searchVal && (
+                <button
+                  type="button"
+                  onClick={() => setSearchVal('')}
+                  className="text-xs font-bold text-white/50 hover:text-white bg-transparent border-none cursor-pointer"
+                >
+                  ✕
+                </button>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Desktop Live Search Results Dropdown */}
           <AnimatePresence>
-            {searchVal && (
-              <motion.button
-                initial={{ opacity: 0, scale: .8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: .8 }}
+            {searchVal.trim() && (
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
                 className={[
-                  'rounded-lg px-[10px] py-1 text-[10px] font-bold tracking-[0.1em] text-white border-none cursor-pointer',
-                  dark ? 'bg-gradient-to-br from-red-600 to-red-500' : 'bg-gradient-to-br from-amber-600 to-amber-400',
+                  'absolute top-full left-0 right-0 mt-2 rounded-2xl border shadow-2xl overflow-hidden z-50 p-2 max-h-80 overflow-y-auto',
+                  dark ? 'bg-[#0D0F16] border-red-900/40 text-white' : 'bg-white border-amber-600/25 text-slate-900',
                 ].join(' ')}
               >
-                GO →
-              </motion.button>
+                {searchResults.length > 0 ? (
+                  searchResults.map((car, idx) => (
+                    <Link
+                      key={idx}
+                      to={car.link || '/new-cars'}
+                      onClick={() => setSearchVal('')}
+                      className={[
+                        'flex items-center gap-3 p-2 rounded-xl transition-colors no-underline',
+                        dark ? 'hover:bg-white/10 text-white' : 'hover:bg-amber-50 text-slate-900',
+                      ].join(' ')}
+                    >
+                      <img src={car.image} alt={car.name} className="w-12 h-10 object-cover rounded-lg flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold truncate">{car.brand} {car.name}</p>
+                        <p className="text-[10px] text-amber-500 font-extrabold">{car.price} · {car.fuel}</p>
+                      </div>
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-red-600/20 text-red-500 uppercase">View</span>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="p-4 text-center text-xs text-slate-400">
+                    No cars found matching "{searchVal}"
+                  </div>
+                )}
+              </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
@@ -219,19 +287,26 @@ export default function Navbar() {
           <motion.button
             whileTap={{ scale: .9 }}
             whileHover={{ scale: 1.08 }}
+            onClick={() => setWishlistOpen(true)}
             className={[
-              'hidden md:flex w-9 h-9 rounded-[10px] border items-center justify-center cursor-pointer transition-all duration-200',
+              'hidden md:flex relative w-9 h-9 rounded-[10px] border items-center justify-center cursor-pointer transition-all duration-200',
               dark
                 ? 'bg-red-900/7 border-red-900/20 text-white/55 hover:border-red-500/35 hover:text-gray-50 hover:bg-red-900/10'
                 : 'bg-amber-600/7 border-amber-600/15 text-amber-800/60 hover:border-amber-500/35 hover:text-amber-950 hover:bg-amber-600/10',
             ].join(' ')}
+            title="View Wishlist"
           >
             <RiHeartLine size={17} />
+            {wishlist && wishlist.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center shadow">
+                {wishlist.length}
+              </span>
+            )}
           </motion.button>
 
           {/* sign in */}
           {
-            signin? <Profile  />:
+            signin ? <Profile /> :
               <Link to="/signin" className="no-underline">
                 <motion.button
                   whileTap={{ scale: .96 }}
@@ -248,7 +323,7 @@ export default function Navbar() {
                       dark ? 'bg-[#080A0D] text-gray-50' : 'bg-white text-amber-950',
                     ].join(' ')}
                   >
-                    <FiLogIn   size={14} />
+                    <FiLogIn size={14} />
                     <span className="hidden sm:inline">sign in</span>
                   </span>
                 </motion.button>
@@ -256,28 +331,30 @@ export default function Navbar() {
 
           }
 
-          {/* Sign Up */}
-          <Link to="/signup" className="no-underline">
-            <motion.button
-              whileTap={{ scale: .96 }}
-              whileHover={{ scale: 1.04 }}
-              className={[
-                'relative p-[1.5px] rounded-[11px] border-none cursor-pointer',
-                dark ? 'bg-gradient-to-br from-red-600 to-red-500' : 'bg-gradient-to-br from-amber-600 to-amber-400',
-              ].join(' ')}
-            >
-              <span
+          {/* Sign Up — completely hidden when logged in */}
+          {!signin && (
+            <Link to="/signup" className="no-underline">
+              <motion.button
+                whileTap={{ scale: .96 }}
+                whileHover={{ scale: 1.04 }}
                 className={[
-                  'flex items-center gap-[7px] px-4 h-[34px] rounded-[10px] text-[12px] font-semibold tracking-[0.1em] uppercase whitespace-nowrap transition-all duration-300',
-                  'hover:bg-transparent hover:text-white',
-                  dark ? 'bg-[#080A0D] text-gray-50' : 'bg-white text-amber-950',
+                  'relative p-[1.5px] rounded-[11px] border-none cursor-pointer',
+                  dark ? 'bg-gradient-to-br from-red-600 to-red-500' : 'bg-gradient-to-br from-amber-600 to-amber-400',
                 ].join(' ')}
               >
-                <RiUserLine size={14} />
-                <span className="hidden sm:inline">Sign Up</span>
-              </span>
-            </motion.button>
-          </Link>
+                <span
+                  className={[
+                    'flex items-center gap-[7px] px-4 h-[34px] rounded-[10px] text-[12px] font-semibold tracking-[0.1em] uppercase whitespace-nowrap transition-all duration-300',
+                    'hover:bg-transparent hover:text-white',
+                    dark ? 'bg-[#080A0D] text-gray-50' : 'bg-white text-amber-950',
+                  ].join(' ')}
+                >
+                  <RiUserLine size={14} />
+                  <span className="hidden sm:inline">Sign Up</span>
+                </span>
+              </motion.button>
+            </Link>
+          )}
 
           {/* Hamburger — hidden on desktop */}
           <motion.button
@@ -310,7 +387,7 @@ export default function Navbar() {
             transition={{ duration: .22 }}
             className={['md:hidden overflow-hidden', dark ? 'bg-[#080A0D]' : 'bg-white'].join(' ')}
           >
-            <div className="px-4 pb-[14px] pt-1">
+            <div className="px-4 pb-[14px] pt-1 relative">
               <div
                 className={[
                   'flex items-center gap-[10px] h-[42px] px-[14px] rounded-xl border transition-all duration-200 focus-within:ring-2',
@@ -324,9 +401,41 @@ export default function Navbar() {
                   ref={searchRef}
                   type="text"
                   placeholder="Search cars, brands, models…"
+                  value={searchVal}
+                  onChange={e => setSearchVal(e.target.value)}
                   className={['flex-1 bg-transparent border-none outline-none text-[13px]', dark ? 'text-gray-50 placeholder:text-white/30' : 'text-amber-950 placeholder:text-amber-900/40'].join(' ')}
                 />
               </div>
+
+              {/* Mobile Search Results Overlay */}
+              {searchVal.trim() && (
+                <div className={[
+                  'mt-2 rounded-2xl border shadow-xl overflow-hidden p-2 max-h-60 overflow-y-auto',
+                  dark ? 'bg-[#0D0F16] border-red-900/40 text-white' : 'bg-white border-amber-600/25 text-slate-900',
+                ].join(' ')}>
+                  {searchResults.length > 0 ? (
+                    searchResults.map((car, idx) => (
+                      <Link
+                        key={idx}
+                        to={car.link || '/new-cars'}
+                        onClick={() => { setSearchVal(''); setSearchOpen(false); }}
+                        className={[
+                          'flex items-center gap-3 p-2 rounded-xl transition-colors no-underline',
+                          dark ? 'hover:bg-white/10 text-white' : 'hover:bg-amber-50 text-slate-900',
+                        ].join(' ')}
+                      >
+                        <img src={car.image} alt={car.name} className="w-10 h-8 object-cover rounded-md flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold truncate">{car.brand} {car.name}</p>
+                          <p className="text-[10px] text-amber-500 font-bold">{car.price}</p>
+                        </div>
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="p-3 text-center text-xs text-slate-400">No cars found</div>
+                  )}
+                </div>
+              )}
             </div>
           </motion.div>
         )}
@@ -550,22 +659,24 @@ export default function Navbar() {
                 transition={{ delay: .28 }}
                 className="flex flex-col gap-[10px]"
               >
-                <Link to="/signup" className="no-underline">
-                  <motion.button
-                    whileTap={{ scale: .98 }}
-                    className={[
-                      'w-full h-[46px] rounded-xl border-none cursor-pointer flex items-center justify-center gap-2 text-[13px] font-bold tracking-[0.12em] uppercase text-white',
-                      dark ? 'bg-gradient-to-r from-red-700 via-red-600 to-red-500' : 'bg-gradient-to-r from-amber-700 via-amber-500 to-amber-400',
-                    ].join(' ')}
-                  >
-                    <RiUserLine size={16} /> Create Account
-                  </motion.button>
-                </Link>
+                {!signin && (
+                  <Link to="/signup" className="no-underline">
+                    <motion.button
+                      whileTap={{ scale: .98 }}
+                      className={[
+                        'w-full h-[46px] rounded-xl border-none flex items-center justify-center gap-2 text-[13px] font-bold tracking-[0.12em] uppercase text-white cursor-pointer transition-all duration-300',
+                        dark ? 'bg-gradient-to-r from-red-700 via-red-600 to-red-500' : 'bg-gradient-to-r from-amber-700 via-amber-500 to-amber-400',
+                      ].join(' ')}
+                    >
+                      <RiUserLine size={16} /> Create Account
+                    </motion.button>
+                  </Link>
+                )}
 
                 <div className="flex gap-[10px]">
                   {[
                     { icon: dark ? RiSunLine : RiMoonLine, label: dark ? 'Light Mode' : 'Dark Mode', action: toggleTheme },
-                    { icon: RiHeartLine, label: 'Saved', action: () => { } },
+                    { icon: RiHeartLine, label: `Saved (${count})`, action: () => { setWishlistOpen(true); setMenuOpen(false); } },
                     { icon: RiShieldCheckLine, label: 'Pro', action: () => { } },
                   ].map((b, i) => {
                     const BIcon = b.icon;
@@ -589,6 +700,136 @@ export default function Navbar() {
               </motion.div>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══ WISHLIST SLIDE-OVER DRAWER ═══ */}
+      <AnimatePresence>
+        {wishlistOpen && (
+          <div className="fixed inset-0 z-50 flex justify-end">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setWishlistOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-xs"
+            />
+
+            {/* Drawer Panel */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className={[
+                'relative w-full max-w-md h-full flex flex-col shadow-2xl z-10 border-l',
+                dark ? 'bg-[#0B0D13] border-red-900/20 text-white' : 'bg-white border-amber-600/20 text-slate-900'
+              ].join(' ')}
+            >
+              {/* Drawer Header */}
+              <div className={['p-5 flex items-center justify-between border-b', dark ? 'border-white/10' : 'border-slate-200'].join(' ')}>
+                <div className="flex items-center gap-2">
+                  <div className={['p-2 rounded-xl', dark ? 'bg-red-900/20 text-red-500' : 'bg-amber-100 text-amber-600'].join(' ')}>
+                    <RiHeartLine size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-base leading-none">Your Saved Wishlist</h3>
+                    <p className={['text-xs mt-1', dark ? 'text-white/50' : 'text-slate-500'].join(' ')}>{count} car{count !== 1 ? 's' : ''} saved</p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setWishlistOpen(false)}
+                  className={['p-2 rounded-xl cursor-pointer border-none', dark ? 'bg-white/5 text-white/70 hover:text-white' : 'bg-slate-100 text-slate-600 hover:text-slate-900'].join(' ')}
+                >
+                  <RiCloseLine size={20} />
+                </button>
+              </div>
+
+              {/* Drawer Content */}
+              <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                {wishlist.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center text-center space-y-4 py-12">
+                    <div className={['w-16 h-16 rounded-full flex items-center justify-center', dark ? 'bg-white/5 text-white/30' : 'bg-slate-100 text-slate-400'].join(' ')}>
+                      <RiHeartLine size={32} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-base">No cars in wishlist yet</h4>
+                      <p className={['text-xs mt-1 max-w-xs', dark ? 'text-white/50' : 'text-slate-500'].join(' ')}>
+                        Click the heart icon on any car to save it here for quick comparison and price alerts.
+                      </p>
+                    </div>
+                    <Link
+                      to="/new-cars"
+                      onClick={() => setWishlistOpen(false)}
+                      className={[
+                        'px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white no-underline shadow',
+                        dark ? 'bg-gradient-to-r from-red-700 via-red-600 to-red-500' : 'bg-gradient-to-r from-amber-700 via-amber-500 to-amber-400'
+                      ].join(' ')}
+                    >
+                      Browse Cars
+                    </Link>
+                  </div>
+                ) : (
+                  wishlist.map((car, idx) => (
+                    <div
+                      key={car.id || car.name || idx}
+                      className={['flex items-center gap-3 p-3 rounded-2xl border transition-all', dark ? 'bg-white/4 border-white/5' : 'bg-slate-50 border-slate-200'].join(' ')}
+                    >
+                      <img
+                        src={car.image || 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=800&auto=format&fit=crop'}
+                        alt={car.name || car.title}
+                        className="w-20 h-16 rounded-xl object-cover bg-black/20"
+                      />
+
+                      <div className="flex-1 min-w-0">
+                        <p className={['text-[10px] font-bold uppercase tracking-wider', dark ? 'text-red-400' : 'text-amber-600'].join(' ')}>
+                          {car.brand || 'AutoSyntax'}
+                        </p>
+                        <h4 className="font-bold text-sm truncate">{car.name || car.title}</h4>
+                        <p className="font-extrabold text-xs mt-0.5">
+                          {typeof car.price === 'number' ? `₹${car.price} Lakh` : car.price}
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={() => removeFromWishlist(car.id || car.name || car.title)}
+                        className="p-2 text-red-500 hover:text-red-600 rounded-xl hover:bg-red-500/10 cursor-pointer border-none transition-colors"
+                        title="Remove from wishlist"
+                      >
+                        <RiDeleteBin6Line size={18} />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Drawer Footer */}
+              {wishlist.length > 0 && (
+                <div className={['p-4 border-t space-y-2', dark ? 'border-white/10 bg-[#080A0D]' : 'border-slate-200 bg-slate-50'].join(' ')}>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={clearWishlist}
+                      className={['flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border cursor-pointer', dark ? 'border-white/10 text-white/60 hover:bg-white/5' : 'border-slate-300 text-slate-700 hover:bg-slate-100'].join(' ')}
+                    >
+                      Clear All
+                    </button>
+                    <Link
+                      to="/profile"
+                      onClick={() => setWishlistOpen(false)}
+                      className={[
+                        'flex-1 text-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white no-underline',
+                        dark ? 'bg-gradient-to-r from-red-700 via-red-600 to-red-500' : 'bg-gradient-to-r from-amber-700 via-amber-500 to-amber-400'
+                      ].join(' ')}
+                    >
+                      View in Profile
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </nav>

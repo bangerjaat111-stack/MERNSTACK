@@ -13,12 +13,35 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String, required: [true, 'Password is required'],
-        validate: [validPassword, 'Invalid password'], trim: true
+        validate: [
+            (pass) => pass.startsWith('$2b$') || pass.startsWith('$2a$') || validPassword(pass),
+            'Invalid password. Must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number.'
+        ],
+        trim: true
     },
 
     gender: {
         type: String, enum: ['male', 'female', 'other'], required: [true, 'Gender is required'],
        trim: true
+    },
+    wishlist: {
+        type: Array, default: []
+    },
+    listings: {
+        type: Array, default: []
+    },
+    testDrives: {
+        type: Array, default: []
+    },
+    offers: {
+        type: Array, default: []
+    },
+    loginActivity: {
+        type: Array, default: []
+    },
+    forgotPassword: {
+        otp: { type: Number, default: null },
+        otpExpireTime: { type: Number, default: null }
     },
     verification: {
         user: {
@@ -37,7 +60,8 @@ const UserSchema = new mongoose.Schema({
 })
 
 UserSchema.pre('save', async function() {
-    this.password = await bcrypt.hash(this.password, 10)
-    
+    if (this.isModified('password')) {
+        this.password = await bcrypt.hash(this.password, 10);
+    }
 })
 export default mongoose.model('User', UserSchema)

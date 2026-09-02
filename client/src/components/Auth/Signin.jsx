@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import sign from '../../assets/sign.png';
 import axios from 'axios';
+import { API_URL } from '../../config/api.js';
 import { useTheme } from '../../Context/ThemeContext.jsx';
 import {showSuccessToast,showErrorToast} from '../Notification/Tost.jsx'
 import {useAuth} from '../../Context/DataContext.jsx'
@@ -145,7 +146,74 @@ export default function Signin() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading]       = useState(false);
 
-  const {setsignin}= useAuth()
+  const { setsignin } = useAuth();
+
+  // Forgot password modal state
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotUserId, setForgotUserId] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+
+  const handleSendForgotOtp = async (e) => {
+    e.preventDefault();
+    if (!forgotEmail) {
+      showErrorToast('Please enter your email address');
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      const res = await axios.post(`${API_URL}/forgot_password`, { email: forgotEmail });
+      if (res.data?.status) {
+        showSuccessToast(res.data.msg);
+        setForgotUserId(res.data.id);
+        setForgotStep(2);
+      }
+    } catch (err) {
+      showErrorToast(err?.response?.data?.msg || 'Failed to send reset OTP');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (!forgotOtp) {
+      showErrorToast('Please enter OTP');
+      return;
+    }
+    if (!newPassword || newPassword.length < 8) {
+      showErrorToast('Password must be at least 8 characters');
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      showErrorToast('Passwords do not match');
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      const res = await axios.post(`${API_URL}/reset_password/${forgotUserId}`, {
+        userotp: forgotOtp,
+        newPassword
+      });
+      if (res.data?.status) {
+        showSuccessToast(res.data.msg || 'Password reset successfully!');
+        setShowForgotModal(false);
+        setForgotStep(1);
+        setForgotEmail('');
+        setForgotOtp('');
+        setNewPassword('');
+        setConfirmNewPassword('');
+      }
+    } catch (err) {
+      showErrorToast(err?.response?.data?.msg || 'Password reset failed');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
   
 
   const formik = useFormik({
@@ -157,7 +225,7 @@ export default function Signin() {
       
       
       try {
-        const response = await axios.post('http://localhost:8080/log_in', values);
+        const response = await axios.post(`${API_URL}/log_in`, values);
         const message = response?.data?.msg|| 'Login successful!';
         const token = response?.data?.token 
         const id = response?.data?.id
@@ -279,9 +347,13 @@ export default function Signin() {
                 <label className={`block text-[8.5px] font-bold uppercase tracking-[0.22em] ${t.label}`}>
                   Password
                 </label>
-                <a href="#" className={`text-[9.5px] font-semibold transition-colors ${t.forgot}`}>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotModal(true)}
+                  className={`text-[9.5px] font-semibold transition-colors bg-transparent border-none cursor-pointer ${t.forgot}`}
+                >
                   Forgot password?
-                </a>
+                </button>
               </div>
               <div className="relative">
                 <input
@@ -388,6 +460,130 @@ export default function Signin() {
 
         </motion.div>
       </div>
+
+      {/* FORGOT PASSWORD MODAL */}
+      <AnimatePresence>
+        {showForgotModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className={`w-full max-w-md ${t.card} backdrop-blur-xl border rounded-2xl p-6 relative flex flex-col gap-4 text-white`}
+            >
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <h3 className="text-base font-extrabold tracking-tight uppercase">
+                  Reset Password
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowForgotModal(false);
+                    setForgotStep(1);
+                  }}
+                  className="text-white/60 hover:text-white text-lg bg-transparent border-none cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {forgotStep === 1 ? (
+                <form onSubmit={handleSendForgotOtp} className="flex flex-col gap-4">
+                  <p className="text-xs text-white/70">
+                    Enter your registered email address below. We will send you a 4-digit OTP to reset your password.
+                  </p>
+                  <div>
+                    <label className={`block text-[9px] font-bold uppercase tracking-[0.2em] mb-1 ${t.label}`}>
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="name@example.com"
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      disabled={forgotLoading}
+                      className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl px-3.5 py-2.5 ${t.inputText} text-xs outline-none ${t.inputFocus}`}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={forgotLoading}
+                    className={`w-full py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider ${t.btn} border-none cursor-pointer disabled:opacity-50`}
+                  >
+                    {forgotLoading ? 'Sending OTP...' : 'Send Reset OTP'}
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleResetPassword} className="flex flex-col gap-3">
+                  <p className="text-xs text-white/70">
+                    Enter the 4-digit OTP code sent to <strong>{forgotEmail}</strong> and your new password.
+                  </p>
+                  <div>
+                    <label className={`block text-[9px] font-bold uppercase tracking-[0.2em] mb-1 ${t.label}`}>
+                      4-Digit OTP
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={4}
+                      required
+                      placeholder="e.g. 1234"
+                      value={forgotOtp}
+                      onChange={(e) => setForgotOtp(e.target.value)}
+                      disabled={forgotLoading}
+                      className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl px-3.5 py-2.5 ${t.inputText} text-xs outline-none ${t.inputFocus} tracking-widest text-center font-bold`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-[9px] font-bold uppercase tracking-[0.2em] mb-1 ${t.label}`}>
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      placeholder="At least 8 characters"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      disabled={forgotLoading}
+                      className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl px-3.5 py-2.5 ${t.inputText} text-xs outline-none ${t.inputFocus}`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-[9px] font-bold uppercase tracking-[0.2em] mb-1 ${t.label}`}>
+                      Confirm New Password
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      placeholder="Repeat new password"
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      disabled={forgotLoading}
+                      className={`w-full ${t.inputBg} border ${t.inputBorder} rounded-xl px-3.5 py-2.5 ${t.inputText} text-xs outline-none ${t.inputFocus}`}
+                    />
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => setForgotStep(1)}
+                      className="flex-1 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border border-white/20 text-white/70 hover:text-white bg-transparent cursor-pointer"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={forgotLoading}
+                      className={`flex-[2] py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider ${t.btn} border-none cursor-pointer disabled:opacity-50`}
+                    >
+                      {forgotLoading ? 'Resetting...' : 'Reset Password'}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

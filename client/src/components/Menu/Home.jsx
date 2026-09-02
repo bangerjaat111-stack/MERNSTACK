@@ -1,276 +1,265 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../Context/ThemeContext.jsx';
+import { useWishlist } from '../../Context/WishlistContext.jsx';
 import { Link } from 'react-router-dom';
 import {
-  RiCarLine, RiPriceTag3Line, RiSearchLine, RiArrowRightLine,
+  RiCarLine, RiPriceTag3Line, RiArrowRightLine,
   RiFireLine, RiStarFill, RiMapPinLine, RiShieldCheckLine,
   RiCustomerService2Line, RiExchangeLine, RiCheckLine,
-  RiArrowLeftSLine, RiArrowRightSLine, RiPlayCircleLine,
-  RiTimeLine, RiThumbUpLine, RiNewspaperLine, RiHomeSmileLine
+  RiPlayCircleLine, RiTimeLine, RiThumbUpLine, RiNewspaperLine,
+  RiHeartLine, RiHeartFill, RiFlashlightLine, RiShieldUserLine
 } from 'react-icons/ri';
 
-/* ─── Static Data ─── */
 const BRANDS = [
-  { name: 'Maruti',   initials: 'MS', color: 'blue'   },
-  { name: 'Tata',     initials: 'TA', color: 'teal'   },
-  { name: 'Hyundai',  initials: 'HY', color: 'red'    },
-  { name: 'Mahindra', initials: 'MA', color: 'amber'  },
-  { name: 'Kia',      initials: 'KI', color: 'coral'  },
-  { name: 'Toyota',   initials: 'TO', color: 'green'  },
-  { name: 'Honda',    initials: 'HO', color: 'purple' },
-  { name: 'BMW',      initials: 'BM', color: 'teal'   },
+  { name: 'Tata Motors', logo: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=300&auto=format&fit=crop', count: '1,420+ Cars' },
+  { name: 'Mahindra', logo: 'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?q=80&w=300&auto=format&fit=crop', count: '980+ Cars' },
+  { name: 'Hyundai', logo: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=300&auto=format&fit=crop', count: '1,250+ Cars' },
+  { name: 'Maruti Suzuki', logo: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=300&auto=format&fit=crop', count: '2,100+ Cars' },
+  { name: 'Kia', logo: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/192817/seltos-exterior-right-front-three-quarter-50.png?isig=0&q=80', count: '850+ Cars' },
+  { name: 'BMW', logo: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=300&auto=format&fit=crop', count: '340+ Luxury' },
 ];
 
 const POPULAR_CARS = [
-  { 
-    name: 'Tata Punch',          
-    price: '₹5.65 – 10.60 L', 
-    tag: 'Top Selling', 
-    fuel: 'Petrol / CNG',  
-    km: '18.97 kmpl',
-    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/172825/punch-facelift-exterior-right-front-three-quarter.png?isig=0&q=80'  // Real SUV image
+  {
+    id: 'h1',
+    name: 'Mahindra Thar Roxx 5-Door',
+    price: '₹12.99 – 20.49 Lakh',
+    tag: 'Hot Launch',
+    fuel: 'Diesel / Petrol',
+    km: '15.2 kmpl · 4x4',
+    image: 'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?q=80&w=800&auto=format&fit=crop',
+    link: '/new-cars'
   },
-  { 
-    name: 'Maruti Brezza',       
-    price: '₹8.26 – 13.01 L', 
-    tag: 'Top Rated',   
-    fuel: 'Petrol',        
-    km: '17.38 kmpl',
-    image: 'https://stimg.cardekho.com/images/car-images/630x420/Maruti/Brezza/10387/1755776291575/front-left-side-47.jpg'
-  },
-  { 
-    name: 'Hyundai Creta',       
-    price: '₹11.11 – 20.45 L',
-    tag: 'Hot Deal',    
-    fuel: 'Petrol / Diesel',
-    km: '16.80 kmpl',
-    image: 'https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/Creta/8667/1751535724464/exterior-image-166.jpg'
-  },
-  { 
-    name: 'Mahindra XUV 3XO',   
-    price: '₹7.49 – 15.49 L', 
-    tag: 'New Launch',  
-    fuel: 'Petrol / Diesel',
-    km: '20.11 kmpl',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJf515PddNnEAY5MrtqKHlREy7yRKHCt_Zfw&s'
-  },
-  { 
-    name: 'Tata Nexon EV',       
-    price: '₹14.49 – 19.49 L',
-    tag: 'Electric',    
-    fuel: 'Electric',       
+  {
+    id: 'h2',
+    name: 'Tata Nexon EV Max',
+    price: '₹14.49 – 19.49 Lakh',
+    tag: 'Electric',
+    fuel: 'Electric',
     km: '465 km range',
-    image: 'https://static.caronphone.com/public/brands/32/53/3209/3209_1759154859.webp'
+    image: 'https://static.caronphone.com/public/brands/32/53/3209/3209_1759154859.webp',
+    link: '/new-cars'
   },
-  { 
-    name: 'Kia Seltos',          
-    price: '₹10.89 – 20.35 L',
-    tag: 'Popular',     
+  {
+    id: 'h3',
+    name: 'Hyundai Creta SX(O) 2025',
+    price: '₹11.11 – 20.45 Lakh',
+    tag: 'Best Seller',
     fuel: 'Petrol / Diesel',
-    km: '16.10 kmpl',
-    image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/192817/seltos-exterior-right-front-three-quarter-50.png?isig=0&q=80'
+    km: '18.4 kmpl · ADAS',
+    image: 'https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/Creta/8667/1751535724464/exterior-image-166.jpg',
+    link: '/new-cars'
+  },
+  {
+    id: 'h4',
+    name: 'Toyota Fortuner Legender 4x4',
+    price: '₹43.66 – 47.64 Lakh',
+    tag: 'Luxury SUV',
+    fuel: 'Diesel Automatic',
+    km: '14.2 kmpl',
+    image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=800&auto=format&fit=crop',
+    link: '/new-cars'
+  },
+  {
+    id: 'h5',
+    name: 'Maruti Suzuki Swift VXI',
+    price: '₹6.49 – 9.64 Lakh',
+    tag: 'Budget Pick',
+    fuel: 'Petrol / CNG',
+    km: '25.7 kmpl',
+    image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop',
+    link: '/new-cars'
+  },
+  {
+    id: 'h6',
+    name: 'BMW 3 Series Gran Limousine',
+    price: '₹60.90 Lakh',
+    tag: 'Luxury Sedan',
+    fuel: 'Petrol Turbo',
+    km: '16.5 kmpl',
+    image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop',
+    link: '/new-cars'
   },
 ];
-
-const BODY_TYPES = [
-  { name: 'SUV',       icon: RiCarLine,         count: 48 },
-  { name: 'Hatchback', icon: RiCarLine,         count: 32 },
-  { name: 'Sedan',     icon: RiCarLine,         count: 27 },
-  { name: 'MUV',       icon: RiCarLine,         count: 15 },
-];
-
-const BUDGETS = ['Under ₹5L', '₹5L – 8L', '₹8L – 12L', '₹12L – 20L', 'Above ₹20L'];
 
 const SERVICES = [
-  { icon: RiShieldCheckLine,      title: 'Free RC Check',       desc: 'Verify ownership & history before you buy' },
-  { icon: RiExchangeLine,         title: 'Easy Exchange',        desc: 'Get best value for your existing car' },
-  { icon: RiCustomerService2Line, title: '24/7 Support',         desc: 'Expert help whenever you need it' },
-  { icon: RiHomeSmileLine,        title: 'Home Inspection',      desc: 'We inspect the car right at your doorstep' },
+  { icon: RiShieldCheckLine, title: 'Verified History', desc: '100% genuine RC & service history records' },
+  { icon: RiExchangeLine, title: 'Zero Brokerage Sale', desc: 'Direct buyers & sellers with instant payment' },
+  { icon: RiCustomerService2Line, title: '24/7 Expert Advice', desc: 'Personal car consultants to guide your purchase' },
+  { icon: RiShieldUserLine, title: 'Doorstep Delivery', desc: 'Fully sanitized vehicle delivered to your home' },
 ];
-
-const NEWS = [
-  { title: 'Tata Sierra 2025 Officially Launched at ₹11.49 Lakh',  tag: 'Launch',  time: '2h ago' },
-  { title: 'Top 5 Electric Cars Under ₹20 Lakh in India 2025',     tag: 'Electric', time: '5h ago' },
-  { title: 'Maruti e Vitara vs Hyundai Creta Electric — Compared', tag: 'Compare', time: '8h ago' },
-];
-
-/* ─── Helper functions ─── */
-function tagClass(tag, dark) {
-  const map = {
-    'Best Seller': dark ? 'bg-red-900/40 text-red-300'     : 'bg-red-100 text-red-700',
-    'Top Rated':   dark ? 'bg-amber-900/40 text-amber-300' : 'bg-amber-100 text-amber-700',
-    'Hot Deal':    dark ? 'bg-orange-900/40 text-orange-300': 'bg-orange-100 text-orange-700',
-    'New Launch':  dark ? 'bg-green-900/40 text-green-300'  : 'bg-green-100 text-green-700',
-    'Electric':    dark ? 'bg-teal-900/40 text-teal-300'    : 'bg-teal-100 text-teal-700',
-    'Popular':     dark ? 'bg-blue-900/40 text-blue-300'    : 'bg-blue-100 text-blue-700',
-  };
-  return map[tag] || (dark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600');
-}
-
-function newsTagClass(tag, dark) {
-  const map = {
-    Launch:   dark ? 'bg-red-900/40 text-red-300'    : 'bg-red-100 text-red-700',
-    Electric: dark ? 'bg-teal-900/40 text-teal-300'  : 'bg-teal-100 text-teal-700',
-    Compare:  dark ? 'bg-blue-900/40 text-blue-300'  : 'bg-blue-100 text-blue-700',
-  };
-  return map[tag] || (dark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600');
-}
-
-function brandRingClass(color) {
-  const map = {
-    blue:   'ring-blue-400/40',
-    teal:   'ring-teal-400/40',
-    red:    'ring-red-400/40',
-    amber:  'ring-amber-400/40',
-    coral:  'ring-orange-400/40',
-    green:  'ring-green-400/40',
-    purple: 'ring-purple-400/40',
-  };
-  return map[color] || 'ring-gray-400/30';
-}
-
-function brandBgClass(color, dark) {
-  const map = {
-    blue:   dark ? 'bg-blue-900/30 text-blue-300'     : 'bg-blue-50 text-blue-700',
-    teal:   dark ? 'bg-teal-900/30 text-teal-300'     : 'bg-teal-50 text-teal-700',
-    red:    dark ? 'bg-red-900/30 text-red-300'       : 'bg-red-50 text-red-700',
-    amber:  dark ? 'bg-amber-900/30 text-amber-300'   : 'bg-amber-50 text-amber-700',
-    coral:  dark ? 'bg-orange-900/30 text-orange-300' : 'bg-orange-50 text-orange-700',
-    green:  dark ? 'bg-green-900/30 text-green-300'   : 'bg-green-50 text-green-700',
-    purple: dark ? 'bg-purple-900/30 text-purple-300' : 'bg-purple-50 text-purple-700',
-  };
-  return map[color] || (dark ? 'bg-gray-800 text-gray-300' : 'bg-gray-100 text-gray-700');
-}
-
-/* ─── Car SVG Illustration (used only in hero section now) ─── */
-function CarIllustration({ dark }) {
-  const body  = dark ? '#1e2030' : '#e8f0fe';
-  const glass = dark ? '#334155' : '#bfdbfe';
-  const wheel = dark ? '#374151' : '#94a3b8';
-  const line  = dark ? '#3b82f6' : '#2563eb';
-  return (
-    <svg viewBox="0 0 320 160" className="w-full max-w-xs mx-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="160" cy="148" rx="100" ry="8" fill={dark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)'} />
-      <rect x="40" y="80" width="240" height="55" rx="10" fill={body} />
-      <path d="M80 80 L110 42 L210 42 L240 80Z" fill={body} />
-      <rect x="115" y="48" width="40" height="26" rx="4" fill={glass} opacity="0.9" />
-      <rect x="165" y="48" width="38" height="26" rx="4" fill={glass} opacity="0.9" />
-      <circle cx="95" cy="135" r="18" fill={wheel} />
-      <circle cx="95" cy="135" r="10" fill={dark ? '#1f2937' : '#e2e8f0'} />
-      <circle cx="225" cy="135" r="18" fill={wheel} />
-      <circle cx="225" cy="135" r="10" fill={dark ? '#1f2937' : '#e2e8f0'} />
-      <rect x="40" y="92" width="30" height="8" rx="4" fill={line} opacity="0.7" />
-      <rect x="250" y="92" width="30" height="8" rx="4" fill={line} opacity="0.7" />
-      <path d="M40 105 L280 105" stroke={line} strokeWidth="1.5" strokeDasharray="6 4" opacity="0.3" />
-    </svg>
-  );
-}
 
 export default function Home() {
   const { dark } = useTheme();
-  const [activeTab, setActiveTab] = useState('new');
-  const [budgetFilter, setBudgetFilter] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const { toggleWishlist, isWishlisted } = useWishlist();
 
-  /* theme shorthands */
-  const bg     = dark ? 'bg-[#080A0D]'  : 'bg-white';
-  const bgSec  = dark ? 'bg-[#0D0F16]'  : 'bg-slate-50';
-  const bgCard = dark ? 'bg-[#13151E]'  : 'bg-white';
-  const border = dark ? 'border-red-900/20'   : 'border-amber-600/14';
-  const textHi = dark ? 'text-gray-50'        : 'text-slate-900';
-  const textSb = dark ? 'text-white/55'       : 'text-slate-500';
+  const bg = dark ? 'bg-[#080A0D]' : 'bg-slate-50';
+  const cardBg = dark ? 'bg-[#0D0F16]' : 'bg-white';
+  const border = dark ? 'border-red-900/20' : 'border-amber-600/15';
+  const textHi = dark ? 'text-gray-50' : 'text-slate-900';
+  const textSb = dark ? 'text-white/55' : 'text-slate-500';
   const gradText = dark
     ? 'bg-gradient-to-r from-red-500 to-red-400 bg-clip-text text-transparent'
     : 'bg-gradient-to-r from-amber-600 to-amber-400 bg-clip-text text-transparent';
   const gradBtn = dark
     ? 'bg-gradient-to-r from-red-700 via-red-600 to-red-500 text-white'
     : 'bg-gradient-to-r from-amber-700 via-amber-500 to-amber-400 text-white';
-  const gradBtnSm = `${gradBtn} text-xs font-bold tracking-widest uppercase rounded-lg px-4 py-2 cursor-pointer border-none`;
-  const inputCls = `w-full bg-transparent outline-none text-sm ${textHi} placeholder:${textSb}`;
-  const sectionHead = `text-2xl sm:text-3xl font-extrabold tracking-tight ${textHi}`;
 
   return (
-    <div className={`${bg} min-h-screen`}>
+    <div className={`${bg} min-h-screen font-sans transition-colors duration-300`}>
 
       {/* ══════════════════════════════════════════════
-          1. HERO (keeps the SVG illustration)
+          1. HERO SECTION
       ══════════════════════════════════════════════ */}
-      <section className={`${bgSec} border-b ${border} py-10 sm:py-16 px-4`}>
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-          <div className="space-y-6">
-            <div className={`inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase px-3 py-1.5 rounded-full border ${dark ? 'border-red-900/30 text-red-400 bg-red-900/10' : 'border-amber-500/30 text-amber-700 bg-amber-50'}`}>
-              <RiFireLine size={13} /> India's Fastest Growing Car Portal
+      <section className="relative overflow-hidden pt-12 pb-20 px-4">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+          
+          <div className="space-y-6 z-10">
+            <div className={`inline-flex items-center gap-2 text-xs font-extrabold tracking-widest uppercase px-4 py-1.5 rounded-full border ${dark ? 'bg-red-900/20 text-red-400 border-red-900/30' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
+              <RiFireLine size={15} /> India's Premier Automotive Destination
             </div>
-            <h1 className={`text-3xl sm:text-5xl font-extrabold leading-tight tracking-tight ${textHi}`}>
-              Find Your <span className={gradText}>Perfect Car</span><br />in Minutes
+            
+            <h1 className={`text-4xl sm:text-6xl font-black leading-none tracking-tight ${textHi}`}>
+              DRIVE YOUR <span className={gradText}>DREAM CAR</span> HOME
             </h1>
-            <p className={`text-base sm:text-lg leading-relaxed max-w-md ${textSb}`}>
-              Browse 10,000+ new &amp; used cars. Compare prices, read expert reviews and get the best deal near you.
+            
+            <p className={`text-base sm:text-lg leading-relaxed ${textSb} max-w-xl`}>
+              Explore 10,000+ verified new & used cars, watch authentic video reviews by Arun Panwar, book test drives, and sell your car at best market price.
             </p>
-            <div className={`flex items-center gap-3 px-4 h-14 rounded-2xl border ${dark ? 'bg-white/5 border-red-900/25' : 'bg-white border-amber-500/20 shadow-sm'}`}>
-              <RiSearchLine size={18} className={textSb} />
-              <input className={inputCls} placeholder="Search brand, model or budget…" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-              <button className={`${gradBtn} rounded-xl px-5 py-2.5 text-sm font-bold tracking-wide border-none cursor-pointer whitespace-nowrap`}>Search</button>
+
+            {/* QUICK ACTIONS ROW */}
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Link to="/new-cars" className={`px-6 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider no-underline shadow-lg ${gradBtn}`}>
+                Explore New Cars
+              </Link>
+              <Link to="/used-cars" className={`px-6 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider no-underline border ${dark ? 'border-white/20 text-white hover:bg-white/10' : 'border-slate-300 text-slate-800 hover:bg-slate-100'}`}>
+                Browse Used Cars
+              </Link>
+              <Link to="/sell" className={`px-6 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider no-underline border ${dark ? 'border-red-600/50 text-red-400 hover:bg-red-900/20' : 'border-amber-500/50 text-amber-700 hover:bg-amber-50'}`}>
+                Sell Your Car
+              </Link>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {BUDGETS.map(b => (
-                <button key={b} onClick={() => setBudgetFilter(b === budgetFilter ? '' : b)} className={[
-                  'text-xs font-semibold px-3 py-1.5 rounded-full border cursor-pointer transition-all duration-200',
-                  b === budgetFilter ? (dark ? 'bg-red-600 border-red-500 text-white' : 'bg-amber-500 border-amber-400 text-white') : (dark ? 'bg-white/5 border-red-900/20 text-white/55 hover:border-red-500/40' : 'bg-white border-amber-500/20 text-slate-500 hover:border-amber-400'),
-                ].join(' ')}>{b}</button>
-              ))}
+
+            {/* TRUST NUMBERS */}
+            <div className={`grid grid-cols-3 gap-4 pt-6 border-t ${border}`}>
+              <div>
+                <p className={`text-2xl font-black ${textHi}`}>10,000+</p>
+                <p className={`text-xs ${textSb}`}>Verified Cars</p>
+              </div>
+              <div>
+                <p className={`text-2xl font-black ${textHi}`}>500+</p>
+                <p className={`text-xs ${textSb}`}>Certified Dealers</p>
+              </div>
+              <div>
+                <p className={`text-2xl font-black ${gradText}`}>4.9 ★</p>
+                <p className={`text-xs ${textSb}`}>User Rating</p>
+              </div>
             </div>
           </div>
-          <div className="hidden md:flex  flex-col items-center gap-4">
-             <img className='h-full w-full rounded-2xl' src="https://wallpapercave.com/wp/wp7132237.jpg" alt="" />
-           
-            <div className={`w-full grid grid-cols-3 gap-px rounded-2xl overflow-hidden border ${border}`}>
-              
-              {[
-                { n: 'RANGE ROVER' },
-                { n: 'AUTO BIOGRAPHY' },
-                { n: '2L+',  label: 'Happy Buyers' },
-              ].map((s, i) => (
-                <div key={i} className={`${bgCard} px-4 py-3 text-center`}>
-                  <div className={`text-xl font-extrabold ${gradText}`}>{s.n}</div>
-                  <div className={`text-[11px] font-medium mt-0.5 ${textSb}`}>{s.label}</div>
-                </div>
-              ))}
+
+          {/* HERO CAR SHOWCASE */}
+          <div className="relative">
+            <div className={`relative rounded-3xl overflow-hidden border ${border} ${cardBg} shadow-2xl p-2`}>
+              <img
+                src="https://wallpapercave.com/wp/wp7132237.jpg"
+                alt="Luxury SUV"
+                className="w-full h-360px sm:h-420px object-cover rounded-2xl"
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
+                <div className="text-white space-y-1">
+                  
+                  <h3 className="text-xl font-extrabold">RANGE ROVER</h3>
+                 </div>
+              </div>
             </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          2. FEATURED BRAND BADGES
+      ══════════════════════════════════════════════ */}
+      <section className={`py-12 border-y ${border} ${dark ? 'bg-[#0A0C12]' : 'bg-slate-100/60'}`}>
+        <div className="max-w-7xl mx-auto px-4 space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className={`text-xl sm:text-2xl font-extrabold tracking-tight ${textHi}`}>Top Car Manufacturers</h2>
+              <p className={`text-xs ${textSb}`}>Browse cars by leading Indian and global automakers</p>
+            </div>
+            <Link to="/new-cars" className={`text-xs font-bold uppercase no-underline ${gradText}`}>
+              View All Brands →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {BRANDS.map((b, i) => (
+              <Link
+                key={i}
+                to="/new-cars"
+                className={`p-4 rounded-2xl border ${border} ${cardBg} hover:scale-105 transition-all text-center no-underline block group shadow-sm`}
+              >
+                <img src={b.logo} alt={b.name} className="w-full h-20 object-cover rounded-xl mb-2 group-hover:opacity-90" />
+                <h4 className={`text-sm font-bold ${textHi}`}>{b.name}</h4>
+                <p className={`text-[11px] ${textSb}`}>{b.count}</p>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════
-          2. NEW / USED TABS + BODY TYPE
+          3. TRENDING CARS GRID
       ══════════════════════════════════════════════ */}
-      <section className={`${bg} py-10 px-4 border-b ${border}`}>
-        <div className="max-w-6xl mx-auto">
-          <div className={`inline-flex rounded-xl p-1 mb-8 border ${dark ? 'bg-white/5 border-red-900/20' : 'bg-slate-100 border-slate-200'}`}>
-            {['new', 'used'].map(t => (
-              <button key={t} onClick={() => setActiveTab(t)} className={[
-                'px-6 py-2 rounded-[10px] text-sm font-bold tracking-wide uppercase transition-all duration-200 cursor-pointer border-none',
-                activeTab === t ? gradBtn : (dark ? 'text-white/50 bg-transparent hover:text-white/80' : 'text-slate-500 bg-transparent hover:text-slate-700'),
-              ].join(' ')}>{t === 'new' ? 'New Cars' : 'Used Cars'}</button>
-            ))}
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span className={`text-xs font-bold uppercase tracking-widest ${gradText}`}>Trending Selection</span>
+              <h2 className={`text-2xl sm:text-4xl font-extrabold tracking-tight mt-1 ${textHi}`}>
+                Most Popular <span className={gradText}>Cars of 2026</span>
+              </h2>
+            </div>
+            <Link to="/new-cars" className={`inline-block px-5 py-2.5 rounded-xl text-xs font-bold uppercase no-underline ${gradBtn}`}>
+              Explore All 48+ Cars
+            </Link>
           </div>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-            {BODY_TYPES.map((bt, i) => {
-              const Icon = bt.icon;
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {POPULAR_CARS.map((car) => {
+              const saved = isWishlisted(car.id || car.name);
               return (
-                <Link key={i} to={`/${activeTab}-cars?body=${bt.name.toLowerCase()}`} className={[
-                  'group flex flex-col items-center gap-2 py-4 px-3 rounded-2xl border transition-all duration-200 no-underline cursor-pointer',
-                  dark ? 'bg-white/4 border-red-900/15 hover:bg-red-900/10 hover:border-red-500/30' : 'bg-white border-slate-200 hover:border-amber-400/60 hover:bg-amber-50/50 shadow-sm',
-                ].join(' ')}>
-                  <span className={[
-                    'flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200',
-                    dark ? 'bg-white/8 group-hover:bg-red-900/20' : 'bg-slate-100 group-hover:bg-amber-100',
-                  ].join(' ')}>
-                    <Icon size={22} className={dark ? 'text-white/60 group-hover:text-red-400' : 'text-slate-500 group-hover:text-amber-600'} />
-                  </span>
-                  <span className={`text-xs font-bold tracking-wide ${textHi}`}>{bt.name}</span>
-                  <span className={`text-[10px] font-medium ${textSb}`}>{bt.count} cars</span>
-                </Link>
+                <div key={car.id} className={`rounded-3xl border ${border} ${cardBg} overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group`}>
+                  <div className="relative h-48 overflow-hidden bg-slate-800">
+                    <img src={car.image} alt={car.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <span className="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                      {car.tag}
+                    </span>
+                    <button
+                      onClick={() => toggleWishlist({ id: car.id, name: car.name, title: car.name, price: car.price, img: car.image })}
+                      className="absolute top-3 right-3 w-9 h-9 rounded-full bg-slate-900/80 backdrop-blur text-white flex items-center justify-center border-none cursor-pointer hover:bg-red-600 transition-colors"
+                    >
+                      {saved ? <RiHeartFill size={18} className="text-red-500" /> : <RiHeartLine size={18} />}
+                    </button>
+                  </div>
+
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div>
+                      <h3 className={`font-extrabold text-lg ${textHi}`}>{car.name}</h3>
+                      <p className={`text-base font-extrabold mt-1 ${gradText}`}>{car.price}</p>
+                      <div className={`grid grid-cols-2 gap-2 mt-3 text-xs ${textSb}`}>
+                        <span>Fuel: <strong>{car.fuel}</strong></span>
+                        <span>Spec: <strong>{car.km}</strong></span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pt-2 border-t border-white/10">
+                      <Link to="/new-cars" className={`flex-1 text-center py-2.5 rounded-xl text-xs font-bold no-underline ${gradBtn}`}>
+                        View Prices & Specs
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -278,148 +267,66 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════════
-          3. POPULAR CARS — NOW WITH REAL CAR IMAGES
+          4. ARUN PANWAR YOUTUBE VIDEO FEATURE
       ══════════════════════════════════════════════ */}
-      <section className={`${bgSec} py-12 px-4 border-b ${border}`}>
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <p className={`text-xs font-bold tracking-widest uppercase mb-1 ${gradText}`}>Most Searched</p>
-              <h2 className={sectionHead}>Popular Cars</h2>
+      <section className={`py-16 border-y ${border} ${dark ? 'bg-[#0D0F16]' : 'bg-slate-100/80'}`}>
+        <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-10 items-center">
+          <div className="relative rounded-3xl overflow-hidden border border-red-600/30 shadow-2xl group">
+            <img
+              src="https://images.unsplash.com/photo-1568844293986-8d0400bd4745?q=80&w=800&auto=format&fit=crop"
+              alt="Arun Panwar Video"
+              className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <Link to="/videos" className="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-transform no-underline">
+                <RiPlayCircleLine size={36} />
+              </Link>
             </div>
-            <Link to="/new-cars" className={`hidden sm:flex items-center gap-1 text-sm font-semibold ${dark ? 'text-red-400 hover:text-red-300' : 'text-amber-600 hover:text-amber-700'} no-underline transition-colors`}>
-              View All <RiArrowRightLine size={16} />
+            <span className="absolute bottom-4 left-4 bg-slate-900/90 text-white text-xs font-bold px-3 py-1.5 rounded-xl border border-white/20">
+              🔥 Arun Panwar Thar Roxx Delivery
+            </span>
+          </div>
+
+          <div className="space-y-5">
+            <span className={`text-xs font-extrabold uppercase tracking-widest ${gradText}`}>AutoSyntax TV Creator Spotlight</span>
+            <h2 className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${textHi}`}>
+              Watch Car Reviews by <span className={gradText}>Arun Panwar</span>
+            </h2>
+            <p className={`text-sm ${textSb} leading-relaxed`}>
+              Get honest, real-world Indian car delivery videos, extreme 4x4 offroad challenges, long-term ownership reviews, and mileage tests from top creator Arun Panwar.
+            </p>
+            <Link to="/videos" className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-bold uppercase tracking-wider no-underline ${gradBtn}`}>
+              <RiPlayCircleLine size={18} /> Watch All Videos Now
             </Link>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {POPULAR_CARS.map((car, i) => (
-              <Link key={i} to={`/new-cars/${car.name.toLowerCase().replace(/ /g, '-')}`} className={[
-                'group block rounded-2xl border overflow-hidden transition-all duration-300 no-underline',
-                dark ? 'bg-[#13151E] border-red-900/15 hover:border-red-500/30 hover:shadow-[0_4px_24px_rgba(220,20,40,0.12)]' : 'bg-white border-slate-200 hover:border-amber-400/60 hover:shadow-lg',
-              ].join(' ')}>
-                {/* Real car image */}
-                <div className="relative h-40 overflow-hidden bg-gray-200 dark:bg-gray-800">
-                  <img 
-                    src={car.image} 
-                    alt={car.name} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <span className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-full ${tagClass(car.tag, dark)} z-10`}>
-                    {car.tag}
-                  </span>
-                </div>
-
-                <div className="p-4 space-y-3">
-                  <div>
-                    <h3 className={`font-bold text-base leading-tight ${textHi}`}>{car.name}</h3>
-                    <p className={`text-[11px] font-semibold mt-0.5 ${gradText}`}>{car.price}</p>
-                  </div>
-                  <div className={`flex items-center gap-3 text-[11px] font-medium ${textSb} border-t pt-3 ${border}`}>
-                    {/* You can add fuel/km info here if desired */}
-                  </div>
-                  <div className="flex gap-2">
-                    <button className={`flex-1 py-2 rounded-xl text-xs font-bold tracking-wide border cursor-pointer transition-all duration-200 ${dark ? 'border-red-900/25 text-white/60 hover:bg-red-900/15 hover:text-red-300 bg-transparent' : 'border-slate-200 text-slate-500 hover:bg-amber-50 hover:text-amber-700 bg-transparent'}`}>
-                      Get Price
-                    </button>
-                    <button className={`flex-1 py-2 rounded-xl text-xs font-bold tracking-wide cursor-pointer border-none ${gradBtn}`}>
-                      View Details
-                    </button>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          <div className="flex sm:hidden justify-center mt-6">
-            <Link to="/new-cars" className={`${gradBtnSm} no-underline`}>View All Cars →</Link>
-          </div>
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════
-          4. POPULAR BRANDS
+          5. WHY CHOOSE AUTOSYNTAX
       ══════════════════════════════════════════════ */}
-      <section className={`${bg} py-12 px-4 border-b ${border}`}>
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <p className={`text-xs font-bold tracking-widest uppercase mb-1 ${gradText}`}>Top Manufacturers</p>
-              <h2 className={sectionHead}>Popular Brands</h2>
-            </div>
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto space-y-10">
+          <div className="text-center space-y-2 max-w-2xl mx-auto">
+            <span className={`text-xs font-extrabold uppercase tracking-widest ${gradText}`}>The AutoSyntax Guarantee</span>
+            <h2 className={`text-3xl sm:text-4xl font-extrabold tracking-tight ${textHi}`}>
+              Why Millions Trust AutoSyntax
+            </h2>
+            <p className={`text-xs sm:text-sm ${textSb}`}>
+              We ensure transparent pricing, verified vehicle documentation, and zero hidden fees.
+            </p>
           </div>
-          <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
-            {BRANDS.map((b, i) => (
-              <Link key={i} to={`/new-cars?brand=${b.name.toLowerCase()}`} className="group flex flex-col items-center gap-2 no-underline">
-                <div className={[
-                  'w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center font-extrabold text-sm ring-2 ring-transparent transition-all duration-200',
-                  brandBgClass(b.color, dark),
-                  `group-hover:${brandRingClass(b.color)}`,
-                  'group-hover:scale-110',
-                ].join(' ')}>{b.initials}</div>
-                <span className={`text-xs font-semibold text-center leading-tight ${textSb}`}>{b.name}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* ══════════════════════════════════════════════
-          5. ELECTRIC BANNER
-      ══════════════════════════════════════════════ */}
-      <section className="py-10 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className={`relative overflow-hidden rounded-3xl border ${dark ? 'bg-gradient-to-br from-teal-950 via-[#0a1628] to-[#0D0F16] border-teal-900/30' : 'bg-gradient-to-br from-teal-50 via-blue-50 to-white border-teal-200'} p-8 sm:p-12`}>
-            <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-              <div className="space-y-3 max-w-lg">
-                <div className={`inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase px-3 py-1.5 rounded-full ${dark ? 'bg-teal-900/40 text-teal-300 border border-teal-700/30' : 'bg-teal-100 text-teal-700 border border-teal-200'}`}>
-                  Go Electric
-                </div>
-                <h2 className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${dark ? 'text-teal-100' : 'text-teal-900'}`}>Explore Electric Vehicles</h2>
-                <p className={`text-sm leading-relaxed ${dark ? 'text-teal-300/70' : 'text-teal-700/80'}`}>Browse 20+ EVs available in India. Compare range, charging time &amp; total cost of ownership.</p>
-                <div className="flex flex-wrap gap-4">
-                  {['465 km Range', '₹14L Starting', 'Fast Charging'].map((s, i) => (
-                    <span key={i} className={`flex items-center gap-1.5 text-xs font-semibold ${dark ? 'text-teal-300' : 'text-teal-700'}`}>
-                      <RiCheckLine size={14} /> {s}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <Link to="/new-cars?fuel=electric" className={`shrink-0 flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold tracking-wide no-underline border-none cursor-pointer ${dark ? 'bg-teal-500 text-teal-950 hover:bg-teal-400' : 'bg-teal-600 text-white hover:bg-teal-700'} transition-colors`}>
-                Explore Now <RiArrowRightLine />
-              </Link>
-            </div>
-            <div className={`absolute -right-16 -top-16 w-56 h-56 rounded-full ${dark ? 'bg-teal-900/20' : 'bg-teal-100/60'}`} />
-            <div className={`absolute -right-6 bottom-0 w-32 h-32 rounded-full ${dark ? 'bg-teal-800/15' : 'bg-teal-200/50'}`} />
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════
-          6. WHY US — SERVICES
-      ══════════════════════════════════════════════ */}
-      <section className={`${bgSec} py-12 px-4 border-t ${border}`}>
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10">
-            <p className={`text-xs font-bold tracking-widest uppercase mb-2 ${gradText}`}>Why AutoSyntax</p>
-            <h2 className={`${sectionHead} max-w-md mx-auto`}>Everything You Need, In One Place</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {SERVICES.map((s, i) => {
               const Icon = s.icon;
               return (
-                <div key={i} className={[
-                  'flex flex-col items-start gap-3 p-6 rounded-2xl border transition-all duration-200',
-                  dark ? 'bg-[#13151E] border-red-900/15 hover:border-red-500/25' : 'bg-white border-slate-200 hover:border-amber-400/50 shadow-sm',
-                ].join(' ')}>
-                  <span className={`flex items-center justify-center w-11 h-11 rounded-xl ${dark ? 'bg-red-900/20' : 'bg-amber-50'}`}>
-                    <Icon size={22} className={dark ? 'text-red-400' : 'text-amber-600'} />
-                  </span>
-                  <div>
-                    <h3 className={`font-bold text-sm mb-1 ${textHi}`}>{s.title}</h3>
-                    <p className={`text-xs leading-relaxed ${textSb}`}>{s.desc}</p>
+                <div key={i} className={`p-6 rounded-3xl border ${border} ${cardBg} space-y-3 shadow-md hover:shadow-xl transition-all`}>
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${dark ? 'bg-red-900/30 text-red-400' : 'bg-amber-100 text-amber-700'}`}>
+                    <Icon size={24} />
                   </div>
+                  <h3 className={`font-bold text-base ${textHi}`}>{s.title}</h3>
+                  <p className={`text-xs ${textSb} leading-relaxed`}>{s.desc}</p>
                 </div>
               );
             })}
@@ -428,85 +335,27 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════════
-          7. SELL YOUR CAR CTA
+          6. SELL YOUR CAR CTA BANNER
       ══════════════════════════════════════════════ */}
-      <section className="py-10 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className={`relative overflow-hidden rounded-3xl border ${dark ? 'border-red-900/25' : 'border-amber-400/30'} ${dark ? 'bg-gradient-to-br from-red-950/60 to-[#0D0F16]' : 'bg-gradient-to-br from-amber-50 to-white'} p-8 sm:p-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6`}>
-            <div className="space-y-2 max-w-md">
-              <h2 className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${textHi}`}>Sell Your Car at the <span className={gradText}>Best Price</span></h2>
-              <p className={`text-sm leading-relaxed ${textSb}`}>Get instant valuation, connect with 5,000+ verified dealers and sell in just 7 days.</p>
-              <div className="flex flex-wrap gap-4 pt-1">
-                {['Free Valuation', 'Zero Commission', '7-Day Guarantee'].map((f, i) => (
-                  <span key={i} className={`flex items-center gap-1.5 text-xs font-semibold ${dark ? 'text-white/60' : 'text-slate-500'}`}>
-                    <RiCheckLine size={13} className={dark ? 'text-red-400' : 'text-amber-500'} /> {f}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <Link to="/sell" className={`shrink-0 flex items-center gap-2 px-8 py-3.5 rounded-2xl text-sm font-bold tracking-wide no-underline border-none cursor-pointer ${gradBtn}`}>
-              <RiPriceTag3Line size={18} /> Sell My Car
+      <section className="py-12 px-4">
+        <div className={`max-w-7xl mx-auto rounded-3xl border ${border} ${cardBg} p-8 sm:p-12 relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8`}>
+          <div className="space-y-3 z-10 max-w-xl">
+            <span className={`text-xs font-bold uppercase tracking-widest ${gradText}`}>Instant Car Sale</span>
+            <h2 className={`text-3xl sm:text-4xl font-black ${textHi}`}>
+              Want to Sell Your Used Car for Top Rupee?
+            </h2>
+            <p className={`text-sm ${textSb}`}>
+              Get free doorstep inspection, instant price estimate, zero commission fees, and payment credited directly to your bank account within 24 hours.
+            </p>
+          </div>
+          <div className="z-10 w-full md:w-auto">
+            <Link to="/sell" className={`block text-center px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest no-underline shadow-2xl ${gradBtn}`}>
+              Get Free Instant Valuation →
             </Link>
-            <div className={`absolute -right-10 -bottom-10 w-48 h-48 rounded-full ${dark ? 'bg-red-900/10' : 'bg-amber-100/60'}`} />
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════
-          8. LATEST NEWS
-      ══════════════════════════════════════════════ */}
-      <section className={`${bgSec} py-12 px-4 border-t ${border}`}>
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <p className={`text-xs font-bold tracking-widest uppercase mb-1 ${gradText}`}>Stay Updated</p>
-              <h2 className={sectionHead}>Latest News</h2>
-            </div>
-            <Link to="/news" className={`hidden sm:flex items-center gap-1 text-sm font-semibold no-underline transition-colors ${dark ? 'text-red-400 hover:text-red-300' : 'text-amber-600 hover:text-amber-700'}`}>
-              All News <RiArrowRightLine size={16} />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {NEWS.map((n, i) => (
-              <Link key={i} to="/news" className={[
-                'group block p-5 rounded-2xl border no-underline transition-all duration-200',
-                dark ? 'bg-[#13151E] border-red-900/15 hover:border-red-500/25' : 'bg-white border-slate-200 hover:border-amber-400/50 shadow-sm',
-              ].join(' ')}>
-                <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mb-3 ${newsTagClass(n.tag, dark)}`}>{n.tag}</span>
-                <h3 className={`font-semibold text-sm leading-snug mb-3 group-hover:${dark ? 'text-red-300' : 'text-amber-700'} transition-colors ${textHi}`}>{n.title}</h3>
-                <div className={`flex items-center gap-2 text-[11px] font-medium ${textSb}`}><RiTimeLine size={12} /> {n.time}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════
-          9. TRUST STRIP
-      ══════════════════════════════════════════════ */}
-      <section className={`${bg} py-8 px-4 border-t ${border}`}>
-        <div className="max-w-6xl mx-auto flex flex-wrap justify-center gap-x-10 gap-y-4">
-          {[
-            { icon: RiThumbUpLine,     stat: '4.8★',  label: 'App Rating' },
-            { icon: RiShieldCheckLine, stat: '100%',   label: 'Verified Listings' },
-            { icon: RiMapPinLine,      stat: '500+',   label: 'Cities Covered' },
-            { icon: RiTimeLine,        stat: '<2 min', label: 'Avg. Response Time' },
-          ].map((t, i) => {
-            const Icon = t.icon;
-            return (
-              <div key={i} className="flex items-center gap-3">
-                <span className={`flex items-center justify-center w-9 h-9 rounded-xl ${dark ? 'bg-white/5' : 'bg-slate-100'}`}>
-                  <Icon size={18} className={dark ? 'text-white/40' : 'text-slate-400'} />
-                </span>
-                <div>
-                  <div className={`text-sm font-extrabold leading-tight ${gradText}`}>{t.stat}</div>
-                  <div className={`text-[11px] font-medium ${textSb}`}>{t.label}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
     </div>
   );
 }

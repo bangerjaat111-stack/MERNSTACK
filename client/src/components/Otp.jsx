@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../config/api.js';
 import { showErrorToast, showSuccessToast } from './Notification/Tost';
 // import {local} from '../ApiUrl'
 
@@ -158,7 +159,7 @@ export default function OtpVerification() {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/verify_otp/${id}`,
+        `${API_URL}/verify_otp/${id}`,
         {
           userotp: finalOtp,
         }
@@ -211,7 +212,7 @@ export default function OtpVerification() {
     try {
       // Call your resend OTP API endpoint
       const response = await axios.post(
-        `http://localhost:8080/resend_otp/${id}`,
+        `${API_URL}/resend_otp/${id}`,
         {}
       );
       

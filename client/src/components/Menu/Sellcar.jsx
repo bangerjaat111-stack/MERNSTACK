@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../Context/ThemeContext';
 import { showSuccessToast, showErrorToast } from '../Notification/Tost';
+import axios from 'axios';
+import { API_URL } from '../../config/api.js';
 import {
   RiCarLine, RiPriceTag3Line, RiShieldCheckLine, RiMapPinLine,
   RiCheckLine, RiUploadCloud2Line, RiCalculatorLine, RiFireLine,
@@ -60,11 +62,31 @@ export default function Sellcar() {
     ? 'bg-gradient-to-r from-red-700 via-red-600 to-red-500 text-white'
     : 'bg-gradient-to-r from-amber-700 via-amber-500 to-amber-400 text-white';
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.phone) {
       showErrorToast('Please fill in your contact details');
       return;
+    }
+    const userId = localStorage.getItem('userid');
+    if (userId) {
+      try {
+        await axios.post(`${API_URL}/user/${userId}/listings`, {
+          title: `${formData.brand} ${formData.model}`,
+          brand: formData.brand,
+          model: formData.model,
+          year: formData.year,
+          fuel: formData.fuel,
+          trans: formData.trans,
+          km: `${formData.km} km`,
+          city: formData.city,
+          price: `₹${formData.askingPrice} Lakh`,
+          img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop',
+          status: 'Active'
+        });
+      } catch (err) {
+        console.error('Failed to save car listing to DB:', err);
+      }
     }
     setSubmitted(true);
     showSuccessToast('Car listing submitted successfully!');

@@ -1,193 +1,143 @@
 import React, { useState, useMemo } from "react";
+import { useTheme } from "../../Context/ThemeContext.jsx";
+import { useWishlist } from "../../Context/WishlistContext.jsx";
 import {
-
-  MapPin,
-  Fuel,
-  Gauge,
-  Settings2,
-  Calendar,
-  Heart,
-  ChevronDown,
-  SlidersHorizontal,
-  X,
-  ArrowUpDown,
-  BadgeCheck,
+  MapPin, Fuel, Gauge, Settings2, Calendar, Heart,
+  SlidersHorizontal, X, ArrowUpDown, BadgeCheck, Calculator, Star
 } from "lucide-react";
+import { RiHeartLine, RiHeartFill, RiCalculatorLine, RiCloseLine } from "react-icons/ri";
 
-/* ---------------------------------------------------------
-   Mock inventory — swap with your API data later.
---------------------------------------------------------- */
 const CARS = [
-  { id: 1, title: "Maruti Suzuki Swift VXI", year: 2021, price: 612000, emi: 11900, km: 24500, fuel: "Petrol", trans: "Manual", owner: "1st Owner", city: "Gurgaon", tag: "Great Price", color: "from-amber-400 to-orange-500" },
-  { id: 2, title: "Hyundai Creta SX(O)", year: 2020, price: 1345000, emi: 24800, km: 38200, fuel: "Diesel", trans: "Automatic", owner: "1st Owner", city: "Pune", tag: "Low KM", color: "from-slate-500 to-slate-700" },
-  { id: 3, title: "Tata Nexon XZ+", year: 2022, price: 895000, emi: 16700, km: 12800, fuel: "Petrol", trans: "Manual", owner: "1st Owner", city: "Bengaluru", tag: null, color: "from-sky-500 to-blue-700" },
-  { id: 4, title: "Honda City ZX", year: 2019, price: 855000, emi: 15900, km: 45600, fuel: "Petrol", trans: "CVT", owner: "2nd Owner", city: "Delhi", tag: null, color: "from-rose-500 to-red-700" },
-  { id: 5, title: "Mahindra XUV700 AX7", year: 2023, price: 2150000, emi: 39500, km: 8100, fuel: "Diesel", trans: "Automatic", owner: "1st Owner", city: "Mumbai", tag: "Almost New", color: "from-neutral-700 to-neutral-900" },
-  { id: 6, title: "Kia Seltos HTX", year: 2021, price: 1189000, emi: 21900, km: 29900, fuel: "Petrol", trans: "Manual", owner: "1st Owner", city: "Chandigarh", tag: null, color: "from-emerald-500 to-teal-700" },
-  { id: 7, title: "Toyota Innova Crysta GX", year: 2018, price: 1450000, emi: 26700, km: 61200, fuel: "Diesel", trans: "Manual", owner: "2nd Owner", city: "Lucknow", tag: null, color: "from-indigo-500 to-violet-700" },
-  { id: 8, title: "Volkswagen Virtus GT", year: 2022, price: 1325000, emi: 24300, km: 15300, fuel: "Petrol", trans: "Automatic", owner: "1st Owner", city: "Jaipur", tag: "Great Price", color: "from-amber-400 to-orange-500" },
-  { id: 9, title: "Maruti Suzuki Baleno Zeta", year: 2020, price: 585000, emi: 10800, km: 33400, fuel: "Petrol", trans: "Manual", owner: "1st Owner", city: "Ahmedabad", tag: null, color: "from-cyan-500 to-sky-700" },
-  { id: 10, title: "Hyundai Venue SX", year: 2021, price: 795000, emi: 14700, km: 27600, fuel: "Petrol", trans: "Manual", owner: "1st Owner", city: "Noida", tag: null, color: "from-fuchsia-500 to-pink-700" },
-  { id: 11, title: "Renault Kwid RXT", year: 2019, price: 325000, emi: 6100, km: 41200, fuel: "Petrol", trans: "Manual", owner: "2nd Owner", city: "Indore", tag: "Great Price", color: "from-amber-400 to-orange-500" },
-  { id: 12, title: "Skoda Octavia Style", year: 2018, price: 1095000, emi: 20200, km: 58900, fuel: "Petrol", trans: "Automatic", owner: "2nd Owner", city: "Chennai", tag: null, color: "from-lime-600 to-green-800" },
-  { id: 13, title: "Ford EcoSport Titanium", year: 2019, price: 675000, emi: 12500, km: 39800, fuel: "Diesel", trans: "Manual", owner: "1st Owner", city: "Kolkata", tag: null, color: "from-blue-600 to-indigo-800" },
-  { id: 14, title: "Tata Punch Adventure", year: 2023, price: 745000, emi: 13800, km: 6200, fuel: "Petrol", trans: "Manual", owner: "1st Owner", city: "Hyderabad", tag: "Almost New", color: "from-neutral-700 to-neutral-900" },
-  { id: 15, title: "MG Hector Sharp", year: 2021, price: 1595000, emi: 29400, km: 22100, fuel: "Diesel", trans: "Manual", owner: "1st Owner", city: "Pune", tag: null, color: "from-red-600 to-rose-800" },
-  { id: 16, title: "Maruti Suzuki Ertiga ZXI", year: 2020, price: 895000, emi: 16500, km: 31700, fuel: "CNG", trans: "Manual", owner: "1st Owner", city: "Surat", tag: null, color: "from-teal-500 to-emerald-700" },
-  { id: 17, title: "Jeep Compass Longitude", year: 2020, price: 1685000, emi: 31000, km: 26400, fuel: "Diesel", trans: "Automatic", owner: "1st Owner", city: "Bengaluru", tag: null, color: "from-stone-600 to-stone-800" },
-  { id: 18, title: "Hyundai i20 Sportz", year: 2022, price: 725000, emi: 13400, km: 14900, fuel: "Petrol", trans: "Manual", owner: "1st Owner", city: "Lucknow", tag: "Low KM", color: "from-slate-500 to-slate-700" },
-  { id: 19, title: "Tata Tiago XZ", year: 2021, price: 495000, emi: 9200, km: 28300, fuel: "CNG", trans: "Manual", owner: "1st Owner", city: "Bhopal", tag: null, color: "from-orange-500 to-amber-700" },
-  { id: 20, title: "Kia Sonet GTX+", year: 2022, price: 985000, emi: 18200, km: 17600, fuel: "Petrol", trans: "Automatic", owner: "1st Owner", city: "Mumbai", tag: null, color: "from-purple-600 to-violet-800" },
-  { id: 21, title: "Tata Nexon EV Max", year: 2022, price: 1425000, emi: 26300, km: 19800, fuel: "Electric", trans: "Automatic", owner: "1st Owner", city: "Delhi", tag: "Low KM", color: "from-emerald-400 to-green-600" },
+  { id: 101, title: "Maruti Suzuki Swift VXI", year: 2021, price: "₹6.12 Lakh", priceNum: 612000, emi: 11900, km: 24500, fuel: "Petrol", trans: "Manual", owner: "1st Owner", city: "Gurgaon", tag: "Certified", img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop" },
+  { id: 102, title: "Hyundai Creta SX(O)", year: 2020, price: "₹13.45 Lakh", priceNum: 1345000, emi: 24800, km: 38200, fuel: "Diesel", trans: "Automatic", owner: "1st Owner", city: "Pune", tag: "Low KM", img: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/Creta/8667/1751535724464/exterior-image-166.jpg" },
+  { id: 103, title: "Tata Nexon XZ+", year: 2022, price: "₹8.95 Lakh", priceNum: 895000, emi: 16700, km: 12800, fuel: "Petrol", trans: "Manual", owner: "1st Owner", city: "Bengaluru", tag: "5-Star Safety", img: "https://static.caronphone.com/public/brands/32/53/3209/3209_1759154859.webp" },
+  { id: 104, title: "Honda City ZX CVT", year: 2019, price: "₹8.55 Lakh", priceNum: 855000, emi: 15900, km: 45600, fuel: "Petrol", trans: "CVT", owner: "2nd Owner", city: "Delhi", tag: "Sunroof", img: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=800&auto=format&fit=crop" },
+  { id: 105, title: "Mahindra XUV700 AX7", year: 2023, price: "₹21.50 Lakh", priceNum: 2150000, emi: 39500, km: 8100, fuel: "Diesel", trans: "Automatic", owner: "1st Owner", city: "Mumbai", tag: "Almost New", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJf515PddNnEAY5MrtqKHlREy7yRKHCt_Zfw&s" },
+  { id: 106, title: "Kia Seltos HTX", year: 2021, price: "₹11.89 Lakh", priceNum: 1189000, emi: 21900, km: 29900, fuel: "Petrol", trans: "Manual", owner: "1st Owner", city: "Chandigarh", tag: "Certified", img: "https://imgd.aeplcdn.com/664x374/n/cw/ec/192817/seltos-exterior-right-front-three-quarter-50.png?isig=0&q=80" },
+  { id: 107, title: "Toyota Innova Crysta GX", year: 2018, price: "₹14.50 Lakh", priceNum: 1450000, emi: 26700, km: 61200, fuel: "Diesel", trans: "Manual", owner: "2nd Owner", city: "Gurgaon", tag: "Verified", img: "https://images.unsplash.com/photo-1622551842564-2ad0c2d2c7e5?q=80&w=800&auto=format&fit=crop" },
+  { id: 108, title: "Volkswagen Virtus GT DSG", year: 2022, price: "₹13.25 Lakh", priceNum: 1325000, emi: 24300, km: 15300, fuel: "Petrol", trans: "Automatic", owner: "1st Owner", city: "Jaipur", tag: "Great Deal", img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop" },
+  { id: 109, title: "BMW 3 Series 320d Luxury", year: 2019, price: "₹28.90 Lakh", priceNum: 2890000, emi: 52000, km: 31000, fuel: "Diesel", trans: "Automatic", owner: "1st Owner", city: "Delhi", tag: "Luxury Certified", img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop" }
 ];
 
 const FUELS = ["Petrol", "Diesel", "CNG", "Electric"];
 const TRANS = ["Manual", "Automatic", "CVT"];
 const BUDGETS = [
-  { label: "Under ₹5 Lakh", max: 500000 },
-  { label: "₹5 – 10 Lakh", max: 1000000 },
-  { label: "₹10 – 15 Lakh", max: 1500000 },
-  { label: "₹15 Lakh+", max: Infinity },
+  { label: "Under ₹7 Lakh", max: 700000 },
+  { label: "₹7 – 12 Lakh", max: 1200000 },
+  { label: "₹12 – 20 Lakh", max: 2000000 },
+  { label: "₹20 Lakh+", max: Infinity },
 ];
 
-function formatINR(n) {
-  return "₹" + n.toLocaleString("en-IN");
-}
-
 export default function Usedcars() {
+  const { dark } = useTheme();
+  const { toggleWishlist, isWishlisted } = useWishlist();
   const [fuelFilter, setFuelFilter] = useState([]);
   const [transFilter, setTransFilter] = useState([]);
   const [budgetFilter, setBudgetFilter] = useState(null);
+  const [selectedCity, setSelectedCity] = useState("All");
   const [sortBy, setSortBy] = useState("recommended");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [saved, setSaved] = useState(new Set());
+
+  // EMI Calculator State
+  const [showEmiModal, setShowEmiModal] = useState(false);
+  const [carPriceInput, setCarPriceInput] = useState(1000000);
+  const [downPayment, setDownPayment] = useState(200000);
+  const [loanTenure, setLoanTenure] = useState(5);
+  const [interestRate, setInterestRate] = useState(9.5);
 
   const toggle = (setter, arr, val) =>
     setter(arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val]);
-
-  const toggleSaved = (id) =>
-    setSaved((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
 
   const results = useMemo(() => {
     let list = CARS.filter((c) => {
       if (fuelFilter.length && !fuelFilter.includes(c.fuel)) return false;
       if (transFilter.length && !transFilter.includes(c.trans)) return false;
-      if (budgetFilter !== null && c.price > BUDGETS[budgetFilter].max) return false;
+      if (budgetFilter !== null && c.priceNum > BUDGETS[budgetFilter].max) return false;
+      if (selectedCity !== "All" && c.city !== selectedCity) return false;
       return true;
     });
-    if (sortBy === "price_low") list = [...list].sort((a, b) => a.price - b.price);
-    if (sortBy === "price_high") list = [...list].sort((a, b) => b.price - a.price);
+    if (sortBy === "price_low") list = [...list].sort((a, b) => a.priceNum - b.priceNum);
+    if (sortBy === "price_high") list = [...list].sort((a, b) => b.priceNum - a.priceNum);
     if (sortBy === "km_low") list = [...list].sort((a, b) => a.km - b.km);
     if (sortBy === "year_new") list = [...list].sort((a, b) => b.year - a.year);
     return list;
-  }, [fuelFilter, transFilter, budgetFilter, sortBy]);
+  }, [fuelFilter, transFilter, budgetFilter, selectedCity, sortBy]);
 
   const clearAll = () => {
     setFuelFilter([]);
     setTransFilter([]);
     setBudgetFilter(null);
+    setSelectedCity("All");
   };
 
-  const activeCount = fuelFilter.length + transFilter.length + (budgetFilter !== null ? 1 : 0);
+  const calculateEmi = () => {
+    const principal = Math.max(0, carPriceInput - downPayment);
+    const monthlyRate = interestRate / 12 / 100;
+    const months = loanTenure * 12;
+    if (principal <= 0 || monthlyRate <= 0) return 0;
+    const emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+    return Math.round(emi);
+  };
+
+  const bg = dark ? 'bg-[#080A0D]' : 'bg-slate-50';
+  const cardBg = dark ? 'bg-[#0D0F16]' : 'bg-white';
+  const border = dark ? 'border-red-900/20' : 'border-slate-200';
+  const textHi = dark ? 'text-gray-50' : 'text-slate-900';
+  const textSb = dark ? 'text-white/55' : 'text-slate-500';
+  const gradBtn = dark
+    ? 'bg-gradient-to-r from-red-700 via-red-600 to-red-500 text-white'
+    : 'bg-gradient-to-r from-amber-700 via-amber-500 to-amber-400 text-white';
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-[#151515]" style={{ fontFamily: "Inter, ui-sans-serif, system-ui" }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
-        .font-display { font-family: 'Rajdhani', sans-serif; }
-      `}</style>
+    <div className={`min-h-screen ${bg} py-8 px-4 transition-colors duration-300 font-sans`}>
+      <div className="max-w-7xl mx-auto space-y-6">
+        
+        {/* HEADER */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full ${dark ? 'bg-red-900/20 text-red-400 border border-red-900/30' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
+              <BadgeCheck size={14} /> 200+ Point Quality Checked
+            </div>
+            <h1 className={`text-2xl sm:text-4xl font-extrabold tracking-tight mt-2 ${textHi}`}>
+              Verified <span className={dark ? 'text-red-500' : 'text-amber-600'}>Used Cars</span>
+            </h1>
+            <p className={`text-sm mt-1 ${textSb}`}>
+              Inspected, certified pre-owned cars with 1-Year Warranty &amp; instant financing.
+            </p>
+          </div>
 
- 
-
-      {/* Page heading */}
-      <div className="border-b border-black/10 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
-          <h1 className="font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">
-            Used Cars <span className="text-[#F2994A]">in Gurgaon</span>
-          </h1>
-          <p className="mt-1 text-sm text-black/50">
-            {results.length} certified used cars found · inspected &amp; verified
-          </p>
+          <button
+            onClick={() => setShowEmiModal(true)}
+            className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold uppercase tracking-wider shadow-lg border-none cursor-pointer ${gradBtn}`}
+          >
+            <RiCalculatorLine size={18} /> Calculate Auto Loan EMI
+          </button>
         </div>
-      </div>
 
-      <div className="mx-auto flex max-w-7xl gap-6 px-4 py-6 sm:px-6">
-        {/* Sidebar filters — desktop */}
-        <aside className="hidden w-64 shrink-0 lg:block">
-          <FilterPanel
-            fuelFilter={fuelFilter}
-            transFilter={transFilter}
-            budgetFilter={budgetFilter}
-            toggle={toggle}
-            setFuelFilter={setFuelFilter}
-            setTransFilter={setTransFilter}
-            setBudgetFilter={setBudgetFilter}
-            clearAll={clearAll}
-            activeCount={activeCount}
-          />
-        </aside>
-
-        {/* Results */}
-        <main className="flex-1">
-          {/* Sort / mobile filter bar */}
-          <div className="mb-4 flex items-center justify-between">
+        {/* CITIES FILTER BAR */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2">
+          <span className={`text-xs font-bold uppercase ${textSb} mr-2`}>City:</span>
+          {["All", "Gurgaon", "Delhi", "Mumbai", "Pune", "Bengaluru", "Jaipur"].map((c) => (
             <button
-              onClick={() => setMobileFiltersOpen(true)}
-              className="flex items-center gap-2 rounded-md border border-black/15 px-3 py-2 text-sm font-medium lg:hidden"
+              key={c}
+              onClick={() => setSelectedCity(c)}
+              className={`px-4 py-1.5 rounded-xl text-xs font-bold tracking-wider transition-all whitespace-nowrap cursor-pointer border-none ${
+                selectedCity === c
+                  ? gradBtn
+                  : dark
+                  ? 'bg-white/5 text-white/60 hover:text-white'
+                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+              }`}
             >
-              <SlidersHorizontal size={15} />
-              Filters {activeCount > 0 && `(${activeCount})`}
+              {c}
             </button>
+          ))}
+        </div>
 
-            <div className="ml-auto flex items-center gap-2 text-sm">
-              <ArrowUpDown size={14} className="text-black/40" />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-md border border-black/15 bg-white px-2 py-1.5 text-sm font-medium focus:outline-none"
-              >
-                <option value="recommended">Recommended</option>
-                <option value="price_low">Price: Low to High</option>
-                <option value="price_high">Price: High to Low</option>
-                <option value="km_low">KM Driven: Low to High</option>
-                <option value="year_new">Year: Newest First</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Car grid */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {results.map((car) => (
-              <CarCard key={car.id} car={car} isSaved={saved.has(car.id)} onSave={() => toggleSaved(car.id)} />
-            ))}
-          </div>
-
-          {results.length === 0 && (
-            <div className="mt-16 text-center text-black/50">
-              <p className="font-display text-lg font-semibold">No cars match these filters</p>
-              <button onClick={clearAll} className="mt-2 text-sm font-medium text-[#F2994A] underline">
-                Clear all filters
-              </button>
-            </div>
-          )}
-        </main>
-      </div>
-
-      {/* Mobile filter drawer */}
-      {mobileFiltersOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setMobileFiltersOpen(false)} />
-          <div className="absolute right-0 top-0 h-full w-80 max-w-[85vw] overflow-y-auto bg-white p-5 shadow-xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-display text-lg font-bold uppercase">Filters</h2>
-              <button onClick={() => setMobileFiltersOpen(false)}>
-                <X size={20} />
-              </button>
-            </div>
+        {/* MAIN LAYOUT */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Desktop Filter Panel */}
+          <aside className={`hidden lg:block w-64 p-5 rounded-2xl border ${border} ${cardBg} h-fit space-y-6`}>
             <FilterPanel
               fuelFilter={fuelFilter}
               transFilter={transFilter}
@@ -197,14 +147,192 @@ export default function Usedcars() {
               setTransFilter={setTransFilter}
               setBudgetFilter={setBudgetFilter}
               clearAll={clearAll}
-              activeCount={activeCount}
+              dark={dark}
             />
-            <button
-              onClick={() => setMobileFiltersOpen(false)}
-              className="mt-6 w-full rounded-md bg-[#12172B] py-2.5 text-sm font-semibold text-white"
-            >
-              Show {results.length} cars
-            </button>
+          </aside>
+
+          {/* Car Grid Container */}
+          <main className="flex-1 space-y-4">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setMobileFiltersOpen(true)}
+                className={`lg:hidden flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border ${border} ${cardBg} ${textHi}`}
+              >
+                <SlidersHorizontal size={14} /> Filters
+              </button>
+
+              <div className="ml-auto flex items-center gap-2 text-xs">
+                <span className={textSb}>Sort by:</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className={`px-3 py-1.5 rounded-xl border outline-none font-bold text-xs ${border} ${cardBg} ${textHi}`}
+                >
+                  <option value="recommended">Recommended</option>
+                  <option value="price_low">Price: Low to High</option>
+                  <option value="price_high">Price: High to Low</option>
+                  <option value="km_low">KM: Low to High</option>
+                  <option value="year_new">Year: Newest</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Cars Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {results.map((car) => {
+                const saved = isWishlisted(car.id || car.title);
+                return (
+                  <div
+                    key={car.id}
+                    className={`group rounded-2xl border ${border} ${cardBg} overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between`}
+                  >
+                    <div className="relative h-44 overflow-hidden bg-slate-800">
+                      <img
+                        src={car.img}
+                        alt={car.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur text-white text-[10px] font-bold px-2.5 py-1 rounded-full border border-white/20">
+                        {car.year}
+                      </span>
+                      {car.tag && (
+                        <span className="absolute top-3 right-12 bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
+                          {car.tag}
+                        </span>
+                      )}
+                      <button
+                        onClick={() => toggleWishlist({ ...car, name: car.title })}
+                        className="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-900/70 backdrop-blur text-white flex items-center justify-center border-none cursor-pointer hover:bg-red-600 transition-colors"
+                      >
+                        {saved ? <RiHeartFill size={16} className="text-red-500" /> : <RiHeartLine size={16} />}
+                      </button>
+                    </div>
+
+                    <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                      <div>
+                        <h3 className={`font-bold text-base line-clamp-1 ${textHi}`}>{car.title}</h3>
+                        <div className="flex items-baseline gap-2 mt-1">
+                          <span className={`text-lg font-extrabold ${dark ? 'text-red-400' : 'text-amber-600'}`}>{car.price}</span>
+                          <span className={`text-xs ${textSb}`}>EMI ₹{car.emi.toLocaleString()}/mo</span>
+                        </div>
+
+                        <div className={`grid grid-cols-2 gap-2 mt-3 text-xs ${textSb}`}>
+                          <span className="flex items-center gap-1"><Gauge size={12} /> {car.km.toLocaleString()} km</span>
+                          <span className="flex items-center gap-1"><Fuel size={12} /> {car.fuel}</span>
+                          <span className="flex items-center gap-1"><Settings2 size={12} /> {car.trans}</span>
+                          <span className="flex items-center gap-1"><MapPin size={12} /> {car.city}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+                        <button
+                          onClick={() => {
+                            setCarPriceInput(car.priceNum);
+                            setShowEmiModal(true);
+                          }}
+                          className={`flex-1 py-2 rounded-xl text-xs font-bold border ${dark ? 'border-white/20 text-white hover:bg-white/10' : 'border-slate-300 text-slate-800 hover:bg-slate-100'} cursor-pointer`}
+                        >
+                          Calc EMI
+                        </button>
+                        <button className={`flex-1 py-2 rounded-xl text-xs font-bold border-none cursor-pointer ${gradBtn}`}>
+                          Book Drive
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {results.length === 0 && (
+              <div className={`p-12 text-center rounded-2xl border ${border} ${cardBg}`}>
+                <p className={`text-base font-bold ${textHi}`}>No used cars found</p>
+                <button onClick={clearAll} className="mt-2 text-xs font-bold text-red-500 underline cursor-pointer">
+                  Clear All Filters
+                </button>
+              </div>
+            )}
+          </main>
+        </div>
+
+      </div>
+
+      {/* EMI CALCULATOR MODAL */}
+      {showEmiModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+          <div className={`w-full max-w-lg p-6 rounded-2xl border ${border} ${cardBg} space-y-5 shadow-2xl`}>
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h3 className={`text-lg font-bold flex items-center gap-2 ${textHi}`}>
+                <RiCalculatorLine className="text-red-500" /> Auto Loan EMI Calculator
+              </h3>
+              <button onClick={() => setShowEmiModal(false)} className="bg-transparent border-none text-slate-400 hover:text-white cursor-pointer">
+                <RiCloseLine size={24} />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div>
+                <div className="flex justify-between font-bold mb-1">
+                  <span className={textSb}>Car Price</span>
+                  <span className={textHi}>₹{carPriceInput.toLocaleString('en-IN')}</span>
+                </div>
+                <input
+                  type="range"
+                  min="200000"
+                  max="5000000"
+                  step="50000"
+                  value={carPriceInput}
+                  onChange={(e) => setCarPriceInput(Number(e.target.value))}
+                  className="w-full accent-red-500 cursor-pointer"
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between font-bold mb-1">
+                  <span className={textSb}>Down Payment</span>
+                  <span className={textHi}>₹{downPayment.toLocaleString('en-IN')}</span>
+                </div>
+                <input
+                  type="range"
+                  min="50000"
+                  max={carPriceInput * 0.8}
+                  step="25000"
+                  value={downPayment}
+                  onChange={(e) => setDownPayment(Number(e.target.value))}
+                  className="w-full accent-red-500 cursor-pointer"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={`block font-bold mb-1 ${textSb}`}>Tenure (Years)</label>
+                  <select
+                    value={loanTenure}
+                    onChange={(e) => setLoanTenure(Number(e.target.value))}
+                    className={`w-full p-2.5 rounded-xl border outline-none font-bold ${border} ${cardBg} ${textHi}`}
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7].map(y => <option key={y} value={y}>{y} Years</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={`block font-bold mb-1 ${textSb}`}>Interest Rate (%)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(Number(e.target.value))}
+                    className={`w-full p-2.5 rounded-xl border outline-none font-bold ${border} ${cardBg} ${textHi}`}
+                  />
+                </div>
+              </div>
+
+              <div className={`p-4 rounded-2xl border ${dark ? 'bg-red-900/10 border-red-900/30' : 'bg-amber-50 border-amber-200'} text-center space-y-1`}>
+                <p className={`text-xs font-bold uppercase ${textSb}`}>Estimated Monthly EMI</p>
+                <p className={`text-3xl font-extrabold ${dark ? 'text-red-400' : 'text-amber-600'}`}>
+                  ₹{calculateEmi().toLocaleString('en-IN')}<span className="text-xs font-normal">/month</span>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -212,145 +340,62 @@ export default function Usedcars() {
   );
 }
 
-/* ---------------------------------------------------------
-   Filter panel (shared between desktop sidebar + mobile drawer)
---------------------------------------------------------- */
-function FilterPanel({
-  fuelFilter,
-  transFilter,
-  budgetFilter,
-  toggle,
-  setFuelFilter,
-  setTransFilter,
-  setBudgetFilter,
-  clearAll,
-  activeCount,
-}) {
+function FilterPanel({ fuelFilter, transFilter, budgetFilter, toggle, setFuelFilter, setTransFilter, setBudgetFilter, clearAll, dark }) {
+  const textHi = dark ? 'text-gray-50' : 'text-slate-900';
+  const textSb = dark ? 'text-white/55' : 'text-slate-500';
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="font-display text-base font-bold uppercase tracking-wide">Filters</h3>
-        {activeCount > 0 && (
-          <button onClick={clearAll} className="text-xs font-medium text-[#F2994A]">
-            Clear all
-          </button>
-        )}
+    <div className="space-y-5 text-xs">
+      <div className="flex items-center justify-between border-b border-white/10 pb-3">
+        <h3 className={`font-bold text-sm uppercase ${textHi}`}>Filters</h3>
+        <button onClick={clearAll} className="text-red-500 font-bold hover:underline bg-transparent border-none cursor-pointer">
+          Reset
+        </button>
       </div>
 
-      <FilterGroup title="Budget">
+      <div>
+        <p className={`font-bold uppercase tracking-wider mb-2 ${textSb}`}>Budget</p>
         {BUDGETS.map((b, i) => (
-          <label key={b.label} className="flex cursor-pointer items-center gap-2 py-1 text-sm">
+          <label key={i} className={`flex items-center gap-2 py-1 cursor-pointer ${textHi}`}>
             <input
               type="radio"
               name="budget"
               checked={budgetFilter === i}
               onChange={() => setBudgetFilter(budgetFilter === i ? null : i)}
-              className="h-3.5 w-3.5 accent-[#F2994A]"
+              className="accent-red-500"
             />
             {b.label}
           </label>
         ))}
-      </FilterGroup>
+      </div>
 
-      <FilterGroup title="Fuel Type">
+      <div>
+        <p className={`font-bold uppercase tracking-wider mb-2 ${textSb}`}>Fuel Type</p>
         {FUELS.map((f) => (
-          <label key={f} className="flex cursor-pointer items-center gap-2 py-1 text-sm">
+          <label key={f} className={`flex items-center gap-2 py-1 cursor-pointer ${textHi}`}>
             <input
               type="checkbox"
               checked={fuelFilter.includes(f)}
               onChange={() => toggle(setFuelFilter, fuelFilter, f)}
-              className="h-3.5 w-3.5 accent-[#F2994A]"
+              className="accent-red-500"
             />
             {f}
           </label>
         ))}
-      </FilterGroup>
+      </div>
 
-      <FilterGroup title="Transmission">
+      <div>
+        <p className={`font-bold uppercase tracking-wider mb-2 ${textSb}`}>Transmission</p>
         {TRANS.map((t) => (
-          <label key={t} className="flex cursor-pointer items-center gap-2 py-1 text-sm">
+          <label key={t} className={`flex items-center gap-2 py-1 cursor-pointer ${textHi}`}>
             <input
               type="checkbox"
               checked={transFilter.includes(t)}
               onChange={() => toggle(setTransFilter, transFilter, t)}
-              className="h-3.5 w-3.5 accent-[#F2994A]"
+              className="accent-red-500"
             />
             {t}
           </label>
         ))}
-      </FilterGroup>
-    </div>
-  );
-}
-
-function FilterGroup({ title, children }) {
-  return (
-    <div className="border-t border-black/10 pt-4 first:border-t-0 first:pt-0">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-black/50">{title}</p>
-      {children}
-    </div>
-  );
-}
-
-/* ---------------------------------------------------------
-   Car card
---------------------------------------------------------- */
-function CarCard({ car, isSaved, onSave }) {
-  return (
-    <div className="group overflow-hidden rounded-lg border border-black/10 bg-white transition hover:shadow-lg">
-      {/* Image placeholder */}
-      <div className={`relative flex h-40 items-center justify-center bg-gradient-to-br ${car.color}`}>
-        <span className="font-display text-5xl font-bold text-white/25">{car.year}</span>
-
-        {car.tag && (
-          <span className="absolute left-2 top-2 flex items-center gap-1 rounded bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-[#12172B]">
-            <BadgeCheck size={12} className="text-[#F2994A]" />
-            {car.tag}
-          </span>
-        )}
-
-        <button
-          onClick={onSave}
-          className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 transition hover:bg-white"
-        >
-          <Heart size={14} className={isSaved ? "fill-[#F2994A] text-[#F2994A]" : "text-black/50"} />
-        </button>
-      </div>
-
-      {/* Body */}
-      <div className="p-3.5">
-        <h3 className="truncate font-display text-[15px] font-bold leading-tight">
-          {car.year} {car.title}
-        </h3>
-
-        <div className="mt-1.5 flex items-baseline gap-2">
-          <span className="font-display text-lg font-bold text-[#12172B]">{formatINR(car.price)}</span>
-          <span className="text-xs text-black/40">EMI {formatINR(car.emi)}/mo</span>
-        </div>
-
-        <div className="mt-3 grid grid-cols-2 gap-y-1.5 text-xs text-black/60">
-          <span className="flex items-center gap-1.5">
-            <Gauge size={13} /> {car.km.toLocaleString("en-IN")} km
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Fuel size={13} /> {car.fuel}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Settings2 size={13} /> {car.trans}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Calendar size={13} /> {car.owner}
-          </span>
-        </div>
-
-        <div className="mt-3 flex items-center justify-between border-t border-black/10 pt-3">
-          <span className="flex items-center gap-1 text-xs text-black/50">
-            <MapPin size={12} /> {car.city}
-          </span>
-          <button className="rounded-md bg-[#12172B] px-3 py-1.5 text-xs font-semibold text-white transition group-hover:bg-[#F2994A]">
-            View Details
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -15,6 +15,8 @@ import Sell from './components/Menu/Sellcar.jsx'
 import Hotdeals from './components/Menu/Hotdeals.jsx'
 import ProfilePage from './components/Navbar/ProfilePage.jsx'
 import SettingPage from './components/Navbar/SettingPage.jsx'
+import ProtectedRoute from './components/Auth/ProtectedRoute.jsx'
+import PublicRoute from './components/Auth/PublicRoute.jsx'
 
 export default function App() {
 
@@ -31,23 +33,22 @@ export default function App() {
         <Routes>
 
           {/* AUTH ROUTES */}
-          <Route path='/signup' element={<Signup />} />
-
-          <Route path='/signin' element={<Signin />} />
+          <Route path='/signup' element={<PublicRoute><Signup /></PublicRoute>} />
+          <Route path='/signin' element={<PublicRoute><Signin /></PublicRoute>} />
           <Route path='/verify_otp/:id' element={<Otp/>}/>
 
           {/* NAVBAR MENU ROUTES */}
-          <Route path='/' element={<Home/>}/>
-          <Route path='/new-cars' element={<Newcars />} />
-          <Route path='/used-cars' element={<UsedCars />} />
-          <Route path='/news' element={<News />} />
-          <Route path='/videos' element={<Videos />} />
-          <Route path='/sell' element={<Sell />} />
-          <Route path='/deals' element={<Hotdeals/>}/>
+          <Route path='/' element={<ProtectedRoute><Home/></ProtectedRoute>}/>
+          <Route path='/new-cars' element={<ProtectedRoute><Newcars /></ProtectedRoute>} />
+          <Route path='/used-cars' element={<ProtectedRoute><UsedCars /></ProtectedRoute>} />
+          <Route path='/news' element={<ProtectedRoute><News /></ProtectedRoute>} />
+          <Route path='/videos' element={<ProtectedRoute><Videos /></ProtectedRoute>} />
+          <Route path='/sell' element={<ProtectedRoute><Sell /></ProtectedRoute>} />
+          <Route path='/deals' element={<ProtectedRoute><Hotdeals/></ProtectedRoute>}/>
 
           {/* USER PROFILE & SETTING ROUTES */}
-          <Route path='/profile' element={<ProfilePage />} />
-          <Route path='/setting' element={<SettingPage />} />
+          <Route path='/profile' element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path='/setting' element={<ProtectedRoute><SettingPage /></ProtectedRoute>} />
 
         </Routes>
 

@@ -14,8 +14,10 @@ export default function Profile() {
   const { setsignin } = useAuth()
 
   const handleLogout = () => {
-    setsignin(false)
-    Navigate('/signin')
+    localStorage.removeItem('usertoken');
+    localStorage.removeItem('userid');
+    setsignin(false);
+    Navigate('/signin');
   }
 
   const menuitems = [

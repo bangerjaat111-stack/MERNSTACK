@@ -1,103 +1,51 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTheme } from '../../Context/ThemeContext';
+import { GENERATED_200_VIDEOS, CATEGORIES } from '../../data/videosData';
 import {
-  RiPlayCircleLine, RiSearchLine, RiFireLine, RiTimeLine,
-  RiEyeLine, RiStarFill, RiCloseLine, RiFilmLine, RiShareForwardLine
+  RiPlayCircleLine, RiSearchLine, RiTimeLine,
+  RiEyeLine, RiStarFill, RiCloseLine, RiFilmLine, RiShareForwardLine, RiArrowLeftLine
 } from 'react-icons/ri';
-
-const VIDEOS_DATA = [
-  {
-    id: 1,
-    title: '2026 Tata Sierra EV First Look & Walkaround | Concept to Reality',
-    channel: 'MotorBeam',
-    category: 'Walkarounds',
-    views: '450K',
-    duration: '14:20',
-    rating: '4.9',
-    thumbnail: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=800&auto=format&fit=crop',
-    embedId: 'dQw4w9WgXcQ', // Sample embed
-    blurb: 'In-depth walkaround of the upcoming Tata Sierra EV. Check out the glass roof, retro design cues, and interior space.'
-  },
-  {
-    id: 2,
-    title: 'Mahindra Thar Roxx 5-Door vs Force Gurkha 5-Door | Ultimate Offroad Battle',
-    channel: 'PowerDrift',
-    category: 'Comparisons',
-    views: '1.2M',
-    duration: '22:15',
-    rating: '4.8',
-    thumbnail: 'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?q=80&w=800&auto=format&fit=crop',
-    embedId: 'dQw4w9WgXcQ',
-    blurb: 'We take both 5-door offroad beasts to extreme mud and rock trails. Which SUV reigns supreme?'
-  },
-  {
-    id: 3,
-    title: 'Hyundai Creta EV 2026 Test Drive Review | Range, Acceleration & Features',
-    channel: 'Faisal Khan',
-    category: 'Reviews',
-    views: '890K',
-    duration: '18:45',
-    rating: '4.9',
-    thumbnail: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop',
-    embedId: 'dQw4w9WgXcQ',
-    blurb: 'Real-world highway range test of the electric Creta. 0-100 km/h acceleration test and charging speeds.'
-  },
-  {
-    id: 4,
-    title: 'BMW M5 Touring (727 HP Hybrid) Drag Race vs Porsche Panamera Turbo S',
-    channel: 'CarWow India',
-    category: 'Drag Races',
-    views: '2.4M',
-    duration: '11:05',
-    rating: '5.0',
-    thumbnail: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop',
-    embedId: 'dQw4w9WgXcQ',
-    blurb: 'Quarter-mile drag race and rolling acceleration test between two V8 hybrid performance monsters.'
-  },
-  {
-    id: 5,
-    title: 'Top 5 Electric Cars in India Under ₹20 Lakh (2026 Edition)',
-    channel: 'CarDekho',
-    category: 'EV Specials',
-    views: '620K',
-    duration: '16:30',
-    rating: '4.7',
-    thumbnail: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=800&auto=format&fit=crop',
-    embedId: 'dQw4w9WgXcQ',
-    blurb: 'Comprehensive buying guide covering Nexon EV, Punch EV, Windsor EV, and eVX.'
-  },
-  {
-    id: 6,
-    title: 'Maruti Suzuki Dzire 5-Star BNCAP Crash Test Breakdown & Review',
-    channel: 'AutoCar India',
-    category: 'Reviews',
-    views: '740K',
-    duration: '12:50',
-    rating: '4.8',
-    thumbnail: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=800&auto=format&fit=crop',
-    embedId: 'dQw4w9WgXcQ',
-    blurb: 'Full review of the 5-star rated new Dzire with sunroof, 360-degree camera, and refined Z-series engine.'
-  }
-];
-
-const CATEGORIES = ['All', 'Reviews', 'Comparisons', 'Drag Races', 'EV Specials', 'Walkarounds'];
 
 export default function Videos() {
   const { dark } = useTheme();
   const [activeCat, setActiveCat] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchVal, setSearchVal] = useState('');
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(12);
+
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedVideo(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const filtered = useMemo(() => {
-    return VIDEOS_DATA.filter((v) => {
-      const matchCat = activeCat === 'All' || v.category === activeCat;
+    return GENERATED_200_VIDEOS.filter((v) => {
+      const matchCat =
+        activeCat === 'All' ||
+        v.category === activeCat ||
+        v.brand === activeCat;
+
+      const q = searchVal.toLowerCase().trim();
       const matchSearch =
-        searchQuery.trim() === '' ||
-        v.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        v.channel.toLowerCase().includes(searchQuery.toLowerCase());
+        !q ||
+        v.title.toLowerCase().includes(q) ||
+        v.brand.toLowerCase().includes(q) ||
+        v.model.toLowerCase().includes(q) ||
+        v.channel.toLowerCase().includes(q);
+
       return matchCat && matchSearch;
     });
-  }, [activeCat, searchQuery]);
+  }, [activeCat, searchVal]);
+
+  const displayedVideos = useMemo(() => {
+    return filtered.slice(0, visibleCount);
+  }, [filtered, visibleCount]);
 
   const bg = dark ? 'bg-[#080A0D]' : 'bg-slate-50';
   const cardBg = dark ? 'bg-[#0D0F16]' : 'bg-white';
@@ -119,36 +67,47 @@ export default function Videos() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className={`inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full ${dark ? 'bg-red-900/20 text-red-400 border border-red-900/30' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
-              <RiFilmLine size={14} /> AutoSyntax TV & Media
+              <RiFilmLine size={14} /> AutoSyntax TV · 200 YouTube Car Reviews & Deliveries
             </div>
             <h1 className={`text-2xl sm:text-4xl font-extrabold tracking-tight mt-2 ${textHi}`}>
-              Car Video <span className={gradText}>Reviews & Test Drives</span>
+              Explore <span className={gradText}>200 YouTube Car Videos</span>
             </h1>
             <p className={`text-sm mt-1 ${textSb}`}>
-              Watch expert reviews, high-speed drag races, EV tests, and detailed car walkarounds.
+              Watch authentic Indian car delivery videos, offroad challenges, and detailed drive reviews for all cars.
             </p>
           </div>
 
-          {/* SEARCH BAR */}
-          <div className={`flex items-center gap-3 px-4 py-2.5 rounded-2xl border ${border} ${cardBg} w-full md:w-80 shadow-sm`}>
-            <RiSearchLine size={18} className={textSb} />
-            <input
-              type="text"
-              placeholder="Search reviews, channels..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full bg-transparent outline-none text-xs font-medium ${textHi} placeholder:${textSb}`}
-            />
+          {/* SEARCH INPUT */}
+          <div className="relative w-full md:w-80">
+            <div className={`flex items-center gap-2 px-4 h-11 rounded-xl border transition-all ${dark ? 'bg-white/5 border-white/10 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+              <RiSearchLine className={dark ? 'text-white/40' : 'text-slate-400'} size={18} />
+              <input
+                type="text"
+                placeholder="Search 200 car videos, brands..."
+                value={searchVal}
+                onChange={(e) => {
+                  setSearchVal(e.target.value);
+                  setVisibleCount(12);
+                }}
+                className="w-full bg-transparent border-none outline-none text-xs font-medium"
+              />
+              {searchVal && (
+                <button onClick={() => setSearchVal('')} className="bg-transparent border-none cursor-pointer text-xs font-bold text-slate-400">✕</button>
+              )}
+            </div>
           </div>
         </div>
 
         {/* CATEGORY TABS */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
-              onClick={() => setActiveCat(cat)}
-              className={`px-5 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all whitespace-nowrap cursor-pointer border-none ${
+              onClick={() => {
+                setActiveCat(cat);
+                setVisibleCount(12);
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all whitespace-nowrap cursor-pointer border-none ${
                 activeCat === cat
                   ? gradBtn
                   : dark
@@ -161,22 +120,29 @@ export default function Videos() {
           ))}
         </div>
 
+        {/* VIDEO COUNTER */}
+        <div className="flex items-center justify-between text-xs font-bold text-slate-400">
+          <span>Showing {displayedVideos.length} of {filtered.length} YouTube Videos</span>
+          {filtered.length === 200 && <span className="text-red-500 font-extrabold">200 Videos Available</span>}
+        </div>
+       
+
         {/* VIDEO GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((video) => (
+          {displayedVideos.map((video) => (
             <div
               key={video.id}
               onClick={() => setSelectedVideo(video)}
-              className={`group rounded-2xl border ${border} ${cardBg} overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer flex flex-col`}
+              className={`group rounded-2xl border ${border} ${cardBg} overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between`}
             >
               {/* Thumbnail Container */}
               <div className="relative h-48 overflow-hidden bg-slate-900">
                 <img
-                  src={video.thumbnail}
+                  src={video.thumbnailFallback}
                   alt={video.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
                 
                 {/* Play Button Icon */}
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -190,9 +156,9 @@ export default function Videos() {
                   <RiTimeLine size={12} /> {video.duration}
                 </span>
 
-                {/* Category Badge */}
+                {/* Brand & Category Badge */}
                 <span className="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow">
-                  {video.category}
+                  {video.brand} · {video.category}
                 </span>
               </div>
 
@@ -218,7 +184,7 @@ export default function Videos() {
                     <RiEyeLine size={13} /> {video.views} views
                   </span>
                   <span className="font-bold text-red-500 hover:underline flex items-center gap-1">
-                    Watch Now →
+                    Watch Car Video →
                   </span>
                 </div>
               </div>
@@ -226,64 +192,106 @@ export default function Videos() {
           ))}
         </div>
 
+        {/* LOAD MORE BUTTON */}
+        {visibleCount < filtered.length && (
+          <div className="flex justify-center pt-6">
+            <button
+              onClick={() => setVisibleCount((prev) => Math.min(prev + 24, filtered.length))}
+              className={`px-8 py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest cursor-pointer border-none shadow-lg transition-all ${gradBtn}`}
+            >
+              Load More Car Videos ({filtered.length - visibleCount} Remaining)
+            </button>
+          </div>
+        )}
+
         {filtered.length === 0 && (
           <div className={`text-center py-16 rounded-2xl border ${border} ${cardBg}`}>
-            <p className={`text-base font-bold ${textHi}`}>No videos found</p>
-            <p className={`text-xs mt-1 ${textSb}`}>Try clearing your search query or switching categories.</p>
+            <p className={`text-base font-bold ${textHi}`}>No car videos found matching your search</p>
+            <p className={`text-xs mt-1 ${textSb}`}>Try searching for Swift, Thar, Nexon, Creta, or clearing your search query.</p>
           </div>
         )}
 
       </div>
 
-      {/* VIDEO MODAL PLAYER */}
+      {/* YOUTUBE IFRAME EMBED MODAL PLAYER WITH PROMINENT CROSS CLOSE & BACK BUTTON */}
       {selectedVideo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className={`relative w-full max-w-4xl rounded-2xl border ${border} ${cardBg} overflow-hidden shadow-2xl space-y-4 p-4`}>
+        <div
+          onClick={() => setSelectedVideo(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fadeIn cursor-pointer overflow-y-auto"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`relative w-full max-w-4xl rounded-2xl border ${border} ${cardBg} overflow-hidden shadow-2xl space-y-4 p-5 cursor-default my-auto`}
+          >
             
-            {/* Modal Header */}
-            <div className="flex items-center justify-between pb-2 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <span className="bg-red-600 text-white text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full">
-                  {selectedVideo.category}
-                </span>
-                <h3 className={`font-bold text-sm sm:text-base line-clamp-1 ${textHi}`}>
-                  {selectedVideo.title}
-                </h3>
-              </div>
+            {/* Modal Header with BACK and CROSS (X) BUTTON */}
+            <div className="flex items-center justify-between pb-3 border-b border-white/10 gap-3">
               <button
                 onClick={() => setSelectedVideo(null)}
-                className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer border-none"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer border-none"
               >
-                <RiCloseLine size={20} />
+                <RiArrowLeftLine size={18} /> Back to Videos
+              </button>
+
+              <div className="hidden sm:block flex-1 text-center truncate px-2">
+                <span className="bg-red-600 text-white text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full mr-2">
+                  {selectedVideo.brand} {selectedVideo.model}
+                </span>
+                <span className={`font-bold text-sm ${textHi}`}>
+                  {selectedVideo.title}
+                </span>
+              </div>
+
+              {/* HIGH VISIBILITY RED CLOSE CROSS BUTTON */}
+              <button
+                onClick={() => setSelectedVideo(null)}
+                aria-label="Close YouTube Video"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold uppercase tracking-wider cursor-pointer border-none shadow-lg transition-transform hover:scale-105"
+              >
+                <RiCloseLine size={20} /> Close ✕
               </button>
             </div>
 
-            {/* Embed Video iFrame */}
-            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black">
+            {/* Embed YouTube iFrame Player */}
+            <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-2xl">
               <iframe
+                width="560"
+                height="315"
                 className="w-full h-full"
-                src={`https://www.youtube-nocookie.com/embed/${selectedVideo.embedId}?autoplay=1`}
+                src={`https://www.youtube.com/embed/${selectedVideo.embedId}?si=1PQB-Wj4h0mOxYE8&autoplay=1`}
                 title={selectedVideo.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
             </div>
 
-            {/* Video Footer info */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            {/* Video Footer info & Close Action */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs pt-1">
               <div>
-                <span className={`font-bold ${gradText}`}>{selectedVideo.channel}</span>
+                <span className={`font-bold ${gradText}`}>{selectedVideo.channel} · {selectedVideo.views} views</span>
                 <p className={`text-xs mt-0.5 ${textSb}`}>{selectedVideo.blurb}</p>
               </div>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert('Video link copied to clipboard!');
-                }}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold border ${dark ? 'border-white/20 text-white hover:bg-white/10' : 'border-slate-300 text-slate-800 hover:bg-slate-100'} cursor-pointer`}
-              >
-                <RiShareForwardLine size={16} /> Share Video
-              </button>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`https://www.youtube.com/watch?v=${selectedVideo.embedId}`);
+                    alert('YouTube video link copied!');
+                  }}
+                  className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold border ${dark ? 'border-white/20 text-white hover:bg-white/10' : 'border-slate-300 text-slate-800 hover:bg-slate-100'} cursor-pointer`}
+                >
+                  <RiShareForwardLine size={16} /> Share Link
+                </button>
+
+                <button
+                  onClick={() => setSelectedVideo(null)}
+                  className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-wider cursor-pointer border-none shadow"
+                >
+                  Close & Go Back
+                </button>
+              </div>
             </div>
           </div>
         </div>
