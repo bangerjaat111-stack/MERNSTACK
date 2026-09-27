@@ -1,414 +1,581 @@
-import React, { useMemo, useState } from "react";
-import { Search, SlidersHorizontal, Fuel, Cog, Users, Gauge, Heart, Calculator } from "lucide-react";
-import { useWishlist } from "../../Context/WishlistContext.jsx";
-import { useTheme } from "../../Context/ThemeContext.jsx";
-import { CARS_DATA } from "../../data/carsData.js";
-import { RiCalculatorLine, RiCloseLine, RiHeartFill, RiHeartLine, RiGasStationLine } from "react-icons/ri";
+import React, { useState, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import { useTheme } from '../../Context/ThemeContext.jsx';
+import { useWishlist } from '../../Context/WishlistContext.jsx';
+import { API_URL } from '../../config/api.js';
+import {
+  RiCarLine, RiSearchLine, RiInformationLine, RiCloseLine,
+  RiCheckLine, RiStarFill, RiFilter3Line, RiShieldCheckLine,
+  RiCalculatorLine, RiMoneyDollarCircleLine, RiHeartLine, RiHeartFill
+} from 'react-icons/ri';
 
-const BRANDS = ["Maruti Suzuki", "Tata", "Mahindra", "Hyundai", "Kia", "Toyota", "Honda"];
-const BODY_TYPES = [...new Set(CARS_DATA.map((c) => c.bodyType))];
-const FUEL_TYPES = [...new Set(CARS_DATA.map((c) => c.fuel))];
-
-function formatPrice(lakh) {
-  if (lakh >= 100) {
-    return `₹${(lakh / 100).toFixed(2)} Cr`;
-  }
-  return `₹${lakh.toFixed(2)} Lakh`;
-}
-
-function FilterGroup({ title, options, selected, onToggle }) {
-  return (
-    <div className="border-b border-slate-200 dark:border-white/10 py-4">
-      <h4 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">{title}</h4>
-      <div className="space-y-2">
-        {options.map((opt) => (
-          <label
-            key={opt}
-            className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 cursor-pointer select-none"
-          >
-            <input
-              type="checkbox"
-              checked={selected.includes(opt)}
-              onChange={() => onToggle(opt)}
-              className="h-4 w-4 rounded border-slate-300 dark:border-white/20 accent-red-600 dark:accent-red-600"
-            />
-            {opt}
-          </label>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function CarCard({ car, onOpenEmi }) {
-  const { toggleWishlist, isWishlisted } = useWishlist();
-  const saved = isWishlisted(car);
-
-  return (
-    <div className="group rounded-2xl border border-slate-200 dark:border-red-900/20 bg-white dark:bg-[#0D0F16] overflow-hidden hover:shadow-xl hover:shadow-red-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
-      <div>
-        {/* Car Image Container */}
-        <div className="relative h-48 overflow-hidden bg-slate-900">
-          <img
-            src={car.image}
-            alt={`${car.brand} ${car.name}`}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-          {car.tag && (
-            <span className="absolute top-3 left-3 text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full bg-red-600 text-white shadow">
-              {car.tag}
-            </span>
-          )}
-          <button
-            onClick={() => toggleWishlist(car)}
-            aria-label="Save to wishlist"
-            className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/90 dark:bg-black/60 backdrop-blur flex items-center justify-center hover:scale-110 transition-transform cursor-pointer border-none shadow"
-          >
-            {saved ? <RiHeartFill size={18} className="text-red-600" /> : <RiHeartLine size={18} className="text-slate-600 dark:text-slate-300" />}
-          </button>
-        </div>
-
-        {/* Details Section */}
-        <div className="p-4 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-extrabold text-red-500 dark:text-red-400 uppercase tracking-widest">
-              {car.brand}
-            </span>
-            <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-300">
-              {car.bodyType}
-            </span>
-          </div>
-
-          <h3 className="text-lg font-extrabold text-slate-900 dark:text-white leading-tight">
-            {car.brand} {car.name}
-          </h3>
-
-          <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-extrabold bg-gradient-to-r from-red-600 to-red-500 bg-clip-text text-transparent">
-              {formatPrice(car.price)}
-            </span>
-            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">ex-showroom</span>
-          </div>
-
-          {/* FUEL AVERAGE HIGHLIGHT BADGE */}
-          <div className="flex items-center gap-2 p-2.5 rounded-xl bg-amber-500/10 dark:bg-red-900/20 border border-amber-500/20 dark:border-red-900/30 text-amber-900 dark:text-red-300 text-xs font-bold mt-2">
-            <RiGasStationLine size={18} className="text-amber-600 dark:text-red-400 shrink-0" />
-            <span>Fuel Average: <strong className="text-slate-900 dark:text-white font-extrabold">{car.fuelAverage}</strong></span>
-          </div>
-
-          {/* Specs Bar */}
-          <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400">
-            <span className="flex items-center gap-1">
-              <Fuel size={13} /> {car.fuel}
-            </span>
-            <span className="flex items-center gap-1">
-              <Cog size={13} /> {car.transmission}
-            </span>
-            <span className="flex items-center gap-1">
-              <Users size={13} /> {car.seats} Seats
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="p-4 pt-0 flex gap-2">
-        <button
-          onClick={() => onOpenEmi(car.price * 100000)}
-          className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-white/20 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 cursor-pointer transition-colors"
-        >
-          EMI Calculator
-        </button>
-        <button className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-red-700 via-red-600 to-red-500 hover:from-red-800 hover:to-red-600 text-white text-xs font-bold cursor-pointer transition-colors border-none shadow">
-          Get Best Offer
-        </button>
-      </div>
-    </div>
-  );
-}
-
-export default function NewCars() {
-  const { dark } = useTheme();
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState("popularity");
-  const [brands, setBrands] = useState([]);
-  const [bodyTypes, setBodyTypes] = useState([]);
-  const [fuels, setFuels] = useState([]);
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-
-  // EMI Calculator Modal State
-  const [showEmiModal, setShowEmiModal] = useState(false);
-  const [carPriceInput, setCarPriceInput] = useState(1000000);
-  const [downPayment, setDownPayment] = useState(200000);
-  const [loanTenure, setLoanTenure] = useState(5);
-  const [interestRate, setInterestRate] = useState(9.5);
-
-  const toggle = (setFn) => (value) =>
-    setFn((prev) => (prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]));
-
-  const filtered = useMemo(() => {
-    let result = CARS_DATA.filter((c) => {
-      const matchesQuery =
-        query.trim() === "" ||
-        `${c.brand} ${c.name}`.toLowerCase().includes(query.toLowerCase());
-      const matchesBrand = brands.length === 0 || brands.includes(c.brand);
-      const matchesBody = bodyTypes.length === 0 || bodyTypes.includes(c.bodyType);
-      const matchesFuel = fuels.length === 0 || fuels.includes(c.fuel);
-      return matchesQuery && matchesBrand && matchesBody && matchesFuel;
-    });
-
-    if (sort === "price-low") result = [...result].sort((a, b) => a.price - b.price);
-    if (sort === "price-high") result = [...result].sort((a, b) => b.price - a.price);
-    if (sort === "name") result = [...result].sort((a, b) => a.name.localeCompare(b.name));
-
-    return result;
-  }, [query, sort, brands, bodyTypes, fuels]);
-
-  const clearAll = () => {
-    setBrands([]);
-    setBodyTypes([]);
-    setFuels([]);
-    setQuery("");
+// EMI Calculator Modal Component
+function EmiCalculatorModal({ car, onClose, dark }) {
+  const parsePrice = (priceStr) => {
+    if (!priceStr) return 600000;
+    const clean = priceStr.replace(/[^0-9.]/g, '');
+    const val = parseFloat(clean);
+    if (isNaN(val)) return 600000;
+    if (priceStr.toLowerCase().includes('crore')) return Math.round(val * 10000000);
+    if (priceStr.toLowerCase().includes('lakh')) return Math.round(val * 100000);
+    return Math.round(val);
   };
 
+  const initialPrice = parsePrice(car?.variants?.[0]?.price || car?.price);
+  const [carPrice, setCarPrice] = useState(initialPrice);
+  const [downPaymentPercent, setDownPaymentPercent] = useState(20);
+  const [interestRate, setInterestRate] = useState(8.5);
+  const [tenureYears, setTenureYears] = useState(5);
+
+  const downPayment = Math.round((carPrice * downPaymentPercent) / 100);
+  const loanAmount = Math.max(0, carPrice - downPayment);
+
   const calculateEmi = () => {
-    const principal = Math.max(0, carPriceInput - downPayment);
-    const monthlyRate = interestRate / 12 / 100;
-    const months = loanTenure * 12;
-    if (principal <= 0 || monthlyRate <= 0) return 0;
-    const emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+    if (loanAmount <= 0) return 0;
+    const r = interestRate / 12 / 100;
+    const n = tenureYears * 12;
+    const emi = (loanAmount * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
     return Math.round(emi);
   };
 
-  const activeFilterCount = brands.length + bodyTypes.length + fuels.length;
+  const emi = calculateEmi();
+  const totalPayable = emi * tenureYears * 12;
+  const totalInterest = Math.max(0, totalPayable - loanAmount);
 
-  const FiltersPanel = (
-    <div className="rounded-2xl border border-slate-200 dark:border-red-900/20 bg-white dark:bg-[#0D0F16] p-4 shadow-sm">
-      <div className="flex items-center justify-between mb-1">
-        <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Filters</h3>
-        {activeFilterCount > 0 && (
-          <button
-            onClick={clearAll}
-            className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline border-none bg-transparent cursor-pointer"
-          >
-            Clear all ({activeFilterCount})
-          </button>
-        )}
-      </div>
-      <FilterGroup title="Brand" options={BRANDS} selected={brands} onToggle={toggle(setBrands)} />
-      <FilterGroup title="Body Type" options={BODY_TYPES} selected={bodyTypes} onToggle={toggle(setBodyTypes)} />
-      <FilterGroup title="Fuel Type" options={FUEL_TYPES} selected={fuels} onToggle={toggle(setFuels)} />
-    </div>
-  );
+  const formatINR = (val) => {
+    return '₹ ' + val.toLocaleString('en-IN');
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#080A0D] transition-colors duration-300 font-sans py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn cursor-pointer"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`relative w-full max-w-2xl rounded-3xl border ${
+          dark ? 'bg-[#0D0F16] border-red-900/40 text-white' : 'bg-white border-amber-600/25 text-slate-900'
+        } p-6 shadow-2xl space-y-6 cursor-default max-h-[90vh] overflow-y-auto`}
+      >
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div className="flex items-start justify-between border-b border-white/10 pb-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-red-900/20 text-red-400 border border-red-900/30">
-              New Cars Catalog · Maruti, Tata, Mahindra, Kia, Hyundai, Toyota, Honda
+            <span className="px-2.5 py-0.5 rounded text-[10px] font-black uppercase bg-amber-500 text-black">
+              Car Loan Calculator
             </span>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white mt-2">
-              New Cars in India (2026)
-            </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Explore {filtered.length} latest cars with ex-showroom prices, specs, <strong className="text-red-500">fuel averages</strong>, &amp; loan EMIs.
-            </p>
+            <h2 className="text-xl font-black uppercase mt-1">
+              EMI Calculator {car ? `— ${car.title}` : ''}
+            </h2>
           </div>
-
           <button
-            onClick={() => setShowEmiModal(true)}
-            className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-red-700 via-red-600 to-red-500 text-white text-xs font-bold uppercase tracking-wider border-none cursor-pointer shadow-lg hover:scale-[1.02] transition-transform"
+            onClick={onClose}
+            className="p-2 rounded-full bg-white/10 hover:bg-red-600 hover:text-white transition-colors cursor-pointer border-none text-slate-300"
           >
-            <RiCalculatorLine size={18} /> Auto Loan EMI Calculator
+            <RiCloseLine size={22} />
           </button>
         </div>
 
-        {/* Brand quick filter pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 scrollbar-none">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 shrink-0">Brands:</span>
-          {BRANDS.map((b) => {
-            const isSelected = brands.includes(b);
-            return (
-              <button
-                key={b}
-                onClick={() => toggle(setBrands)(b)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap cursor-pointer border transition-all ${
-                  isSelected
-                    ? 'bg-red-600 border-red-600 text-white shadow'
-                    : dark
-                    ? 'bg-white/5 border-white/10 text-white/70 hover:text-white'
-                    : 'bg-white border-slate-200 text-slate-700 hover:border-red-500'
-                }`}
-              >
-                {b}
-              </button>
-            );
-          })}
+        {/* EMI Summary Card */}
+        <div className="p-5 rounded-2xl bg-linear-to-r from-red-600 via-red-700 to-amber-600 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <span className="text-xs uppercase font-bold text-white/80">Estimated Monthly EMI</span>
+            <h3 className="text-3xl font-black mt-0.5">{formatINR(emi)} <span className="text-sm font-normal">/ month</span></h3>
+            <p className="text-[11px] text-white/80 mt-1">For {tenureYears} Years @ {interestRate}% Interest Rate</p>
+          </div>
+          <div className="text-right sm:text-right w-full sm:w-auto border-t sm:border-t-0 sm:border-l border-white/20 pt-3 sm:pt-0 sm:pl-5 text-xs space-y-1">
+            <p>Loan Amount: <strong>{formatINR(loanAmount)}</strong></p>
+            <p>Total Interest: <strong>{formatINR(totalInterest)}</strong></p>
+            <p>Total Payable: <strong>{formatINR(totalPayable)}</strong></p>
+          </div>
         </div>
 
-        {/* Search & Sort Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6">
-          <div className="relative w-full sm:w-80">
+        {/* Sliders Grid */}
+        <div className="space-y-4 text-xs font-semibold">
+          {/* Car Price */}
+          <div className="space-y-1">
+            <div className="flex justify-between">
+              <span className="text-slate-400">Car Price:</span>
+              <span className="font-extrabold text-amber-500">{formatINR(carPrice)}</span>
+            </div>
             <input
-              type="text"
-              placeholder="Search Maruti, Tata, Thar, Creta..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0D0F16] text-xs font-medium text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-red-500/40"
+              type="range"
+              min="100000"
+              max="15000000"
+              step="50000"
+              value={carPrice}
+              onChange={(e) => setCarPrice(Number(e.target.value))}
+              className="w-full accent-red-500 cursor-pointer"
             />
-            {query && (
-              <button onClick={() => setQuery('')} className="absolute right-3 top-2.5 text-xs font-bold text-slate-400 bg-transparent border-none cursor-pointer">✕</button>
-            )}
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-            <button
-              onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-              className="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0D0F16] text-xs font-bold text-slate-700 dark:text-slate-200"
-            >
-              <SlidersHorizontal size={16} />
-              Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
-            </button>
+          {/* Down Payment */}
+          <div className="space-y-1">
+            <div className="flex justify-between">
+              <span className="text-slate-400">Down Payment ({downPaymentPercent}%):</span>
+              <span className="font-extrabold text-red-500">{formatINR(downPayment)}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="80"
+              step="5"
+              value={downPaymentPercent}
+              onChange={(e) => setDownPaymentPercent(Number(e.target.value))}
+              className="w-full accent-amber-500 cursor-pointer"
+            />
+          </div>
 
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0D0F16] text-xs font-bold text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-red-500/40 cursor-pointer"
-            >
-              <option value="popularity">Sort: Popularity</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="name">Name: A–Z</option>
-            </select>
+          {/* Interest Rate */}
+          <div className="space-y-1">
+            <div className="flex justify-between">
+              <span className="text-slate-400">Interest Rate (% p.a.):</span>
+              <span className="font-extrabold text-amber-500">{interestRate}%</span>
+            </div>
+            <input
+              type="range"
+              min="5"
+              max="18"
+              step="0.25"
+              value={interestRate}
+              onChange={(e) => setInterestRate(Number(e.target.value))}
+              className="w-full accent-red-500 cursor-pointer"
+            />
+          </div>
+
+          {/* Loan Tenure */}
+          <div className="space-y-1">
+            <div className="flex justify-between">
+              <span className="text-slate-400">Loan Tenure (Years):</span>
+              <span className="font-extrabold text-red-500">{tenureYears} Years ({tenureYears * 12} Months)</span>
+            </div>
+            <div className="flex gap-2 pt-1">
+              {[1, 2, 3, 4, 5, 6, 7].map((yr) => (
+                <button
+                  key={yr}
+                  onClick={() => setTenureYears(yr)}
+                  className={`flex-1 py-2 rounded-xl text-xs font-bold border cursor-pointer transition-all ${
+                    tenureYears === yr
+                      ? 'bg-red-600 text-white border-red-500 shadow'
+                      : dark ? 'bg-white/5 text-white/70 border-white/10' : 'bg-slate-100 text-slate-700 border-slate-200'
+                  }`}
+                >
+                  {yr} yr
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Mobile Filters Drawer */}
-        {mobileFiltersOpen && (
-          <div className="lg:hidden mb-6">{FiltersPanel}</div>
-        )}
-
-        <div className="flex gap-6">
-          {/* Desktop sidebar */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="sticky top-6">{FiltersPanel}</div>
-          </aside>
-
-          {/* Results grid */}
-          <div className="flex-1">
-            {filtered.length === 0 ? (
-              <div className="text-center py-20 rounded-2xl border border-dashed border-slate-300 dark:border-white/10">
-                <p className="text-slate-500 dark:text-slate-400 font-bold text-base">
-                  No cars match your selected filters.
-                </p>
-                <button
-                  onClick={clearAll}
-                  className="mt-3 text-xs font-extrabold uppercase text-red-600 dark:text-red-400 hover:underline bg-transparent border-none cursor-pointer"
-                >
-                  Reset all filters
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-                {filtered.map((car) => (
-                  <CarCard
-                    key={car.id}
-                    car={car}
-                    onOpenEmi={(p) => {
-                      setCarPriceInput(p);
-                      setShowEmiModal(true);
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+        {/* Footer */}
+        <div className="flex items-center justify-between pt-2 border-t border-white/10">
+          <p className="text-[10px] text-slate-400">
+            *Indicative calculation. Subject to bank approval & credit score.
+          </p>
+          <button
+            onClick={onClose}
+            className="px-5 py-2 rounded-xl bg-red-600 text-white font-bold text-xs uppercase tracking-wider border-none cursor-pointer hover:bg-red-700 transition-colors"
+          >
+            Close Calculator
+          </button>
         </div>
       </div>
+    </div>
+  );
+}
 
-      {/* EMI CALCULATOR MODAL */}
-      {showEmiModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-          <div className="w-full max-w-lg p-6 rounded-2xl border border-slate-200 dark:border-red-900/30 bg-white dark:bg-[#0D0F16] text-slate-900 dark:text-white space-y-5 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-3">
-              <h3 className="text-lg font-bold flex items-center gap-2">
-                <RiCalculatorLine className="text-red-500" /> New Car Loan EMI Calculator
-              </h3>
-              <button onClick={() => setShowEmiModal(false)} className="bg-transparent border-none text-slate-400 hover:text-white cursor-pointer">
-                <RiCloseLine size={24} />
+export default function Newcars() {
+  const { dark } = useTheme();
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const location = useLocation();
+  const [cars, setCars] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeBrand, setActiveBrand] = useState('All');
+  const [activeBodyType, setActiveBodyType] = useState('All');
+  const [searchVal, setSearchVal] = useState('');
+  const [selectedCar, setSelectedCar] = useState(null);
+  const [emiCar, setEmiCar] = useState(null);
+
+  // Sync search query parameter from URL (Navbar search)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('search');
+    if (q !== null) {
+      setSearchVal(q);
+    } else {
+      setSearchVal('');
+    }
+  }, [location.search]);
+
+  // Fetch cars from backend API (/car)
+  useEffect(() => {
+    const fetchCars = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${API_URL}/car`);
+        if (response.data && response.data.data) {
+          setCars(response.data.data);
+        }
+      } catch (err) {
+        console.error('Error fetching cars API:', err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCars();
+  }, []);
+
+  // Compute unique brands and body types dynamically
+  const brands = useMemo(() => {
+    const set = new Set(cars.map(c => c.brand).filter(Boolean));
+    return ['All', ...Array.from(set)];
+  }, [cars]);
+
+  const bodyTypes = useMemo(() => {
+    const set = new Set(cars.map(c => c.bodyType).filter(Boolean));
+    return ['All', ...Array.from(set)];
+  }, [cars]);
+
+  // Filter cars logic
+  const filteredCars = useMemo(() => {
+    return cars.filter(c => {
+      const matchBrand = activeBrand === 'All' || (c.brand && c.brand.toLowerCase() === activeBrand.toLowerCase());
+      const matchBody = activeBodyType === 'All' || (c.bodyType && c.bodyType.toLowerCase() === activeBodyType.toLowerCase());
+      
+      const q = searchVal.toLowerCase().trim();
+      const matchQuery = !q ||
+        (c.title && c.title.toLowerCase().includes(q)) ||
+        (c.brand && c.brand.toLowerCase().includes(q)) ||
+        (c.model && c.model.toLowerCase().includes(q)) ||
+        (c.segment && c.segment.toLowerCase().includes(q)) ||
+        (c.description && c.description.toLowerCase().includes(q)) ||
+        (c.engine?.fuelType && c.engine.fuelType.toLowerCase().includes(q));
+
+      return matchBrand && matchBody && matchQuery;
+    });
+  }, [cars, activeBrand, activeBodyType, searchVal]);
+
+  // Theme styling definitions
+  const bg = dark ? 'bg-[#080A0D]' : 'bg-slate-50';
+  const cardBg = dark ? 'bg-[#0D0F16]' : 'bg-white';
+  const border = dark ? 'border-red-900/20' : 'border-amber-600/15';
+  const textHi = dark ? 'text-gray-50' : 'text-slate-900';
+  const textSb = dark ? 'text-white/55' : 'text-slate-500';
+
+  return (
+    <div className={`min-h-screen ${bg} py-8 px-4 transition-colors duration-300 font-sans`}>
+      <div className="max-w-7xl mx-auto space-y-6">
+
+    
+
+        {/* BRAND FILTERS */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          <span className="text-xs font-bold text-slate-400 mr-2 flex items-center gap-1 shrink-0">
+            <RiFilter3Line size={14} /> Brands:
+          </span>
+          {brands.map((b) => (
+            <button
+              key={b}
+              onClick={() => setActiveBrand(b)}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer border whitespace-nowrap ${
+                activeBrand === b
+                  ? dark ? 'bg-red-600 text-white border-red-500' : 'bg-amber-600 text-white border-amber-500'
+                  : dark ? 'bg-white/5 border-white/10 text-white/60 hover:text-white' : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+              }`}
+            >
+              {b}
+            </button>
+          ))}
+        </div>
+
+        {/* BODY TYPE FILTERS */}
+        {bodyTypes.length > 1 && (
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            <span className="text-xs font-bold text-slate-400 mr-2 flex items-center gap-1 shrink-0">
+              <RiCarLine size={14} /> Body Type:
+            </span>
+            {bodyTypes.map((bt) => (
+              <button
+                key={bt}
+                onClick={() => setActiveBodyType(bt)}
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-all cursor-pointer border whitespace-nowrap ${
+                  activeBodyType === bt
+                    ? dark ? 'bg-red-700 text-white border-red-600' : 'bg-amber-700 text-white border-amber-600'
+                    : dark ? 'bg-white/5 border-white/5 text-white/40 hover:text-white' : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'
+                }`}
+              >
+                {bt}
               </button>
+            ))}
+          </div>
+        )}
+
+        {/* CARS GRID */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className={`h-80 rounded-2xl animate-pulse ${dark ? 'bg-white/5' : 'bg-slate-200'}`} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCars.map((car) => {
+              const startPrice = car.variants?.[0]?.price || 'N/A';
+              const isSaved = isWishlisted(car);
+
+              return (
+                <div
+                  key={car._id || car.id || car.title}
+                  onClick={() => setSelectedCar(car)}
+                  className={`group rounded-2xl border ${border} ${cardBg} overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer flex flex-col justify-between`}
+                >
+                  {/* Image Container */}
+                  <div className="relative h-48 overflow-hidden bg-slate-900">
+                    <img
+                      src={car.thumbnail}
+                      alt={car.title}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1200&q=80';
+                      }}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    
+                    {/* Brand & BodyType Badge */}
+                    <span className="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow">
+                      {car.brand} · {car.bodyType}
+                    </span>
+
+                    {/* Wishlist Heart Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleWishlist(car);
+                      }}
+                      className="absolute top-3 right-3 p-2 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-md transition-transform hover:scale-110 border-none cursor-pointer z-10"
+                      title={isSaved ? "Remove from Wishlist" : "Add to Wishlist"}
+                    >
+                      {isSaved ? (
+                        <RiHeartFill size={18} className="text-red-500" />
+                      ) : (
+                        <RiHeartLine size={18} className="text-white hover:text-red-400" />
+                      )}
+                    </button>
+
+                    {/* Price Tag */}
+                    <span className="absolute bottom-3 left-3 bg-black/80 backdrop-blur-md text-red-400 font-extrabold text-xs px-3 py-1 rounded-lg border border-red-500/30">
+                      Starts {startPrice}
+                    </span>
+                  </div>
+
+                  {/* Content Details */}
+                  <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                    <div>
+                      <h3 className={`font-extrabold text-base leading-snug line-clamp-1 ${textHi} group-hover:text-red-500 transition-colors`}>
+                        {car.title}
+                      </h3>
+                      <p className={`text-xs mt-1 line-clamp-2 ${textSb}`}>
+                        {car.description}
+                      </p>
+                    </div>
+
+                    {/* Engine & Transmission preview */}
+                    <div className={`p-2.5 rounded-xl ${dark ? 'bg-white/5 border border-white/5' : 'bg-slate-100/90 border border-slate-200/60'} space-y-1`}>
+                      <div className="flex items-center justify-between text-xs font-semibold text-slate-400">
+                        <span className="truncate">Fuel: {car.engine?.fuelType || 'Petrol / Diesel'}</span>
+                        <span className="text-red-500 font-bold shrink-0 ml-1">{car.engine?.transmission || 'Manual/AMT'}</span>
+                      </div>
+                      {car.safety?.airbags && (
+                        <div className="text-[10px] text-slate-400 font-semibold flex items-center gap-1">
+                          <RiShieldCheckLine size={12} className="text-red-500" /> {car.safety.airbags} Airbags · {car.segment}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Footer link replaced Model Year with EMI Calculator */}
+                    <div className={`flex items-center justify-between text-xs pt-2 border-t ${border} ${textSb}`}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEmiCar(car);
+                        }}
+                        className="flex items-center gap-1.5 font-bold text-amber-500 hover:text-amber-400 cursor-pointer border-none bg-transparent"
+                        title="Calculate Car Loan EMI"
+                      >
+                        <RiCalculatorLine size={15} /> EMI Calculator
+                      </button>
+                      <span className="font-bold text-red-500 group-hover:underline">View Specs & Variants →</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* NO RESULTS FOUND STATE */}
+        {!loading && filteredCars.length === 0 && (
+          <div className={`text-center py-16 rounded-2xl border ${border} ${cardBg}`}>
+            <RiCarLine size={48} className="mx-auto text-slate-500 mb-3" />
+            <p className={`text-base font-bold ${textHi}`}>No cars found matching your search</p>
+            <p className={`text-xs mt-1 ${textSb}`}>Try adjusting your brand, body type or search query.</p>
+            <button
+              onClick={() => {
+                setActiveBrand('All');
+                setActiveBodyType('All');
+                setSearchVal('');
+              }}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-bold border-none cursor-pointer hover:bg-red-700 transition-colors"
+            >
+              Reset Filters
+            </button>
+          </div>
+        )}
+
+      </div>
+
+      {/* CAR DETAILS MODAL */}
+      {selectedCar && (
+        <div
+          onClick={() => setSelectedCar(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-md animate-fadeIn cursor-pointer overflow-y-auto"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`relative w-full max-w-4xl rounded-2xl border ${border} ${cardBg} overflow-hidden shadow-2xl space-y-4 p-4 sm:p-6 cursor-default my-auto max-h-[92vh] overflow-y-auto scrollbar-thin`}
+          >
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-white/10 gap-3">
+              <div className="flex items-center gap-2 truncate">
+                <span className="bg-red-600 text-white text-[10px] font-bold uppercase px-2.5 py-1 rounded-full">
+                  {selectedCar.brand}
+                </span>
+                <h2 className={`font-extrabold text-base sm:text-lg ${textHi} truncate`}>
+                  {selectedCar.title}
+                </h2>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => toggleWishlist(selectedCar)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-none font-bold text-xs cursor-pointer transition-transform hover:scale-105 ${
+                    isWishlisted(selectedCar)
+                      ? 'bg-red-600 text-white shadow'
+                      : 'bg-white/10 hover:bg-white/20 text-white'
+                  }`}
+                  title={isWishlisted(selectedCar) ? "Remove from Wishlist" : "Save to Wishlist"}
+                >
+                  {isWishlisted(selectedCar) ? (
+                    <><RiHeartFill size={16} className="text-white" /> Saved</>
+                  ) : (
+                    <><RiHeartLine size={16} /> Wishlist</>
+                  )}
+                </button>
+                <button
+                  onClick={() => setEmiCar(selectedCar)}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-black text-xs font-extrabold cursor-pointer border-none shadow transition-transform hover:scale-105"
+                >
+                  <RiCalculatorLine size={16} /> EMI
+                </button>
+                <button
+                  onClick={() => setSelectedCar(null)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold uppercase tracking-wider cursor-pointer border-none shadow transition-transform hover:scale-105"
+                >
+                  <RiCloseLine size={20} /> Close ✕
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-4 text-xs">
-              <div>
-                <div className="flex justify-between font-bold mb-1">
-                  <span className="text-slate-500 dark:text-slate-400">Ex-Showroom Car Price</span>
-                  <span className="font-extrabold text-red-500">₹{carPriceInput.toLocaleString('en-IN')}</span>
-                </div>
-                <input
-                  type="range"
-                  min="400000"
-                  max="10000000"
-                  step="50000"
-                  value={carPriceInput}
-                  onChange={(e) => setCarPriceInput(Number(e.target.value))}
-                  className="w-full accent-red-600 cursor-pointer"
+            {/* Image & Main Info Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+              <div className="relative h-56 rounded-xl overflow-hidden bg-black/40">
+                <img
+                  src={selectedCar.thumbnail}
+                  alt={selectedCar.title}
+                  className="w-full h-full object-cover"
                 />
               </div>
 
-              <div>
-                <div className="flex justify-between font-bold mb-1">
-                  <span className="text-slate-500 dark:text-slate-400">Down Payment</span>
-                  <span>₹{downPayment.toLocaleString('en-IN')}</span>
+              <div className="space-y-3">
+                <h3 className={`text-lg font-black ${textHi}`}>{selectedCar.title}</h3>
+                <p className={`text-xs ${textSb} leading-relaxed`}>{selectedCar.description}</p>
+                
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className={`p-2.5 rounded-lg border ${border} ${dark ? 'bg-black/30' : 'bg-slate-50'}`}>
+                    <span className="text-[10px] text-slate-400 block font-semibold">BODY TYPE</span>
+                    <span className={`font-bold ${textHi}`}>{selectedCar.bodyType}</span>
+                  </div>
+                  <div className={`p-2.5 rounded-lg border ${border} ${dark ? 'bg-black/30' : 'bg-slate-50'}`}>
+                    <span className="text-[10px] text-slate-400 block font-semibold">SEGMENT</span>
+                    <span className={`font-bold ${textHi}`}>{selectedCar.segment}</span>
+                  </div>
+                  <div className={`p-2.5 rounded-lg border ${border} ${dark ? 'bg-black/30' : 'bg-slate-50'}`}>
+                    <span className="text-[10px] text-slate-400 block font-semibold">FUEL TYPE</span>
+                    <span className={`font-bold ${textHi}`}>{selectedCar.engine?.fuelType || 'Petrol / Diesel'}</span>
+                  </div>
+                  <div className={`p-2.5 rounded-lg border ${border} ${dark ? 'bg-black/30' : 'bg-slate-50'}`}>
+                    <span className="text-[10px] text-slate-400 block font-semibold">TRANSMISSION</span>
+                    <span className={`font-bold ${textHi}`}>{selectedCar.engine?.transmission || 'Manual/AMT'}</span>
+                  </div>
                 </div>
-                <input
-                  type="range"
-                  min="50000"
-                  max={carPriceInput * 0.8}
-                  step="25000"
-                  value={downPayment}
-                  onChange={(e) => setDownPayment(Number(e.target.value))}
-                  className="w-full accent-red-600 cursor-pointer"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-bold mb-1 text-slate-500 dark:text-slate-400">Tenure (Years)</label>
-                  <select
-                    value={loanTenure}
-                    onChange={(e) => setLoanTenure(Number(e.target.value))}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 outline-none font-bold text-slate-900 dark:text-white"
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7].map(y => <option key={y} value={y}>{y} Years</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-bold mb-1 text-slate-500 dark:text-slate-400">Interest Rate (%)</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={interestRate}
-                    onChange={(e) => setInterestRate(Number(e.target.value))}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 outline-none font-bold text-slate-900 dark:text-white"
-                  />
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl border border-red-900/30 bg-red-900/10 text-center space-y-1">
-                <p className="text-xs font-bold uppercase text-slate-400">Estimated Monthly EMI</p>
-                <p className="text-3xl font-extrabold text-red-500">
-                  ₹{calculateEmi().toLocaleString('en-IN')}<span className="text-xs font-normal">/month</span>
-                </p>
               </div>
             </div>
+
+            {/* VARIANTS TABLE */}
+            {selectedCar.variants && selectedCar.variants.length > 0 && (
+              <div className={`p-4 rounded-xl border ${border} ${dark ? 'bg-white/5' : 'bg-slate-100/80'} space-y-2`}>
+                <h4 className={`text-xs font-black uppercase tracking-wider ${textHi}`}>Available Variants & Prices</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                  {selectedCar.variants.map((v, idx) => (
+                    <div key={idx} className={`p-2.5 rounded-lg border ${border} ${dark ? 'bg-black/30' : 'bg-white'} flex justify-between items-center`}>
+                      <span className={`font-semibold ${textHi}`}>{v.name}</span>
+                      <span className="font-extrabold text-red-500 ml-2">{v.price}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* DETAILED SPECIFICATIONS */}
+            {selectedCar.engine && (
+              <div className={`p-4 rounded-xl border ${border} ${dark ? 'bg-white/5' : 'bg-slate-100/80'} space-y-3`}>
+                <h4 className={`text-xs font-black uppercase tracking-wider ${textHi}`}>Engine & Performance Specs</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                  <div>
+                    <span className="text-[10px] text-slate-400 block uppercase">DISPLACEMENT</span>
+                    <span className={`font-bold ${textHi}`}>{selectedCar.engine.displacement || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block uppercase">MAX POWER</span>
+                    <span className={`font-bold ${textHi}`}>{selectedCar.engine.maxPower || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block uppercase">MAX TORQUE</span>
+                    <span className={`font-bold ${textHi}`}>{selectedCar.engine.maxTorque || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-400 block uppercase">DRIVETRAIN</span>
+                    <span className={`font-bold ${textHi}`}>{selectedCar.engine.drivetrain || 'FWD'}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       )}
+
+      {/* EMI CALCULATOR MODAL DIALOG */}
+      {emiCar && (
+        <EmiCalculatorModal
+          car={emiCar}
+          onClose={() => setEmiCar(null)}
+          dark={dark}
+        />
+      )}
+
     </div>
   );
 }

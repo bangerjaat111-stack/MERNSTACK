@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '../config/api.js';
-import { showSuccessToast, showErrorToast } from '../components/Notification/Tost';
+import { showSuccessToast } from '../components/Notification/Tost';
 
 const WishlistContext = createContext();
 
@@ -17,14 +17,53 @@ export function WishlistProvider({ children }) {
 
   const userId = localStorage.getItem('userid');
 
-  // Load wishlist from DB on mount/login
+  // Helper function to check if car is in wishlist (deduplicated by ID or Title)
+  const isWishlisted = (carOrId) => {
+    if (!carOrId) return false;
+    const targetId = typeof carOrId === 'object' ? (carOrId.id || carOrId._id) : carOrId;
+    const targetTitle = typeof carOrId === 'object' ? (carOrId.title || carOrId.name) : carOrId;
+
+    return wishlist.some((item) => {
+      if (!item) return false;
+      const itemId = item.id || item._id;
+      const itemTitle = item.title || item.name;
+
+      if (targetId && itemId && String(targetId) === String(itemId)) return true;
+      if (
+        targetTitle &&
+        itemTitle &&
+        targetTitle.toString().toLowerCase().trim() === itemTitle.toString().toLowerCase().trim()
+      ) {
+        return true;
+      }
+      return false;
+    });
+  };
+
+  // Load wishlist from DB on mount/login and remove any duplicate records
   useEffect(() => {
     if (!userId) return;
     const fetchUserWishlist = async () => {
       try {
         const res = await axios.get(`${API_URL}/user/${userId}/wishlist`);
         if (res.data?.status && Array.isArray(res.data?.wishlist)) {
-          setWishlist(res.data.wishlist);
+          const uniqueList = [];
+          res.data.wishlist.forEach((item) => {
+            const itemId = item.id || item._id;
+            const itemTitle = item.title || item.name;
+            const isDuplicate = uniqueList.some((existing) => {
+              const exId = existing.id || existing._id;
+              const exTitle = existing.title || existing.name;
+              return (
+                (itemId && exId && String(itemId) === String(exId)) ||
+                (itemTitle && exTitle && itemTitle.toString().toLowerCase().trim() === exTitle.toString().toLowerCase().trim())
+              );
+            });
+            if (!isDuplicate) {
+              uniqueList.push(item);
+            }
+          });
+          setWishlist(uniqueList);
         }
       } catch (err) {
         console.error('Failed to load user wishlist from DB:', err);
@@ -33,7 +72,7 @@ export function WishlistProvider({ children }) {
     fetchUserWishlist();
   }, [userId]);
 
-  // Persist to local storage
+  // Persist to localStorage
   useEffect(() => {
     try {
       localStorage.setItem('autosyntax_wishlist', JSON.stringify(wishlist));
@@ -42,41 +81,53 @@ export function WishlistProvider({ children }) {
     }
   }, [wishlist]);
 
-  const isWishlisted = (carOrId) => {
-    if (!carOrId) return false;
-    const targetId = typeof carOrId === 'object' ? carOrId.id : carOrId;
-    const targetName = typeof carOrId === 'object' ? (carOrId.name || carOrId.title) : carOrId;
-
-    return wishlist.some(
-      (item) =>
-        (targetId && item.id && item.id === targetId) ||
-        (targetName && item.name && item.name === targetName) ||
-        (targetName && item.title && item.title === targetName)
-    );
-  };
-
   const toggleWishlist = async (car) => {
     if (!car) return;
-    const carId = car.id;
-    const carName = car.name || car.title;
+    const carId = car.id || car._id;
+    const carName = car.title || car.name || 'Car';
     const isSaved = isWishlisted(car);
 
-    // Optimistic state update & notification
-    setWishlist((prev) => {
-      if (isSaved) {
-        showSuccessToast(`Removed ${carName || 'car'} from wishlist`);
-        return prev.filter(
-          (item) =>
-            !(carId && item.id && item.id === carId) &&
-            !(carName && (item.name === carName || item.title === carName))
-        );
-      } else {
-        showSuccessToast(`Added ${carName || 'car'} to wishlist ❤️`);
-        return [...prev, car];
-      }
-    });
+    if (isSaved) {
+      // Remove car from wishlist
+      setWishlist((prev) =>
+        prev.filter((item) => {
+          if (!item) return false;
+          const itemId = item.id || item._id;
+          const itemTitle = item.title || item.name;
 
-    // If user is logged in, sync with DB
+          const matchesId = carId && itemId && String(carId) === String(itemId);
+          const matchesTitle =
+            carName &&
+            itemTitle &&
+            carName.toString().toLowerCase().trim() === itemTitle.toString().toLowerCase().trim();
+
+          return !(matchesId || matchesTitle);
+        })
+      );
+      showSuccessToast(`Removed ${carName} from wishlist`);
+    } else {
+      // Add car to wishlist (strictly deduplicate)
+      setWishlist((prev) => {
+        const alreadyInPrev = prev.some((item) => {
+          if (!item) return false;
+          const itemId = item.id || item._id;
+          const itemTitle = item.title || item.name;
+
+          const matchesId = carId && itemId && String(carId) === String(itemId);
+          const matchesTitle =
+            carName &&
+            itemTitle &&
+            carName.toString().toLowerCase().trim() === itemTitle.toString().toLowerCase().trim();
+
+          return matchesId || matchesTitle;
+        });
+
+        return alreadyInPrev ? prev : [...prev, car];
+      });
+      showSuccessToast(`Added ${carName} to wishlist ❤️`);
+    }
+
+    // Sync with DB if logged in
     if (userId) {
       try {
         await axios.post(`${API_URL}/user/${userId}/wishlist`, { car });
@@ -87,18 +138,23 @@ export function WishlistProvider({ children }) {
   };
 
   const removeFromWishlist = async (carIdOrTitle) => {
-    const carToRemove = wishlist.find(
-      (item) => item.id === carIdOrTitle || item.name === carIdOrTitle || item.title === carIdOrTitle
-    );
+    const targetStr = carIdOrTitle ? String(carIdOrTitle).toLowerCase().trim() : '';
+
     setWishlist((prev) =>
-      prev.filter(
-        (item) => item.id !== carIdOrTitle && item.name !== carIdOrTitle && item.title !== carIdOrTitle
-      )
+      prev.filter((item) => {
+        if (!item) return false;
+        const itemId = item.id || item._id ? String(item.id || item._id).toLowerCase().trim() : '';
+        const itemTitle = item.title || item.name ? String(item.title || item.name).toLowerCase().trim() : '';
+
+        return itemId !== targetStr && itemTitle !== targetStr;
+      })
     );
+
     showSuccessToast('Car removed from wishlist');
-    if (userId && carToRemove) {
+
+    if (userId) {
       try {
-        await axios.post(`${API_URL}/user/${userId}/wishlist`, { car: carToRemove });
+        await axios.post(`${API_URL}/user/${userId}/wishlist`, { car: { id: carIdOrTitle, title: carIdOrTitle } });
       } catch (err) {
         console.error('Failed to remove item from DB wishlist:', err);
       }

@@ -266,11 +266,8 @@ export default function Hotdeals() {
                   className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center cursor-pointer border-none hover:scale-110 transition-transform"
                   title="Toggle Wishlist"
                 >
-                  {isInWishlist(deal) ? (
-                    <RiHeartFill size={16} className="text-red-500" />
-                  ) : (
-                    <RiHeartLine size={16} className="text-white/80" />
-                  )}
+                
+                  
                 </button>
 
                 {/* Timer Badge */}

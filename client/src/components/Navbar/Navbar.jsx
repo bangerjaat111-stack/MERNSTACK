@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../Context/ThemeContext.jsx';
 import { useWishlist } from '../../Context/WishlistContext.jsx';
 import logo from '../../assets/logo.png';
 import Profile from './Profile.jsx';
 import { useAuth } from '../../Context/DataContext.jsx';
+import axios from 'axios';
+import { API_URL } from '../../config/api.js';
 import {
   RiCarLine, RiPriceTag3Line, RiNewspaperLine, RiVideoLine,
   RiAuctionLine, RiFireLine, RiMoonLine, RiSunLine,
@@ -39,42 +41,65 @@ function SearchIcon({ className }) {
   );
 }
 
-const SEARCH_CARS = [
-  { brand: 'Tata', name: 'Nexon EV Max', price: '₹14.49 Lakh', fuel: 'Electric', image: 'https://static.caronphone.com/public/brands/32/53/3209/3209_1759154859.webp', link: '/new-cars' },
-  { brand: 'Tata', name: 'Curvv EV', price: '₹17.49 Lakh', fuel: 'Electric', image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
-  { brand: 'Tata', name: 'Sierra EV', price: '₹18.79 Lakh', fuel: 'Electric', image: 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
-  { brand: 'Tata', name: 'Punch', price: '₹6.13 Lakh', fuel: 'Petrol', image: 'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
-  { brand: 'Mahindra', name: 'Thar Roxx', price: '₹12.99 Lakh', fuel: 'Diesel', image: 'https://images.unsplash.com/photo-1568844293986-8d0400bd4745?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
-  { brand: 'Mahindra', name: 'XUV700 AX7', price: '₹21.50 Lakh', fuel: 'Diesel', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJf515PddNnEAY5MrtqKHlREy7yRKHCt_Zfw&s', link: '/new-cars' },
-  { brand: 'Mahindra', name: 'Scorpio N', price: '₹13.69 Lakh', fuel: 'Diesel', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
-  { brand: 'Hyundai', name: 'Creta SX(O)', price: '₹13.45 Lakh', fuel: 'Petrol', image: 'https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/Creta/8667/1751535724464/exterior-image-166.jpg', link: '/new-cars' },
-  { brand: 'Hyundai', name: 'Verna Turbo', price: '₹10.96 Lakh', fuel: 'Petrol', image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
-  { brand: 'Maruti Suzuki', name: 'Swift VXI', price: '₹6.49 Lakh', fuel: 'Petrol', image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
-  { brand: 'Maruti Suzuki', name: 'Dzire ZXI', price: '₹6.79 Lakh', fuel: 'Petrol', image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
-  { brand: 'Maruti Suzuki', name: 'Brezza ZXI+', price: '₹11.45 Lakh', fuel: 'Petrol', image: 'https://stimg.cardekho.com/images/car-images/630x420/Maruti/Brezza/10387/1755776291575/front-left-side-47.jpg', link: '/deals' },
-  { brand: 'Kia', name: 'Seltos GTX+', price: '₹18.20 Lakh', fuel: 'Petrol', image: 'https://imgd.aeplcdn.com/664x374/n/cw/ec/192817/seltos-exterior-right-front-three-quarter-50.png?isig=0&q=80', link: '/deals' },
-  { brand: 'BMW', name: '3 Series Gran Limousine', price: '₹56.50 Lakh', fuel: 'Petrol', image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop', link: '/deals' },
-  { brand: 'Toyota', name: 'Innova Hycross', price: '₹19.77 Lakh', fuel: 'Hybrid', image: 'https://images.unsplash.com/photo-1622551842564-2ad0c2d2c7e5?q=80&w=800&auto=format&fit=crop', link: '/new-cars' },
-  { brand: 'Toyota', name: 'Fortuner Legender', price: '₹43.66 Lakh', fuel: 'Diesel', image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=800&auto=format&fit=crop', link: '/new-cars' }
-];
-
 export default function Navbar() {
   const { dark, toggleTheme } = useTheme();
   const { wishlist, removeFromWishlist, clearWishlist, count } = useWishlist();
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [wishlistOpen, setWishlistOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchVal, setSearchVal] = useState('');
+  const [apiCars, setApiCars] = useState([]);
   const searchRef = useRef(null);
   const { signin } = useAuth();
 
+  // Fetch cars list from backend /car and /video APIs for search bar
+  useEffect(() => {
+    Promise.all([
+      axios.get(`${API_URL}/car`).catch(() => ({ data: { data: [] } })),
+      axios.get(`${API_URL}/video`).catch(() => ({ data: { data: [] } }))
+    ]).then(([carRes, videoRes]) => {
+      const carData = carRes.data?.data || [];
+      const videoData = videoRes.data?.data || [];
+      const combined = [...carData];
+      videoData.forEach(v => {
+        if (!combined.some(c => (c.id && c.id === v.id) || (c.title && c.title === v.title))) {
+          combined.push(v);
+        }
+      });
+      setApiCars(combined);
+    });
+  }, []);
+
+  const searchDataset = useMemo(() => {
+    return apiCars;
+  }, [apiCars]);
+
   const searchResults = useMemo(() => {
     if (!searchVal.trim()) return [];
-    const q = searchVal.toLowerCase();
-    return SEARCH_CARS.filter(c => c.name.toLowerCase().includes(q) || c.brand.toLowerCase().includes(q) || c.fuel.toLowerCase().includes(q));
-  }, [searchVal]);
+    const q = searchVal.toLowerCase().trim();
+    return searchDataset.filter(c =>
+      (c.title && c.title.toLowerCase().includes(q)) ||
+      (c.brand && c.brand.toLowerCase().includes(q)) ||
+      (c.model && c.model.toLowerCase().includes(q)) ||
+      (c.segment && c.segment.toLowerCase().includes(q)) ||
+      (c.bodyType && c.bodyType.toLowerCase().includes(q)) ||
+      (c.engine?.fuelType && c.engine.fuelType.toLowerCase().includes(q))
+    );
+  }, [searchVal, searchDataset]);
+
+  const handleSearchSubmit = (e, customQuery) => {
+    if (e) e.preventDefault();
+    const q = customQuery || searchVal;
+    if (!q.trim()) return;
+    const isVideoRoute = location.pathname.startsWith('/video');
+    const targetPath = isVideoRoute ? location.pathname : '/new-cars';
+    navigate(`${targetPath}?search=${encodeURIComponent(q.trim())}`);
+    setSearchVal('');
+    setSearchOpen(false);
+  };
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 10);
@@ -167,34 +192,36 @@ export default function Navbar() {
           transition={{ delay: .15, duration: .4 }}
           className="relative hidden md:flex flex-1 max-w-[460px] mx-auto"
         >
-          <div
-            className={[
-              'w-full flex items-center gap-[10px] h-10 px-[14px] rounded-xl border transition-all duration-200 focus-within:ring-2',
-              dark
-                ? 'bg-red-900/5 border-red-900/20 focus-within:border-red-600/55 focus-within:ring-red-600/10'
-                : 'bg-amber-600/5 border-amber-600/15 focus-within:border-amber-600/50 focus-within:ring-amber-600/10',
-            ].join(' ')}
-          >
-            <SearchIcon className={['w-4 h-4 flex-shrink-0', dark ? 'text-white/30' : 'text-amber-900/40'].join(' ')} />
-            <input
-              type="text"
-              placeholder="Search cars, brands, models…"
-              value={searchVal}
-              onChange={e => setSearchVal(e.target.value)}
-              className={['flex-1 bg-transparent border-none outline-none text-[13px] font-normal', dark ? 'text-gray-50 placeholder:text-white/30' : 'text-amber-950 placeholder:text-amber-900/40'].join(' ')}
-            />
-            <AnimatePresence>
-              {searchVal && (
-                <button
-                  type="button"
-                  onClick={() => setSearchVal('')}
-                  className="text-xs font-bold text-white/50 hover:text-white bg-transparent border-none cursor-pointer"
-                >
-                  ✕
-                </button>
-              )}
-            </AnimatePresence>
-          </div>
+          <form onSubmit={handleSearchSubmit} className="w-full">
+            <div
+              className={[
+                'w-full flex items-center gap-[10px] h-10 px-[14px] rounded-xl border transition-all duration-200 focus-within:ring-2',
+                dark
+                  ? 'bg-red-900/5 border-red-900/20 focus-within:border-red-600/55 focus-within:ring-red-600/10'
+                  : 'bg-amber-600/5 border-amber-600/15 focus-within:border-amber-600/50 focus-within:ring-amber-600/10',
+              ].join(' ')}
+            >
+              <SearchIcon className={['w-4 h-4 flex-shrink-0', dark ? 'text-white/30' : 'text-amber-900/40'].join(' ')} />
+              <input
+                type="text"
+                placeholder="Search cars, brands, engines, prices…"
+                value={searchVal}
+                onChange={e => setSearchVal(e.target.value)}
+                className={['flex-1 bg-transparent border-none outline-none text-[13px] font-normal', dark ? 'text-gray-50 placeholder:text-white/30' : 'text-amber-950 placeholder:text-amber-900/40'].join(' ')}
+              />
+              <AnimatePresence>
+                {searchVal && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchVal('')}
+                    className="text-xs font-bold text-white/50 hover:text-white bg-transparent border-none cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                )}
+              </AnimatePresence>
+            </div>
+          </form>
 
           {/* Desktop Live Search Results Dropdown */}
           <AnimatePresence>
@@ -211,20 +238,21 @@ export default function Navbar() {
                 {searchResults.length > 0 ? (
                   searchResults.map((car, idx) => (
                     <Link
-                      key={idx}
-                      to={car.link || '/new-cars'}
-                      onClick={() => setSearchVal('')}
+                      key={car._id || car.id || idx}
+                      to={`${location.pathname.startsWith('/video') ? location.pathname : '/new-cars'}?search=${encodeURIComponent(car.title)}`}
+                      onClick={() => { setSearchVal(''); setSearchOpen(false); }}
                       className={[
-                        'flex items-center gap-3 p-2 rounded-xl transition-colors no-underline',
+                        'flex items-center gap-3 p-2.5 rounded-xl transition-colors no-underline border-b border-white/5 last:border-none',
                         dark ? 'hover:bg-white/10 text-white' : 'hover:bg-amber-50 text-slate-900',
                       ].join(' ')}
                     >
-                      <img src={car.image} alt={car.name} className="w-12 h-10 object-cover rounded-lg flex-shrink-0" />
+                      <img src={car.thumbnail || car.thumbnailUrl || car.image} alt={car.title} className="w-12 h-10 object-cover rounded-lg flex-shrink-0 bg-black/20" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold truncate">{car.brand} {car.name}</p>
-                        <p className="text-[10px] text-amber-500 font-extrabold">{car.price} · {car.fuel}</p>
+                        <p className="text-xs font-bold truncate">{car.title}</p>
+                        <p className="text-[10px] text-red-500 font-extrabold">{car.variants?.[0]?.price || car.price || 'Price Available'}</p>
+                        <p className="text-[9px] text-slate-400 truncate font-semibold">{car.brand} · {car.bodyType || car.segment || 'Car'}</p>
                       </div>
-                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-red-600/20 text-red-500 uppercase">View</span>
+                      <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-red-600/20 text-red-500 uppercase shrink-0">View Car</span>
                     </Link>
                   ))
                 ) : (
@@ -388,24 +416,26 @@ export default function Navbar() {
             className={['md:hidden overflow-hidden', dark ? 'bg-[#080A0D]' : 'bg-white'].join(' ')}
           >
             <div className="px-4 pb-[14px] pt-1 relative">
-              <div
-                className={[
-                  'flex items-center gap-[10px] h-[42px] px-[14px] rounded-xl border transition-all duration-200 focus-within:ring-2',
-                  dark
-                    ? 'bg-red-900/5 border-red-900/20 focus-within:border-red-600/55 focus-within:ring-red-600/10'
-                    : 'bg-amber-600/5 border-amber-600/15 focus-within:border-amber-600/50 focus-within:ring-amber-600/10',
-                ].join(' ')}
-              >
-                <SearchIcon className={['w-4 h-4 flex-shrink-0', dark ? 'text-white/30' : 'text-amber-900/40'].join(' ')} />
-                <input
-                  ref={searchRef}
-                  type="text"
-                  placeholder="Search cars, brands, models…"
-                  value={searchVal}
-                  onChange={e => setSearchVal(e.target.value)}
-                  className={['flex-1 bg-transparent border-none outline-none text-[13px]', dark ? 'text-gray-50 placeholder:text-white/30' : 'text-amber-950 placeholder:text-amber-900/40'].join(' ')}
-                />
-              </div>
+              <form onSubmit={handleSearchSubmit}>
+                <div
+                  className={[
+                    'flex items-center gap-[10px] h-[42px] px-[14px] rounded-xl border transition-all duration-200 focus-within:ring-2',
+                    dark
+                      ? 'bg-red-900/5 border-red-900/20 focus-within:border-red-600/55 focus-within:ring-red-600/10'
+                      : 'bg-amber-600/5 border-amber-600/15 focus-within:border-amber-600/50 focus-within:ring-amber-600/10',
+                  ].join(' ')}
+                >
+                  <SearchIcon className={['w-4 h-4 flex-shrink-0', dark ? 'text-white/30' : 'text-amber-900/40'].join(' ')} />
+                  <input
+                    ref={searchRef}
+                    type="text"
+                    placeholder="Search cars, brands, engines, prices…"
+                    value={searchVal}
+                    onChange={e => setSearchVal(e.target.value)}
+                    className={['flex-1 bg-transparent border-none outline-none text-[13px]', dark ? 'text-gray-50 placeholder:text-white/30' : 'text-amber-950 placeholder:text-amber-900/40'].join(' ')}
+                  />
+                </div>
+              </form>
 
               {/* Mobile Search Results Overlay */}
               {searchVal.trim() && (
@@ -416,18 +446,19 @@ export default function Navbar() {
                   {searchResults.length > 0 ? (
                     searchResults.map((car, idx) => (
                       <Link
-                        key={idx}
-                        to={car.link || '/new-cars'}
+                        key={car._id || car.id || idx}
+                        to={`${location.pathname.startsWith('/video') ? location.pathname : '/new-cars'}?search=${encodeURIComponent(car.title)}`}
                         onClick={() => { setSearchVal(''); setSearchOpen(false); }}
                         className={[
-                          'flex items-center gap-3 p-2 rounded-xl transition-colors no-underline',
+                          'flex items-center gap-3 p-2 rounded-xl transition-colors no-underline border-b border-white/5 last:border-none',
                           dark ? 'hover:bg-white/10 text-white' : 'hover:bg-amber-50 text-slate-900',
                         ].join(' ')}
                       >
-                        <img src={car.image} alt={car.name} className="w-10 h-8 object-cover rounded-md flex-shrink-0" />
+                        <img src={car.thumbnailUrl || car.image} alt={car.title} className="w-10 h-8 object-cover rounded-md flex-shrink-0 bg-black/20" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold truncate">{car.brand} {car.name}</p>
-                          <p className="text-[10px] text-amber-500 font-bold">{car.price}</p>
+                          <p className="text-xs font-bold truncate">{car.title}</p>
+                          <p className="text-[10px] text-red-500 font-bold">{car.price || car.specs?.price}</p>
+                          <p className="text-[9px] text-slate-400 truncate">Engine: {car.engine || car.specs?.engine}</p>
                         </div>
                       </Link>
                     ))

@@ -42,17 +42,18 @@ export default function ProfilePage() {
     }
     const fetchUserData = async () => {
       try {
-        const [profileRes, listingsRes] = await Promise.all([
+        const [profileRes, usedCarsRes] = await Promise.all([
           axios.get(`${API_URL}/user/${userId}`),
-          axios.get(`${API_URL}/user/${userId}/listings`).catch(() => ({ data: { listings: [] } }))
+          axios.get(`${API_URL}/used-cars/my/${userId}`).catch(() => axios.get(`${API_URL}/user/${userId}/listings`)).catch(() => ({ data: { listings: [] } }))
         ]);
 
         if (profileRes.data?.status && profileRes.data?.data) {
           setUser(profileRes.data.data);
           setFormData({ name: profileRes.data.data.name || '', gender: profileRes.data.data.gender || '' });
         }
-        if (listingsRes.data?.status && Array.isArray(listingsRes.data?.listings)) {
-          setUserListings(listingsRes.data.listings);
+        const listingsData = usedCarsRes.data?.listings || usedCarsRes.data?.data || [];
+        if (Array.isArray(listingsData)) {
+          setUserListings(listingsData);
         }
       } catch (err) {
         console.error("Failed to load user profile or listings:", err);
@@ -66,11 +67,10 @@ export default function ProfilePage() {
   const handleDeleteListing = async (listingId) => {
     if (!window.confirm('Are you sure you want to delete this car listing?')) return;
     try {
-      const res = await axios.delete(`${API_URL}/user/${userId}/listings/${listingId}`);
-      if (res.data?.status) {
-        showSuccessToast('Car listing deleted successfully!');
-        setUserListings((prev) => prev.filter((item) => String(item.id) !== String(listingId)));
-      }
+      await axios.delete(`${API_URL}/used-cars/${listingId}`).catch(() => {});
+      await axios.delete(`${API_URL}/user/${userId}/listings/${listingId}`).catch(() => {});
+      showSuccessToast('Car listing deleted successfully!');
+      setUserListings((prev) => prev.filter((item) => String(item._id || item.id) !== String(listingId)));
     } catch (err) {
       showErrorToast(err?.response?.data?.msg || 'Failed to delete listing');
     }
@@ -395,26 +395,45 @@ export default function ProfilePage() {
 
             {userListings && userListings.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {userListings.map((item) => (
-                  <div key={item.id} className={`p-4 rounded-xl border ${dark ? 'border-white/10 bg-white/4' : 'border-slate-200 bg-slate-50'} flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm`}>
-                    <img src={item.img || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop'} alt={item.title} className="w-full sm:w-28 h-20 object-cover rounded-lg" />
-                    <div className="flex-1 text-center sm:text-left space-y-1">
-                      <h4 className={`font-bold text-base ${textHi}`}>{item.title}</h4>
-                      <p className={`text-xs ${textSb}`}>{item.city} · {item.km} · Asking {item.price}</p>
-                      <span className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-300">
-                        {item.status || 'Active Listing'}
-                      </span>
+                {userListings.map((item) => {
+                  const itemId = item._id || item.id;
+                  const statusStr = (item.status || 'Approved').toLowerCase();
+                  return (
+                    <div key={itemId} className={`p-4 rounded-xl border ${dark ? 'border-white/10 bg-white/4' : 'border-slate-200 bg-slate-50'} flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm`}>
+                      <img src={item.img || item.images?.[0] || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop'} alt={item.title} className="w-full sm:w-28 h-20 object-cover rounded-lg" />
+                      <div className="flex-1 text-center sm:text-left space-y-1">
+                        <h4 className={`font-bold text-base ${textHi}`}>{item.title}</h4>
+                        <p className={`text-xs ${textSb}`}>{item.city} · {item.km} · Asking {item.price}</p>
+                        {statusStr === 'pending' ? (
+                          <span className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-500 border border-amber-500/30">
+                            Pending Review
+                          </span>
+                        ) : statusStr === 'sold' ? (
+                          <span className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-gray-500/20 text-gray-400 border border-gray-500/30">
+                            Sold
+                          </span>
+                        ) : (
+                          <span className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-green-500/20 text-green-500 border border-green-500/30">
+                            Approved
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
+                        <Link to={`/used-cars/${itemId}`} className="no-underline">
+                          <button className={`w-full px-3 py-1.5 rounded-xl text-xs font-bold border ${dark ? 'border-white/10 text-white' : 'border-slate-300 text-slate-700'} cursor-pointer`}>
+                            View
+                          </button>
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteListing(itemId)}
+                          className="flex-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white transition-all border-none cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
-                      <button
-                        onClick={() => handleDeleteListing(item.id)}
-                        className="flex-1 px-4 py-2 rounded-xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white transition-all border-none cursor-pointer"
-                      >
-                        Delete Listing
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className={`p-8 text-center rounded-xl border ${border}`}>

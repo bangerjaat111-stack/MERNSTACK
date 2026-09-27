@@ -8,10 +8,12 @@ import Signin from './components/Auth/Signin.jsx'
 import Otp from '../src/components/Otp.jsx'
 import Home from '../src/components/Menu/Home.jsx'
 import Newcars from './components/Menu/Newcars.jsx'
-import UsedCars from './components/Menu/Usedcars.jsx'
+import UsedCars from './pages/UsedCars.jsx'
+import UsedCarDetail from './pages/UsedCarDetail.jsx'
+import SellCar from './pages/SellCar.jsx'
+import MyListings from './pages/MyListings.jsx'
 import News from './components/Menu/News.jsx'
 import Videos from './components/Menu/Videos.jsx'
-import Sell from './components/Menu/Sellcar.jsx'
 import Hotdeals from './components/Menu/Hotdeals.jsx'
 import ProfilePage from './components/Navbar/ProfilePage.jsx'
 import SettingPage from './components/Navbar/SettingPage.jsx'
@@ -40,10 +42,17 @@ export default function App() {
           {/* NAVBAR MENU ROUTES */}
           <Route path='/' element={<ProtectedRoute><Home/></ProtectedRoute>}/>
           <Route path='/new-cars' element={<ProtectedRoute><Newcars /></ProtectedRoute>} />
+          <Route path='/newcars' element={<ProtectedRoute><Newcars /></ProtectedRoute>} />
           <Route path='/used-cars' element={<ProtectedRoute><UsedCars /></ProtectedRoute>} />
+          <Route path='/used-car/:id' element={<ProtectedRoute><UsedCarDetail /></ProtectedRoute>} />
+          <Route path='/used-cars/:id' element={<ProtectedRoute><UsedCarDetail /></ProtectedRoute>} />
           <Route path='/news' element={<ProtectedRoute><News /></ProtectedRoute>} />
           <Route path='/videos' element={<ProtectedRoute><Videos /></ProtectedRoute>} />
-          <Route path='/sell' element={<ProtectedRoute><Sell /></ProtectedRoute>} />
+          <Route path='/video' element={<ProtectedRoute><Videos /></ProtectedRoute>} />
+          <Route path='/sell' element={<ProtectedRoute><SellCar /></ProtectedRoute>} />
+          <Route path='/sell-car' element={<ProtectedRoute><SellCar /></ProtectedRoute>} />
+          <Route path='/my-listings' element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
+          <Route path='/profile/my-cars' element={<ProtectedRoute><MyListings /></ProtectedRoute>} />
           <Route path='/deals' element={<ProtectedRoute><Hotdeals/></ProtectedRoute>}/>
 
           {/* USER PROFILE & SETTING ROUTES */}

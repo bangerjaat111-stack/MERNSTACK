@@ -3,11 +3,11 @@ import { useTheme } from '../../Context/ThemeContext.jsx';
 import { useWishlist } from '../../Context/WishlistContext.jsx';
 import { Link } from 'react-router-dom';
 import {
-  RiCarLine, RiPriceTag3Line, RiArrowRightLine,
-  RiFireLine, RiStarFill, RiMapPinLine, RiShieldCheckLine,
-  RiCustomerService2Line, RiExchangeLine, RiCheckLine,
-  RiPlayCircleLine, RiTimeLine, RiThumbUpLine, RiNewspaperLine,
-  RiHeartLine, RiHeartFill, RiFlashlightLine, RiShieldUserLine
+  
+  RiFireLine, RiShieldCheckLine,
+  RiCustomerService2Line, RiExchangeLine,
+  RiPlayCircleLine, 
+  RiHeartLine, RiHeartFill,  RiShieldUserLine
 } from 'react-icons/ri';
 
 const BRANDS = [
