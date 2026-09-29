@@ -6,7 +6,7 @@ import { useWishlist } from '../../Context/WishlistContext.jsx';
 import { API_URL } from '../../config/api.js';
 import {
   RiVideoLine, RiSearchLine, RiPlayFill, RiCloseLine,
-  RiInformationLine, RiFilter3Line, RiShieldCheckLine, RiFlashlightLine,
+   RiFilter3Line, RiShieldCheckLine, RiFlashlightLine,
   RiPriceTag3Line, RiGasStationLine, RiCalculatorLine,
   RiHeartLine, RiHeartFill
 } from 'react-icons/ri';
@@ -208,17 +208,58 @@ export default function Videos() {
     }
   }, [location.search]);
 
-  // Fetch videos ONLY from backend API (/video)
+  // ✅ Fetch videos from backend API (/video) + NORMALIZE for MongoDB + fallback data
   useEffect(() => {
     const fetchVideos = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${API_URL}/video`);
-        if (response.data && response.data.data) {
-          setVideos(response.data.data);
-        }
+        const { data } = await axios.get(`${API_URL}/video`, { timeout: 15000 });
+
+        const raw = Array.isArray(data?.data) ? data.data : [];
+
+        // ✅ Normalize both Mongo docs & fallback raw cars to the shape the UI expects
+        const normalized = raw.map((v) => {
+          // engine can be object (Mongo) or string (raw fallback)
+          const normalizedEngine =
+            typeof v.engine === 'object' && v.engine !== null
+              ? v.engine
+              : {
+                  type: v.engine || v.specs?.engine || '',
+                  fuelType: v.specs?.fuelType || '',
+                  displacement: '',
+                  maxPower: v.maxPower || v.power || v.specs?.power || '',
+                  maxTorque: v.torque || v.specs?.torque || '',
+                  transmission: v.transmission || v.specs?.transmission || '',
+                  drivetrain: 'FWD',
+                };
+
+          // variants must always be a non-empty array
+          const normalizedVariants =
+            Array.isArray(v.variants) && v.variants.length > 0
+              ? v.variants
+              : [{ name: 'Base', price: v.price || v.specs?.price || 'Price on request' }];
+
+          return {
+            ...v,
+            // image
+            thumbnail: v.thumbnailUrl || v.thumbnail || v.image || '',
+            // text
+            description: v.description || v.blurb || '',
+            // filters
+            bodyType: v.bodyType || 'SUV',
+            category: v.category || 'Reviews',
+            // engine & variants
+            engine: normalizedEngine,
+            variants: normalizedVariants,
+            // price
+            price: v.price || normalizedVariants[0]?.price || '',
+          };
+        });
+
+        setVideos(normalized);
       } catch (err) {
-        console.error('Error fetching backend videos API:', err.message);
+        console.error('❌ Error fetching backend videos API:', err.message);
+        setVideos([]);
       } finally {
         setLoading(false);
       }
@@ -237,19 +278,25 @@ export default function Videos() {
     return ['All', ...Array.from(set)];
   }, [videos]);
 
-  // Filter logic based on brand, bodyType, and search query
+  // ✅ Filter logic based on brand, bodyType, and search query (uses `category` not `segment`)
   const filteredVideos = useMemo(() => {
     return videos.filter(v => {
-      const matchBrand = activeBrand === 'All' || (v.brand && v.brand.toLowerCase() === activeBrand.toLowerCase());
-      const matchBody = activeBodyType === 'All' || (v.bodyType && v.bodyType.toLowerCase() === activeBodyType.toLowerCase());
+      const matchBrand =
+        activeBrand === 'All' ||
+        (v.brand && v.brand.toLowerCase() === activeBrand.toLowerCase());
+
+      const matchBody =
+        activeBodyType === 'All' ||
+        (v.bodyType && v.bodyType.toLowerCase() === activeBodyType.toLowerCase());
 
       const q = searchVal.toLowerCase().trim();
-      const matchQuery = !q ||
+      const matchQuery =
+        !q ||
         (v.title && v.title.toLowerCase().includes(q)) ||
         (v.brand && v.brand.toLowerCase().includes(q)) ||
         (v.model && v.model.toLowerCase().includes(q)) ||
         (v.bodyType && v.bodyType.toLowerCase().includes(q)) ||
-        (v.segment && v.segment.toLowerCase().includes(q)) ||
+        (v.category && v.category.toLowerCase().includes(q)) ||   // ✅ was v.segment
         (v.engine?.fuelType && v.engine.fuelType.toLowerCase().includes(q)) ||
         (v.engine?.type && v.engine.type.toLowerCase().includes(q)) ||
         (v.variants?.[0]?.price && v.variants[0].price.toLowerCase().includes(q));
@@ -268,8 +315,6 @@ export default function Videos() {
   return (
     <div className={`min-h-screen ${bg} py-8 px-4 transition-colors duration-300 font-sans`}>
       <div className="max-w-7xl mx-auto space-y-6">
-
-     
 
         {/* BRAND & BODY TYPE FILTERS */}
         <div className="flex flex-col gap-3">
@@ -299,8 +344,9 @@ export default function Videos() {
 
           {/* Body Types Filter */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-           
-      
+            <span className="text-xs font-bold uppercase tracking-wider text-amber-500 flex items-center gap-1 shrink-0">
+              <RiFilter3Line /> Body:
+            </span>
             {bodyTypes.map(bt => (
               <button
                 key={bt}
@@ -362,7 +408,7 @@ export default function Videos() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    
+
                     {/* Play Button Overlay */}
                     <button
                       onClick={() => setSelectedVideo(video)}
@@ -478,7 +524,7 @@ export default function Videos() {
       {selectedVideo && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
           <div className={`relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl border ${border} ${cardBg} p-6 shadow-2xl space-y-6 ${textHi}`}>
-            
+
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
               <div>
@@ -522,22 +568,38 @@ export default function Videos() {
 
             {/* Modal Video / Image Player Box */}
             <div className="relative aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center border border-white/10">
-              <img
-                src={selectedVideo.thumbnail || selectedVideo.thumbnailUrl || selectedVideo.image}
-                alt={selectedVideo.title}
-                className="w-full h-full object-cover opacity-80"
-              />
-              <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center p-4 space-y-3">
-                <div className="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center shadow-2xl animate-pulse">
-                  <RiPlayFill size={34} className="ml-1" />
-                </div>
-                <p className="text-sm font-bold text-white tracking-wide">
-                  Backend Official Car Information Video
-                </p>
-                <p className="text-xs text-white/70 max-w-md">
-                  {selectedVideo.description}
-                </p>
-              </div>
+              {selectedVideo.embedId || selectedVideo.youtubeUrl ? (
+                <iframe
+                  src={
+                    selectedVideo.embedId
+                      ? `https://www.youtube.com/embed/${selectedVideo.embedId}?autoplay=1`
+                      : selectedVideo.youtubeUrl.includes('embed')
+                      ? selectedVideo.youtubeUrl
+                      : `https://www.youtube.com/embed/${
+                          selectedVideo.youtubeUrl.split('v=')[1]?.split('&')[0] ||
+                          selectedVideo.youtubeUrl.split('youtu.be/')[1]?.split('?')[0] ||
+                          selectedVideo.youtubeUrl
+                        }?autoplay=1`
+                  }
+                  title={selectedVideo.title}
+                  className="w-full h-full border-none"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <>
+                  <img
+                    src={selectedVideo.thumbnail || selectedVideo.thumbnailUrl || selectedVideo.image}
+                    alt={selectedVideo.title}
+                    className="w-full h-full object-cover opacity-80"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center p-4 space-y-3">
+                    <div className="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center shadow-2xl animate-pulse">
+                      <RiPlayFill size={34} className="ml-1" />
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Price & Variants Section */}

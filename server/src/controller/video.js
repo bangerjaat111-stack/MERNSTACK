@@ -1,803 +1,857 @@
-export const video = (req,res) => {
-    try {
-        const data = [
-            
-            {
-                id: 1,
-                brand: "Tata",
-                model: "Aeris",
-                title: "2026 Tata Aeris",
-                slug: "tata-aeris-2026",
-                bodyType: "Sedan",
-                segment: "Compact Sedan",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Tata Motors' new sub-four-metre sedan, replacing the Tigor, with petrol, CNG and AMT options.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487690/tata-aeris_xkuio0.jpg",
-                variants: [
-                    { name: "Smart Petrol MT", price: "₹5.29 Lakh" },
-                    { name: "Pure+ Petrol AMT", price: "₹7.29 Lakh" },
-                    { name: "Accomplished CNG AMT", price: "₹9.74 Lakh" }
-                ],
-                engine: {
-                    type: "Petrol / CNG",
-                    displacement: "1199 cc",
-                    cylinders: 3,
-                    maxPower: "86 PS (Petrol) / 75.5 PS (CNG)",
-                    maxTorque: "113 Nm (Petrol) / 96.5 Nm (CNG)",
-                    transmission: "5-Speed Manual / 5-Speed AMT",
-                    drivetrain: "FWD",
-                    fuelType: "Petrol / CNG"
-                },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: {
-                    type: "Petrol / CNG",
-                    mileage: { claimed: "Not Available", city: "Not Available", highway: "Not Available" },
-                    fuelTankCapacity: "35 Litres (Petrol)"
-                },
-                dimensions: {
-                    length: "3995 mm", width: "1684 mm", height: "1532 mm", wheelbase: "2450 mm",
-                    groundClearance: "Not Available", bootSpace: "419 Litres", seatingCapacity: 5, doors: 4
-                },
-                exterior: { headlights: "Projector Headlamps", taillights: "LED", fogLamps: "Not Available", sunroof: "Not Available", alloyWheels: "15-inch Dual-tone Alloy Wheels", roofRails: false, ORVM: "ORVM-mounted Turn Indicators" },
-                interior: { upholstery: "Fabric", dashboard: "Premium Dashboard", infotainment: "26.03 cm HD Touchscreen", instrumentCluster: "12.7 cm Digital Island Cluster", steering: "Not Available", ambientLighting: "Not Available", wirelessCharging: true, airConditioning: "Not Available" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: "Not Available", hillHoldAssist: "Not Available", rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: "Not Available", laneAssist: "Not Available", adas: false }
-            },
-            {
-                id: 2,
-                brand: "Tata",
-                model: "Tiago",
-                title: "2026 Tata Tiago",
-                slug: "tata-tiago-2026",
-                bodyType: "Hatchback",
-                segment: "Compact Hatchback",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Tata's entry-level hatchback, known for safety and value, available in petrol and CNG.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487689/tata-tiago_dvbhgq.jpg",
-                variants: [
-                    { name: "Smart", price: "₹4.70 Lakh" },
-                    { name: "Pure+", price: "₹6.00 Lakh" },
-                    { name: "Creative+", price: "₹8.00 Lakh" }
-                ],
-                engine: { type: "Petrol / CNG", displacement: "1199 cc", cylinders: 3, maxPower: "85 bhp (Petrol)", maxTorque: "113 Nm (Petrol)", transmission: "5-Speed Manual / 5-Speed AMT", drivetrain: "FWD", fuelType: "Petrol / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / CNG", mileage: { claimed: "Not Available", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "Not Available", width: "Not Available", height: "Not Available", wheelbase: "Not Available", groundClearance: "Not Available", bootSpace: "Not Available", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "Not Available", taillights: "Not Available", fogLamps: "Not Available", sunroof: "Not Available", alloyWheels: "Not Available", roofRails: false, ORVM: "Not Available" },
-                interior: { upholstery: "Not Available", dashboard: "Not Available", infotainment: "Not Available", instrumentCluster: "Not Available", steering: "Not Available", ambientLighting: false, wirelessCharging: false, airConditioning: "Not Available" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: false, adas: false }
-            },
-            {
-                id: 3,
-                brand: "Tata",
-                model: "Altroz",
-                title: "2026 Tata Altroz",
-                slug: "tata-altroz-2026",
-                bodyType: "Hatchback",
-                segment: "Premium Hatchback",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Premium hatchback with multiple powertrain options including a unique diesel engine in the segment.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487688/tata-altroz_pttwtz.jpg",
-                variants: [
-                    { name: "Smart", price: "₹5.99 Lakh" },
-                    { name: "Creative", price: "₹8.00 Lakh" },
-                    { name: "Accomplished+", price: "₹10.00 Lakh" }
-                ],
-                engine: { type: "Petrol / Diesel / CNG", displacement: "1199 cc / 1497 cc", cylinders: 3, maxPower: "Not Available", maxTorque: "Not Available", transmission: "5-Speed Manual / 6-Speed DCT / 5-Speed AMT", drivetrain: "FWD", fuelType: "Petrol / Diesel / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Diesel / CNG", mileage: { claimed: "Not Available", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "Not Available", width: "Not Available", height: "Not Available", wheelbase: "Not Available", groundClearance: "Not Available", bootSpace: "Not Available", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "Not Available", taillights: "Not Available", fogLamps: "Not Available", sunroof: "Not Available", alloyWheels: "Not Available", roofRails: false, ORVM: "Not Available" },
-                interior: { upholstery: "Not Available", dashboard: "Not Available", infotainment: "Not Available", instrumentCluster: "Not Available", steering: "Not Available", ambientLighting: false, wirelessCharging: false, airConditioning: "Not Available" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: false, adas: false }
-            },
-            {
-                id: 4,
-                brand: "Tata",
-                model: "Punch",
-                title: "2026 Tata Punch",
-                slug: "tata-punch-2026",
-                bodyType: "Micro SUV",
-                segment: "Compact SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Tata's popular micro SUV with SUV-inspired styling and multiple powertrain options.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487687/tata-punch_obmzyl.jpg",
-                variants: [
-                    { name: "Smart Petrol", price: "₹5.70 Lakh" },
-                    { name: "Adventure S", price: "₹8.05 Lakh" },
-                    { name: "Accomplished CNG", price: "₹9.41 Lakh" }
-                ],
-                engine: { type: "Petrol / Turbo Petrol / CNG", displacement: "1199 cc", cylinders: 3, maxPower: "Not Available", maxTorque: "Not Available", transmission: "5-Speed MT / 5-Speed AMT", drivetrain: "FWD", fuelType: "Petrol / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / CNG", mileage: { claimed: "Not Available", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "Not Available", width: "Not Available", height: "Not Available", wheelbase: "Not Available", groundClearance: "Not Available", bootSpace: "Not Available", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "Not Available", taillights: "Not Available", fogLamps: "Not Available", sunroof: "Not Available", alloyWheels: "Not Available", roofRails: true, ORVM: "Not Available" },
-                interior: { upholstery: "Not Available", dashboard: "Not Available", infotainment: "Not Available", instrumentCluster: "Not Available", steering: "Not Available", ambientLighting: false, wirelessCharging: false, airConditioning: "Not Available" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: false, adas: false }
-            },
-            {
-                id: 5,
-                brand: "Tata",
-                model: "Nexon",
-                title: "2026 Tata Nexon",
-                slug: "tata-nexon-2026",
-                bodyType: "Compact SUV",
-                segment: "Compact SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Tata's best-selling compact SUV, with petrol, diesel, CNG and electric options.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487687/tata-nexon_vwe8qf.jpg",
-                variants: [
-                    { name: "Smart CNG", price: "₹8.35 Lakh" },
-                    { name: "Creative DCA", price: "₹11.35 Lakh" },
-                    { name: "Fearless+ DT AMT", price: "₹14.02 Lakh" }
-                ],
-                engine: { type: "Turbo Petrol / Diesel / CNG", displacement: "1199 cc / 1497 cc", cylinders: 3, maxPower: "Not Available", maxTorque: "Not Available", transmission: "5/6-Speed MT / 6-Speed AMT / 7-Speed DCA", drivetrain: "FWD", fuelType: "Petrol / Diesel / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Diesel / CNG", mileage: { claimed: "17.44 kmpl (Petrol)", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "44 Litres" },
-                dimensions: { length: "3995 mm", width: "1804 mm", height: "1620 mm", wheelbase: "2498 mm", groundClearance: "208 mm", bootSpace: "382 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED Projector", taillights: "LED", fogLamps: true, sunroof: "Panoramic (top trims)", alloyWheels: "16-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Fabric / Leatherette", dashboard: "Premium Dashboard", infotainment: "10.25-inch Touchscreen", instrumentCluster: "Digital", steering: "Flat-bottom", ambientLighting: true, wirelessCharging: true, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: false, adas: false }
-            },
-            {
-                id: 6,
-                brand: "Tata",
-                model: "Curvv",
-                title: "2026 Tata Curvv",
-                slug: "tata-curvv-2026",
-                bodyType: "SUV Coupe",
-                segment: "Mid-size SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Tata's coupe-SUV with turbo-petrol and diesel engines, including segment-first diesel DCA.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487686/tata-curvv_i1azii.jpg",
-                variants: [
-                    { name: "Smart X", price: "₹10.00 Lakh" },
-                    { name: "Creative X+", price: "₹12.91 Lakh" },
-                    { name: "Accomplished X+ DCA", price: "₹19.00 Lakh" }
-                ],
-                engine: { type: "Turbo Petrol / Diesel", displacement: "1199 cc / 1497 cc", cylinders: 3, maxPower: "118-123 bhp", maxTorque: "170-260 Nm", transmission: "6-Speed MT / 7-Speed DCA", drivetrain: "FWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "13-17 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "44 Litres" },
-                dimensions: { length: "4308 mm", width: "1810 mm", height: "1630 mm", wheelbase: "2560 mm", groundClearance: "208 mm", bootSpace: "500 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: true, sunroof: "Panoramic", alloyWheels: "18-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leatherette", dashboard: "Premium Dashboard", infotainment: "12.3-inch Touchscreen", instrumentCluster: "10.25-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 7,
-                brand: "Tata",
-                model: "Sierra",
-                title: "2026 Tata Sierra",
-                slug: "tata-sierra-2026",
-                bodyType: "SUV",
-                segment: "Mid-size SUV",
-                launchYear: 2025,
-                modelYear: 2026,
-                description: "Tata's revived Sierra nameplate, a premium SUV with multiple engine options and nostalgic design.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487685/tata-sierra_oplmgh.jpg",
-                variants: [
-                    { name: "Smart Plus", price: "₹11.49 Lakh" },
-                    { name: "Adventure Plus Turbo", price: "₹18.14 Lakh" },
-                    { name: "Accomplished Plus Diesel AT", price: "₹21.29 Lakh" }
-                ],
-                engine: { type: "Petrol / Turbo Petrol / Diesel", displacement: "1497-1498 cc", cylinders: 4, maxPower: "105-158 bhp", maxTorque: "145-280 Nm", transmission: "6-Speed MT / 6-Speed AT", drivetrain: "FWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "Not Available", acceleration: "0-100 km/h in 10 sec (Turbo Petrol)" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "29.9 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "50 Litres" },
-                dimensions: { length: "4340 mm", width: "1841 mm", height: "1715 mm", wheelbase: "2730 mm", groundClearance: "205 mm", bootSpace: "622 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: true, sunroof: "Panoramic", alloyWheels: "19-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leatherette", dashboard: "Premium Dashboard", infotainment: "12.3-inch Touchscreen", instrumentCluster: "10.25-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Dual-zone Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 8,
-                brand: "Tata",
-                model: "Harrier",
-                title: "2026 Tata Harrier",
-                slug: "tata-harrier-2026",
-                bodyType: "SUV",
-                segment: "Mid-size SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Tata's premium mid-size SUV, now with turbo-petrol and diesel engine options.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487684/tata-harrier_tdjmr5.jpg",
-                variants: [
-                    { name: "Smart", price: "₹13.99 Lakh" },
-                    { name: "Adventure X", price: "₹18.00 Lakh" },
-                    { name: "Fearless X", price: "₹24.94 Lakh" }
-                ],
-                engine: { type: "Turbo Petrol / Diesel", displacement: "1498 cc / 1956 cc", cylinders: 4, maxPower: "170 PS", maxTorque: "280 Nm (Petrol) / 350 Nm (Diesel)", transmission: "6-Speed MT / 6-Speed AT", drivetrain: "FWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "14.6 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "50 Litres" },
-                dimensions: { length: "4605 mm", width: "1922 mm", height: "1718 mm", wheelbase: "2741 mm", groundClearance: "205 mm", bootSpace: "445-815 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED Projector", taillights: "LED", fogLamps: true, sunroof: "Panoramic", alloyWheels: "18-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leatherette", dashboard: "Premium Dashboard", infotainment: "14.52-inch Touchscreen", instrumentCluster: "10.25-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Dual-zone Automatic Climate Control" },
-                safety: { airbags: 7, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 9,
-                brand: "Tata",
-                model: "Safari",
-                title: "2026 Tata Safari",
-                slug: "tata-safari-2026",
-                bodyType: "SUV",
-                segment: "Mid-size SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Tata's premium 7-seater SUV with 5-star safety rating and turbo-petrol/diesel options.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487684/tata-safari_ourkfe.jpg",
-                variants: [
-                    { name: "Smart", price: "₹13.40 Lakh" },
-                    { name: "Adventure X+", price: "₹19.00 Lakh" },
-                    { name: "Accomplished Ultra", price: "₹25.75 Lakh" }
-                ],
-                engine: { type: "Turbo Petrol / Diesel", displacement: "1498 cc / 1956 cc", cylinders: 4, maxPower: "167.62 bhp", maxTorque: "280 Nm (Petrol) / 350 Nm (Diesel)", transmission: "6-Speed MT / 6-Speed AT", drivetrain: "FWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "14.1-16.3 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "50 Litres" },
-                dimensions: { length: "4668 mm", width: "1922 mm", height: "1795 mm", wheelbase: "2741 mm", groundClearance: "205 mm", bootSpace: "420-827 Litres", seatingCapacity: 7, doors: 5 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: true, sunroof: "Panoramic", alloyWheels: "19-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leatherette", dashboard: "Premium Dashboard", infotainment: "12.3-inch Touchscreen", instrumentCluster: "10.25-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Dual-zone Automatic Climate Control" },
-                safety: { airbags: 7, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
+import Video from "../model/video_model.js";
 
-            // === MARUTI SUZUKI ===
-            {
-                id: 10,
-                brand: "Maruti Suzuki",
-                model: "Alto K10",
-                title: "2026 Maruti Suzuki Alto K10",
-                slug: "maruti-alto-k10-2026",
-                bodyType: "Hatchback",
-                segment: "Entry Hatchback",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "India's most affordable car, with petrol, CNG and AMT options under Rs 5 lakh.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487683/maruti-alto-k10_wmeo3y.jpg",
-                variants: [
-                    { name: "Std Optional", price: "₹3.70 Lakh" },
-                    { name: "VXi Optional", price: "₹4.32 Lakh" },
-                    { name: "VXi (O) AMT", price: "₹4.97 Lakh" }
-                ],
-                engine: { type: "Petrol / CNG", displacement: "998 cc", cylinders: 3, maxPower: "68 PS (Petrol) / 56 PS (CNG)", maxTorque: "89 Nm (Petrol) / 82 Nm (CNG)", transmission: "5-Speed MT / 5-Speed AMT", drivetrain: "FWD", fuelType: "Petrol / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / CNG", mileage: { claimed: "24-34 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "Not Available", width: "Not Available", height: "Not Available", wheelbase: "Not Available", groundClearance: "Not Available", bootSpace: "Not Available", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "Not Available", taillights: "Not Available", fogLamps: "Not Available", sunroof: "Not Available", alloyWheels: "Not Available", roofRails: false, ORVM: "Not Available" },
-                interior: { upholstery: "Fabric", dashboard: "Not Available", infotainment: "7-inch Touchscreen (top trims)", instrumentCluster: "Not Available", steering: "Not Available", ambientLighting: false, wirelessCharging: false, airConditioning: "Manual" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: "Not Available", hillHoldAssist: "Not Available", rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: false, adas: false }
-            },
-            {
-                id: 11,
-                brand: "Maruti Suzuki",
-                model: "S-Presso",
-                title: "2026 Maruti Suzuki S-Presso",
-                slug: "maruti-s-presso-2026",
-                bodyType: "Hatchback",
-                segment: "Entry Hatchback",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "The most affordable new car in India, with SUV-inspired styling and AMT option.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487682/maruti-s-presso_g0s7of.jpg",
-                variants: [
-                    { name: "Std Optional", price: "₹3.50 Lakh" },
-                    { name: "VXi Optional", price: "₹4.32 Lakh" },
-                    { name: "VXi Optional AGS", price: "₹4.77 Lakh" }
-                ],
-                engine: { type: "Petrol / CNG", displacement: "998 cc", cylinders: 3, maxPower: "68 PS (Petrol) / 56 PS (CNG)", maxTorque: "89 Nm (Petrol) / 82 Nm (CNG)", transmission: "5-Speed MT / 5-Speed AMT", drivetrain: "FWD", fuelType: "Petrol / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / CNG", mileage: { claimed: "24-33 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "Not Available", width: "Not Available", height: "Not Available", wheelbase: "Not Available", groundClearance: "Not Available", bootSpace: "Not Available", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "Not Available", taillights: "Not Available", fogLamps: "Not Available", sunroof: "Not Available", alloyWheels: "Not Available", roofRails: false, ORVM: "Not Available" },
-                interior: { upholstery: "Fabric", dashboard: "Not Available", infotainment: "Not Available", instrumentCluster: "Not Available", steering: "Not Available", ambientLighting: false, wirelessCharging: false, airConditioning: "Manual" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: "Not Available", hillHoldAssist: "Not Available", rearParkingCamera: "Not Available", parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: false, adas: false }
-            },
-            {
-                id: 12,
-                brand: "Maruti Suzuki",
-                model: "Wagon R",
-                title: "2026 Maruti Suzuki Wagon R",
-                slug: "maruti-wagon-r-2026",
-                bodyType: "Hatchback",
-                segment: "Compact Hatchback",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Practical and spacious tall-boy hatchback, popular for its space and fuel efficiency.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487682/maruti-wagon-r_keqz7x.jpg",
-                variants: [
-                    { name: "LXi", price: "₹4.99 Lakh" },
-                    { name: "VXi", price: "₹6.00 Lakh" },
-                    { name: "ZXi+", price: "₹7.24 Lakh" }
-                ],
-                engine: { type: "Petrol / CNG", displacement: "998-1197 cc", cylinders: 3, maxPower: "Not Available", maxTorque: "Not Available", transmission: "5-Speed MT / 5-Speed AMT", drivetrain: "FWD", fuelType: "Petrol / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / CNG", mileage: { claimed: "24.35-25.19 kmpl; 34.05 km/kg", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "3655 mm", width: "1620 mm", height: "1675 mm", wheelbase: "2435 mm", groundClearance: "170 mm", bootSpace: "341 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "Halogen", taillights: "Halogen", fogLamps: false, sunroof: "Not Available", alloyWheels: "14-inch Alloy", roofRails: false, ORVM: "Electric Adjustable" },
-                interior: { upholstery: "Fabric", dashboard: "Utility Dashboard", infotainment: "7-inch Touchscreen", instrumentCluster: "Analogue", steering: "Standard", ambientLighting: false, wirelessCharging: false, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: false, adas: false }
-            },
-            {
-                id: 13,
-                brand: "Maruti Suzuki",
-                model: "Swift",
-                title: "2026 Maruti Suzuki Swift",
-                slug: "maruti-swift-2026",
-                bodyType: "Hatchback",
-                segment: "Premium Hatchback",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "India's favorite sporty hatchback with the new Z-Series engine and improved efficiency.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487681/maruti-swift_unpcnz.jpg",
-                variants: [
-                    { name: "LXi", price: "₹5.79 Lakh" },
-                    { name: "VXi", price: "₹7.00 Lakh" },
-                    { name: "ZXi+", price: "₹8.80 Lakh" }
-                ],
-                engine: { type: "Petrol / CNG", displacement: "1197 cc", cylinders: 3, maxPower: "82 PS", maxTorque: "112 Nm", transmission: "5-Speed MT / 5-Speed AMT", drivetrain: "FWD", fuelType: "Petrol / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / CNG", mileage: { claimed: "24.8-25.75 kmpl; 32.85 km/kg", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "37 Litres" },
-                dimensions: { length: "3860 mm", width: "1735 mm", height: "1520 mm", wheelbase: "2450 mm", groundClearance: "163 mm", bootSpace: "265 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED Projector", taillights: "LED", fogLamps: true, sunroof: "Not Available", alloyWheels: "16-inch Alloy", roofRails: false, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Fabric", dashboard: "Premium Dashboard", infotainment: "9-inch Touchscreen", instrumentCluster: "Analogue", steering: "Flat-bottom", ambientLighting: false, wirelessCharging: true, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: false, adas: false }
-            },
-            {
-                id: 14,
-                brand: "Maruti Suzuki",
-                model: "Baleno",
-                title: "2026 Maruti Suzuki Baleno",
-                slug: "maruti-baleno-2026",
-                bodyType: "Hatchback",
-                segment: "Premium Hatchback",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Premium hatchback with spacious cabin, modern features and strong fuel efficiency.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487680/maruti-baleno_f1x5jk.jpg",
-                variants: [
-                    { name: "Sigma", price: "₹5.99 Lakh" },
-                    { name: "Delta", price: "₹7.50 Lakh" },
-                    { name: "Alpha", price: "₹9.10 Lakh" }
-                ],
-                engine: { type: "Petrol / CNG", displacement: "1197 cc", cylinders: 4, maxPower: "82.93 bhp", maxTorque: "112.4 Nm", transmission: "5-Speed MT / 5-Speed AMT", drivetrain: "FWD", fuelType: "Petrol / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / CNG", mileage: { claimed: "22.35-22.9 kmpl; 30.61 km/kg", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "37 Litres" },
-                dimensions: { length: "3990 mm", width: "1745 mm", height: "1530 mm", wheelbase: "2520 mm", groundClearance: "170 mm", bootSpace: "318 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED Projector", taillights: "LED", fogLamps: true, sunroof: "Not Available", alloyWheels: "16-inch Alloy", roofRails: false, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Fabric", dashboard: "Premium Dashboard", infotainment: "9-inch Touchscreen", instrumentCluster: "Analogue", steering: "Flat-bottom", ambientLighting: true, wirelessCharging: true, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: true, adas: true }
-            },
-            {
-                id: 15,
-                brand: "Maruti Suzuki",
-                model: "Dzire",
-                title: "2026 Maruti Suzuki Dzire",
-                slug: "maruti-dzire-2026",
-                bodyType: "Sedan",
-                segment: "Compact Sedan",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "India's best-selling compact sedan with excellent fuel efficiency and modern features.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487680/maruti-dzire_eqk4h1.jpg",
-                variants: [
-                    { name: "LXi", price: "₹6.26 Lakh" },
-                    { name: "VXi", price: "₹7.50 Lakh" },
-                    { name: "ZXi+ AMT", price: "₹9.31 Lakh" }
-                ],
-                engine: { type: "Petrol / CNG", displacement: "1197 cc", cylinders: 3, maxPower: "82 PS", maxTorque: "112 Nm", transmission: "5-Speed MT / 5-Speed AMT", drivetrain: "FWD", fuelType: "Petrol / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / CNG", mileage: { claimed: "24.79-25.71 kmpl; 33.73 km/kg", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "37 Litres" },
-                dimensions: { length: "3995 mm", width: "1735 mm", height: "1525 mm", wheelbase: "2450 mm", groundClearance: "163 mm", bootSpace: "382 Litres", seatingCapacity: 5, doors: 4 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: true, sunroof: "Not Available", alloyWheels: "15-inch Alloy", roofRails: false, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Fabric", dashboard: "Premium Dashboard", infotainment: "9-inch Touchscreen", instrumentCluster: "Analogue", steering: "Flat-bottom", ambientLighting: false, wirelessCharging: true, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: false, adas: false }
-            },
-            {
-                id: 16,
-                brand: "Maruti Suzuki",
-                model: "Brezza",
-                title: "2026 Maruti Suzuki Brezza",
-                slug: "maruti-brezza-2026",
-                bodyType: "Compact SUV",
-                segment: "Compact SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Maruti's compact SUV, now with a new 1.0L turbo-petrol option alongside 1.5L petrol and CNG.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487679/maruti-brezza_eb5qye.jpg",
-                variants: [
-                    { name: "LXi Turbo", price: "₹7.40 Lakh" },
-                    { name: "ZXi 1.5 AT", price: "₹11.85 Lakh" },
-                    { name: "ZXi+ Turbo DT", price: "₹11.32 Lakh" }
-                ],
-                engine: { type: "Turbo Petrol / Petrol / CNG", displacement: "998 cc / 1462 cc", cylinders: 3, maxPower: "110 bhp (Turbo) / 103 bhp (1.5L) / 88 bhp (CNG)", maxTorque: "170 Nm (Turbo) / 139 Nm (1.5L) / 121.5 Nm (CNG)", transmission: "6-Speed MT / 6-Speed AT", drivetrain: "FWD", fuelType: "Petrol / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / CNG", mileage: { claimed: "17.38-19.80 kmpl; 25.51 km/kg", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "48 Litres" },
-                dimensions: { length: "3995 mm", width: "1790 mm", height: "1685 mm", wheelbase: "2500 mm", groundClearance: "198 mm", bootSpace: "328 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED Projector", taillights: "LED", fogLamps: true, sunroof: "Electric Sunroof", alloyWheels: "16-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Fabric", dashboard: "Premium Dashboard", infotainment: "10.1-inch Touchscreen", instrumentCluster: "Digital", steering: "Flat-bottom", ambientLighting: false, wirelessCharging: true, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: false, adas: false }
-            },
-            {
-                id: 17,
-                brand: "Maruti Suzuki",
-                model: "Grand Vitara",
-                title: "2026 Maruti Suzuki Grand Vitara",
-                slug: "maruti-grand-vitara-2026",
-                bodyType: "SUV",
-                segment: "Mid-size SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Maruti's flagship SUV with strong hybrid technology and optional AWD.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487678/maruti-grand-vitara_plrird.jpg",
-                variants: [
-                    { name: "Sigma", price: "₹10.77 Lakh" },
-                    { name: "Zeta", price: "₹15.00 Lakh" },
-                    { name: "Alpha+ Hybrid", price: "₹19.72 Lakh" }
-                ],
-                engine: { type: "Petrol / Strong Hybrid / CNG", displacement: "1462 cc / 1490 cc", cylinders: 3, maxPower: "103 bhp / 116 bhp (Hybrid)", maxTorque: "137 Nm / 141 Nm", transmission: "5-Speed MT / 6-Speed AT / e-CVT", drivetrain: "FWD / AWD", fuelType: "Petrol / Hybrid / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Hybrid / CNG", mileage: { claimed: "20.58-27.97 kmpl; 26.6 km/kg", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "45 Litres" },
-                dimensions: { length: "4345 mm", width: "1795 mm", height: "1645 mm", wheelbase: "2600 mm", groundClearance: "210 mm", bootSpace: "373 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED Projector", taillights: "LED", fogLamps: true, sunroof: "Panoramic", alloyWheels: "17-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leatherette", dashboard: "Premium Dashboard", infotainment: "9-inch Touchscreen", instrumentCluster: "Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 18,
-                brand: "Maruti Suzuki",
-                model: "Fronx",
-                title: "2026 Maruti Suzuki Fronx",
-                slug: "maruti-fronx-2026",
-                bodyType: "SUV Coupe",
-                segment: "Compact SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Coupe-SUV crossover with turbo-petrol option and stylish design.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487678/maruti-fronx_ckh0g0.jpg",
-                variants: [
-                    { name: "Sigma", price: "₹6.85 Lakh" },
-                    { name: "Delta+", price: "₹9.00 Lakh" },
-                    { name: "Alpha", price: "₹11.98 Lakh" }
-                ],
-                engine: { type: "Petrol / Turbo Petrol / CNG", displacement: "1197 cc / 998 cc", cylinders: 3, maxPower: "89 bhp / 100 bhp (Turbo)", maxTorque: "113 Nm / 147.6 Nm (Turbo)", transmission: "5-Speed MT / 6-Speed AT / 5-Speed AMT", drivetrain: "FWD", fuelType: "Petrol / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / CNG", mileage: { claimed: "20.01-22.89 kmpl; 28.51 km/kg", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "37 Litres" },
-                dimensions: { length: "3995 mm", width: "1765 mm", height: "1550 mm", wheelbase: "2520 mm", groundClearance: "190 mm", bootSpace: "308 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED Projector", taillights: "LED", fogLamps: true, sunroof: "Not Available", alloyWheels: "16-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Fabric", dashboard: "Premium Dashboard", infotainment: "9-inch Touchscreen", instrumentCluster: "Analogue", steering: "Flat-bottom", ambientLighting: false, wirelessCharging: true, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: false, adas: false }
-            },
-            {
-                id: 19,
-                brand: "Maruti Suzuki",
-                model: "Ertiga",
-                title: "2026 Maruti Suzuki Ertiga",
-                slug: "maruti-ertiga-2026",
-                bodyType: "MPV",
-                segment: "Compact MPV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "India's most popular 7-seater MPV with petrol and CNG options, excellent for families.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487677/maruti-ertiga_umw7ym.jpg",
-                variants: [
-                    { name: "LXi", price: "₹8.85 Lakh" },
-                    { name: "VXi CNG", price: "₹10.50 Lakh" },
-                    { name: "ZXi+ AT", price: "₹12.99 Lakh" }
-                ],
-                engine: { type: "Petrol / CNG", displacement: "1462 cc", cylinders: 4, maxPower: "102 bhp (Petrol) / 87 bhp (CNG)", maxTorque: "137 Nm (Petrol) / 121 Nm (CNG)", transmission: "5-Speed MT / 6-Speed AT", drivetrain: "FWD", fuelType: "Petrol / CNG" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / CNG", mileage: { claimed: "20.30-20.51 kmpl; 26.11 km/kg", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "45 Litres" },
-                dimensions: { length: "4395 mm", width: "1735 mm", height: "1690 mm", wheelbase: "2740 mm", groundClearance: "185 mm", bootSpace: "209 Litres", seatingCapacity: 7, doors: 5 },
-                exterior: { headlights: "LED Projector", taillights: "LED", fogLamps: true, sunroof: "Not Available", alloyWheels: "15-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Fabric", dashboard: "Premium Dashboard", infotainment: "7-inch Touchscreen", instrumentCluster: "Analogue", steering: "Standard", ambientLighting: false, wirelessCharging: false, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 4, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Rear", blindSpotMonitor: false, laneAssist: false, adas: false }
-            },
+/* ============================================================
+   RAW DATA (your 33 cars — keep this exactly as you had it)
+   ============================================================ */
+export const allinformation = [
 
-            // === LAND ROVER ===
-            {
-                id: 20,
-                brand: "Land Rover",
-                model: "Defender",
-                title: "2026 Land Rover Defender",
-                slug: "land-rover-defender-2026",
-                bodyType: "SUV",
-                segment: "Luxury SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Iconic off-roader combining legendary capability with modern luxury and technology.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487676/land-rover-defender_qsr3bg.jpg",
-                variants: [
-                    { name: "2.0L Petrol 110 X-Dynamic HSE", price: "₹1.07 Crore" },
-                    { name: "3.0L Diesel 110 X", price: "₹1.44 Crore" },
-                    { name: "4.4L V8 Petrol 110 OCTA Edition One", price: "₹2.62 Crore" }
-                ],
-                engine: { type: "Turbo Petrol / Turbo Diesel / V8", displacement: "1997 cc / 2997 cc / 4395 cc / 5000 cc", cylinders: 4, maxPower: "296-518 bhp", maxTorque: "400-700 Nm", transmission: "8-Speed AT", drivetrain: "AWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "191 km/h (limited)", acceleration: "0-100 km/h in 6.4 sec (Trophy Edition)" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "6.8-14.01 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "90 Litres" },
-                dimensions: { length: "5018 mm", width: "2008 mm", height: "1967 mm", wheelbase: "3022 mm", groundClearance: "291 mm", bootSpace: "857-1075 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: true, sunroof: "Panoramic", alloyWheels: "20-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leather", dashboard: "Premium Dashboard", infotainment: "11.4-inch Touchscreen", instrumentCluster: "Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Dual-zone Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 21,
-                brand: "Land Rover",
-                model: "Range Rover",
-                title: "2026 Land Rover Range Rover",
-                slug: "land-rover-range-rover-2026",
-                bodyType: "SUV",
-                segment: "Luxury SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "The flagship Range Rover, combining ultimate luxury with off-road capability and mild-hybrid powertrains.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487676/land-rover-range-rover_d75caa.jpg",
-                variants: [
-                    { name: "3.0 I Diesel LWB HSE", price: "₹2.40 Crore" },
-                    { name: "3.0 I LWB Autobiography", price: "₹2.65 Crore" },
-                    { name: "4.4 L Petrol LWB SV", price: "₹3.50 Crore" }
-                ],
-                engine: { type: "Mild Hybrid Petrol / Diesel / V8", displacement: "2996 cc / 2997 cc / 4395 cc", cylinders: 6, maxPower: "346-606 bhp", maxTorque: "550-750 Nm", transmission: "8-Speed AT", drivetrain: "AWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "250 km/h (est.)", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "Not Available", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "5052 mm", width: "2047 mm", height: "1870 mm", wheelbase: "2997 mm", groundClearance: "219 mm", bootSpace: "725-1841 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: true, sunroof: "Panoramic", alloyWheels: "21-23 inch Alloy", roofRails: "Not Available", ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leather", dashboard: "Premium Dashboard", infotainment: "13.1-inch Touchscreen", instrumentCluster: "13.7-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "4-zone Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 22,
-                brand: "Land Rover",
-                model: "Range Rover Velar",
-                title: "2026 Land Rover Range Rover Velar",
-                slug: "land-rover-range-rover-velar-2026",
-                bodyType: "SUV",
-                segment: "Luxury SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Stylish mid-size luxury SUV with minimalist design and advanced technology.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487675/land-rover-range-rover-velar_lhzog9.jpg",
-                variants: [
-                    { name: "2.0L Petrol Dynamic SE", price: "₹87.50 Lakh" },
-                    { name: "2.0L Diesel Autobiography", price: "₹89.90 Lakh" }
-                ],
-                engine: { type: "Turbo Petrol / Mild Hybrid Diesel", displacement: "1997 cc", cylinders: 4, maxPower: "201-247 bhp", maxTorque: "365-430 Nm", transmission: "8-Speed AT", drivetrain: "AWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "Not Available", acceleration: "0-100 km/h in 7.5-8.3 sec" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "13.1-15.8 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "4797 mm", width: "2041 mm", height: "1683 mm", wheelbase: "2874 mm", groundClearance: "196 mm", bootSpace: "673 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: true, sunroof: "Panoramic", alloyWheels: "20-inch Alloy", roofRails: "Not Available", ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leather", dashboard: "Premium Dashboard", infotainment: "11.4-inch Touchscreen", instrumentCluster: "Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Dual-zone Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 23,
-                brand: "Land Rover",
-                model: "Range Rover Sport",
-                title: "2026 Land Rover Range Rover Sport",
-                slug: "land-rover-range-rover-sport-2026",
-                bodyType: "SUV",
-                segment: "Luxury SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Sportier version of the Range Rover with dynamic performance and premium interiors.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487675/land-rover-range-rover-sport_me3kfk.jpg",
-                variants: [
-                    { name: "3.0L Petrol SE", price: "₹1.43 Crore" },
-                    { name: "3.0L Diesel Dynamic HSE", price: "₹1.80 Crore" },
-                    { name: "4.4L V8 Autobiography", price: "₹2.35 Crore" }
-                ],
-                engine: { type: "Turbo Petrol / Turbo Diesel / V8", displacement: "2997 cc / 4395 cc", cylinders: 6, maxPower: "355-523 bhp", maxTorque: "500-750 Nm", transmission: "8-Speed AT", drivetrain: "AWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "242 km/h", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "Not Available", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "4946 mm", width: "2047 mm", height: "1820 mm", wheelbase: "2997 mm", groundClearance: "216 mm", bootSpace: "835-1795 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: true, sunroof: "Panoramic", alloyWheels: "21-23 inch Alloy", roofRails: "Not Available", ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leather", dashboard: "Premium Dashboard", infotainment: "13.1-inch Touchscreen", instrumentCluster: "Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Dual-zone Automatic Climate Control" },
-                safety: { airbags: 6, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
+  {
+    "statusCode": 200,
+    "data": {
+      "page": 1,
+      "limit": 10,
+      "totalPages": 20,
+      "previousPage": false,
+      "nextPage": true,
+      "totalItems": 200,
+      "currentPageItems": 10,
+      "data": [
 
-            // === MERCEDES-BENZ ===
-            {
-                id: 24,
-                brand: "Mercedes-Benz",
-                model: "A-Class Limousine",
-                title: "2026 Mercedes-Benz A-Class Limousine",
-                slug: "mercedes-a-class-limousine-2026",
-                bodyType: "Sedan",
-                segment: "Compact Luxury Sedan",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Entry-level luxury sedan with sporty styling, modern features and premium interiors.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487674/mercedes-a-class-limousine_epfgrz.jpg",
-                variants: [
-                    { name: "A 200 Petrol", price: "₹46.05 Lakh" },
-                    { name: "A 200d Diesel", price: "₹48.55 Lakh" }
-                ],
-                engine: { type: "Turbo Petrol / Turbo Diesel", displacement: "1332 cc / 1950 cc", cylinders: 4, maxPower: "163 bhp", maxTorque: "250-320 Nm", transmission: "7-Speed DCT / 8-Speed DCT", drivetrain: "FWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "230 km/h", acceleration: "0-100 km/h in 7.5-8.0 sec" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "13-18.91 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "4559 mm", width: "1796 mm", height: "1440 mm", wheelbase: "2729 mm", groundClearance: "Not Available", bootSpace: "405 Litres", seatingCapacity: 5, doors: 4 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: "Not Available", sunroof: "Panoramic", alloyWheels: "17-inch Alloy", roofRails: false, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leatherette", dashboard: "Premium Dashboard", infotainment: "10.25-inch Touchscreen", instrumentCluster: "10.25-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 7, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 25,
-                brand: "Mercedes-Benz",
-                model: "C-Class",
-                title: "2026 Mercedes-Benz C-Class",
-                slug: "mercedes-c-class-2026",
-                bodyType: "Sedan",
-                segment: "Luxury Sedan",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Premium luxury sedan with elegant styling, refined performance and advanced technology.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487673/mercedes-c-class_hdf230.jpg",
-                variants: [
-                    { name: "C 200 Petrol", price: "₹59.90 Lakh" },
-                    { name: "C 220d Diesel", price: "₹59.90 Lakh" },
-                    { name: "C 300 Petrol", price: "₹65.60 Lakh" }
-                ],
-                engine: { type: "Turbo Petrol / Turbo Diesel", displacement: "1496 cc / 1993 cc / 1999 cc", cylinders: 4, maxPower: "204-258 bhp", maxTorque: "300-400 Nm", transmission: "9-Speed AT", drivetrain: "RWD / AWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "240 km/h", acceleration: "0-100 km/h in 5.9-7.3 sec" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "15-23 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "4751 mm", width: "1820 mm", height: "1437 mm", wheelbase: "2865 mm", groundClearance: "Not Available", bootSpace: "455 Litres", seatingCapacity: 5, doors: 4 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: "Not Available", sunroof: "Panoramic", alloyWheels: "18-inch Alloy", roofRails: false, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leather", dashboard: "Premium Dashboard", infotainment: "11.9-inch Touchscreen", instrumentCluster: "12.3-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Dual-zone Automatic Climate Control" },
-                safety: { airbags: 7, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 26,
-                brand: "Mercedes-Benz",
-                model: "E-Class",
-                title: "2026 Mercedes-Benz E-Class",
-                slug: "mercedes-e-class-2026",
-                bodyType: "Sedan",
-                segment: "Executive Luxury Sedan",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Executive luxury sedan offering a spacious cabin, sophisticated design and comfortable driving.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487672/mercedes-e-class_vg3zty.jpg",
-                variants: [
-                    { name: "E 200 Petrol", price: "₹80.00 Lakh" },
-                    { name: "E 220d Diesel", price: "₹82.00 Lakh" },
-                    { name: "E 450 Petrol", price: "₹93.50 Lakh" }
-                ],
-                engine: { type: "Turbo Petrol / Turbo Diesel", displacement: "1999 cc / 1993 cc / 2999 cc", cylinders: 4, maxPower: "197-435 bhp", maxTorque: "320-520 Nm", transmission: "9-Speed AT", drivetrain: "RWD / AWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "250 km/h", acceleration: "0-100 km/h in 5.0-7.5 sec" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "15 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "4949 mm", width: "1880 mm", height: "1468 mm", wheelbase: "2961 mm", groundClearance: "Not Available", bootSpace: "540 Litres", seatingCapacity: 5, doors: 4 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: "Not Available", sunroof: "Panoramic", alloyWheels: "18-inch Alloy", roofRails: false, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leather", dashboard: "Premium Dashboard", infotainment: "14.4-inch Touchscreen", instrumentCluster: "12.3-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "4-zone Automatic Climate Control" },
-                safety: { airbags: 8, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 27,
-                brand: "Mercedes-Benz",
-                model: "GLA",
-                title: "2026 Mercedes-Benz GLA",
-                slug: "mercedes-gla-2026",
-                bodyType: "SUV",
-                segment: "Compact Luxury SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Compact luxury SUV with sporty design and premium features.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487672/mercedes-gla_mvcbqh.jpg",
-                variants: [
-                    { name: "GLA 200 Petrol", price: "₹51.80 Lakh" },
-                    { name: "GLA 220d 4MATIC Diesel", price: "₹53.00 Lakh" }
-                ],
-                engine: { type: "Turbo Petrol / Turbo Diesel", displacement: "1332 cc / 1950 cc", cylinders: 4, maxPower: "163 bhp", maxTorque: "250-320 Nm", transmission: "7-Speed DCT / 8-Speed DCT", drivetrain: "FWD / AWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "17.4-18.9 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "4410 mm", width: "1834 mm", height: "1611 mm", wheelbase: "2729 mm", groundClearance: "Not Available", bootSpace: "435 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: "Not Available", sunroof: "Panoramic", alloyWheels: "18-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leatherette", dashboard: "Premium Dashboard", infotainment: "10.25-inch Touchscreen", instrumentCluster: "10.25-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Automatic Climate Control" },
-                safety: { airbags: 7, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 28,
-                brand: "Mercedes-Benz",
-                model: "GLC",
-                title: "2026 Mercedes-Benz GLC",
-                slug: "mercedes-glc-2026",
-                bodyType: "SUV",
-                segment: "Luxury SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Mid-size luxury SUV with advanced technology and premium interior.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487672/mercedes-glc_eclikx.jpg",
-                variants: [
-                    { name: "GLC 220d Diesel", price: "₹77.00 Lakh" },
-                    { name: "GLC 300 Petrol", price: "₹77.00 Lakh" }
-                ],
-                engine: { type: "Turbo Petrol / Turbo Diesel", displacement: "1993 cc / 1999 cc", cylinders: 4, maxPower: "197-258 bhp", maxTorque: "440-400 Nm", transmission: "9-Speed AT", drivetrain: "AWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "8-19.4 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "4716 mm", width: "1890 mm", height: "1640 mm", wheelbase: "2888 mm", groundClearance: "Not Available", bootSpace: "620 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: "Not Available", sunroof: "Panoramic", alloyWheels: "19-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leather", dashboard: "Premium Dashboard", infotainment: "11.9-inch Touchscreen", instrumentCluster: "12.3-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "Dual-zone Automatic Climate Control" },
-                safety: { airbags: 7, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 29,
-                brand: "Mercedes-Benz",
-                model: "GLE",
-                title: "2026 Mercedes-Benz GLE",
-                slug: "mercedes-gle-2026",
-                bodyType: "SUV",
-                segment: "Luxury SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Premium mid-size luxury SUV with powerful engines and spacious cabin.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487671/mercedes-gle_hcsuvg.jpg",
-                variants: [
-                    { name: "GLE 300d 4MATIC AMG Line", price: "₹1.00 Crore" },
-                    { name: "GLE 450 4MATIC", price: "₹1.12 Crore" },
-                    { name: "GLE 450 Night Edition", price: "₹1.14 Crore" }
-                ],
-                engine: { type: "Turbo Petrol / Turbo Diesel / Mild Hybrid", displacement: "1993 cc / 2999 cc", cylinders: 6, maxPower: "269-381 bhp", maxTorque: "500-500 Nm", transmission: "9-Speed AT", drivetrain: "AWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "11.11-14 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "4924 mm", width: "1947 mm", height: "1797 mm", wheelbase: "2995 mm", groundClearance: "Not Available", bootSpace: "630 Litres", seatingCapacity: 5, doors: 5 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: "Not Available", sunroof: "Panoramic", alloyWheels: "20-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leather", dashboard: "Premium Dashboard", infotainment: "12.3-inch Touchscreen", instrumentCluster: "12.3-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "4-zone Automatic Climate Control" },
-                safety: { airbags: 9, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 30,
-                brand: "Mercedes-Benz",
-                model: "GLS",
-                title: "2026 Mercedes-Benz GLS",
-                slug: "mercedes-gls-2026",
-                bodyType: "SUV",
-                segment: "Full-size Luxury SUV",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "Mercedes' flagship 7-seater SUV, offering ultimate luxury and commanding presence.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487671/mercedes-gls_ep2fyi.jpg",
-                variants: [
-                    { name: "GLS 450 4MATIC", price: "₹1.32 Crore" },
-                    { name: "GLS 450d 4MATIC", price: "₹1.34 Crore" },
-                    { name: "GLS 450d Night Edition", price: "₹1.43 Crore" }
-                ],
-                engine: { type: "Turbo Petrol / Turbo Diesel", displacement: "2999 cc / 2925 cc", cylinders: 6, maxPower: "367-381 bhp", maxTorque: "500-550 Nm", transmission: "9-Speed AT", drivetrain: "AWD", fuelType: "Petrol / Diesel" },
-                performance: { topSpeed: "Not Available", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Diesel", mileage: { claimed: "12 kmpl", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "5209 mm", width: "1956 mm", height: "1823 mm", wheelbase: "3135 mm", groundClearance: "Not Available", bootSpace: "355-2400 Litres", seatingCapacity: 7, doors: 5 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: "Not Available", sunroof: "Panoramic", alloyWheels: "21-inch Alloy", roofRails: true, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Leather", dashboard: "Premium Dashboard", infotainment: "12.3-inch Touchscreen", instrumentCluster: "12.3-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "4-zone Automatic Climate Control" },
-                safety: { airbags: 9, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            },
-            {
-                id: 31,
-                brand: "Mercedes-Benz",
-                model: "S-Class",
-                title: "2026 Mercedes-Benz S-Class",
-                slug: "mercedes-s-class-2026",
-                bodyType: "Sedan",
-                segment: "Luxury Flagship Sedan",
-                launchYear: 2026,
-                modelYear: 2026,
-                description: "The pinnacle of Mercedes luxury, with cutting-edge technology and unparalleled comfort.",
-                thumbnail: "https://res.cloudinary.com/dsmgxutev/image/upload/v1790487671/mercedes-s-class_wrrqde.jpg",
-                variants: [
-                    { name: "S 450e Petrol Hybrid", price: "₹2.20 Crore" },
-                    { name: "S 580 Petrol", price: "₹2.38 Crore" }
-                ],
-                engine: { type: "Mild Hybrid Petrol / Petrol", displacement: "2999 cc / 3982 cc", cylinders: 6, maxPower: "435-585 bhp", maxTorque: "Not Available", transmission: "9-Speed AT", drivetrain: "RWD / AWD", fuelType: "Petrol / Hybrid" },
-                performance: { topSpeed: "250 km/h", acceleration: "Not Available" },
-                fuel: { type: "Petrol / Hybrid", mileage: { claimed: "32.3 kmpl (Hybrid)", city: "Not Available", highway: "Not Available" }, fuelTankCapacity: "Not Available" },
-                dimensions: { length: "5179 mm", width: "1954 mm", height: "1503 mm", wheelbase: "3106 mm", groundClearance: "Not Available", bootSpace: "550 Litres", seatingCapacity: 5, doors: 4 },
-                exterior: { headlights: "LED", taillights: "LED", fogLamps: "Not Available", sunroof: "Panoramic", alloyWheels: "20-inch Alloy", roofRails: false, ORVM: "Electric Adjustable & Folding" },
-                interior: { upholstery: "Nappa Leather", dashboard: "Premium Dashboard", infotainment: "12.8-inch OLED Touchscreen", instrumentCluster: "12.3-inch Digital", steering: "Leather Wrapped", ambientLighting: true, wirelessCharging: true, airConditioning: "4-zone Automatic Climate Control" },
-                safety: { airbags: 10, abs: true, ebd: true, esc: true, tractionControl: true, hillHoldAssist: true, rearParkingCamera: true, parkingSensors: "Front & Rear", blindSpotMonitor: true, laneAssist: true, adas: true }
-            }
+        {
+          "id": 1,
+          "title": "Land Rover Defender",
+          "thumbnail": "https://cdn-s3.autocarindia.com/Land-Rover/defender/Z62_7431%20copy.jpg?w=728&q=75&fm=auto",
+          "video": "https://youtu.be/gxRQ7iXmtnw?si=nVbjI-xddBi5A9Im",
+          "description": "Land Rover Defender is a rugged and premium SUV built to combine legendary off-road capability with modern luxury and technology.",
+          "brand": "Land Rover",
+          "category": "Reviews",
+          "price": "₹1.05 Crore - ₹1.50 Crore",
+          "engine": "2.0L Turbocharged Petrol / 3.0L Turbocharged Petrol / 5.0L Supercharged V8",
+          "topSpeed": "191 km/h",
+          "maxPower": "296 bhp - 518 bhp",
+          "power": "296 bhp - 518 bhp",
+          "torque": "400 Nm - 625 Nm",
+          "acceleration": "6.7s - 8.3s (0-100 km/h)",
+          "transmission": "8-Speed Automatic"
+        },
 
-        ]
-        res.status(200).send({status:true,msg:"all is ok",data:data})
+        {
+          "id": 1,
+          "title": "new tata tiago 2026",
+          "thumbnail": "https://cdn-s3.autocarindia.com/Tata/tiago/Tata_Tiago_Facelift_Front_Quarter_Tracking.jpg",
+          "video": "https://youtu.be/h32rbzHEi58?si=DWApGQTnGEjhnsXG",
+          "description": "The Tata Tiago is a stylish and practical hatchback designed for everyday city driving.",
+          "brand": "tata",
+          "category": "Reviews",
+          "price": "₹5.65 Lakh - ₹8.90 Lakh",
+          "engine": "1.2L Revotron Petrol / 1.2L Revotron CNG",
+          "topSpeed": "150 km/h",
+          "maxPower": "85 bhp",
+          "power": "85 bhp",
+          "torque": "113 Nm",
+          "acceleration": "16.29s (0-100 km/h)",
+          "transmission": "5-Speed Manual / 5-Speed AMT"
+        },
+        {
+          "id": 2,
+          "title": "curv",
+          "thumbnail": "https://imgd.aeplcdn.com/1920x1080/n/cw/ec/139651/curvv-exterior-right-front-three-quarter-16.png?isig=0&q=80&q=80",
+          "video": "https://youtu.be/a95JcDr8-NE?si=6wWnIe57Qe5F0SPp",
+          "description": "The Tata Curvv is a modern SUV-coupe that combines a sporty, aerodynamic design with the practicality of an SUV.",
+          "brand": "tata",
+          "category": "",
+          "price": "₹10.00 Lakh - ₹19.00 Lakh",
+          "engine": "1.2L Turbo Petrol / 1.5L Diesel / 1.5L Turbo Petrol (GDi)",
+          "topSpeed": "180 km/h",
+          "maxPower": "118 bhp - 167 bhp",
+          "power": "118 bhp - 167 bhp",
+          "torque": "170 Nm - 260 Nm",
+          "acceleration": "8.6s - 9.0s (0-100 km/h)",
+          "transmission": "6-Speed Manual / 7-Speed DCA"
+        },
+        {
+          "id": 3,
+          "title": "nexon",
+          "thumbnail": "https://imgd.aeplcdn.com/1920x1080/n/cw/ec/141867/nexon-facelift-exterior-right-front-three-quarter-69.jpeg?isig=0&q=80&q=80",
+          "video": "https://youtu.be/U7XbOEss6LE?si=8GktM2U7TB4jWY5E",
+          "description": "Tata Nexon is a stylish and feature-packed compact SUV designed for both city driving and highway journeys",
+          "brand": "tata",
+          "category": "reviews",
+          "price": "₹8.00 Lakh - ₹15.80 Lakh",
+          "engine": "1.2L Turbo Petrol / 1.5L Turbo Diesel / 1.2L Turbo CNG",
+          "topSpeed": "180 km/h",
+          "maxPower": "118 bhp - 113 bhp",
+          "power": "118 bhp - 113 bhp",
+          "torque": "170 Nm - 260 Nm",
+          "acceleration": "9.14s (0-100 km/h)",
+          "transmission": "5-Speed Manual / 6-Speed Manual / 6-Speed AMT / 7-Speed DCA"
+        },
 
+        {
+          "id": 4,
+          "title": "sierra dark edition",
+          "thumbnail": "https://cdn-s3.autocarindia.com/Tata/sierra/500_6533.JPG?w=728&q=75&fm=auto",
+          "video": "https://youtu.be/nptYq_81d2w?si=ajZyIgfbVQ9KBPv5",
+          "description": "Tata Sierra is a premium SUV that combines a bold, distinctive design with a spacious and modern cabin",
+          "brand": "tata",
+          "category": "reviews",
+          "price": "₹11.50 Lakh - ₹17.50 Lakh",
+          "engine": "1.5L Turbo Petrol / 1.5L Turbo Diesel",
+          "topSpeed": "190 km/h (limited)",
+          "maxPower": "160 bhp - 167 bhp",
+          "power": "160 bhp - 167 bhp",
+          "torque": "255 Nm - 260 Nm",
+          "acceleration": "10.09s (0-100 km/h)",
+          "transmission": "6-Speed Manual / 6-Speed Automatic"
+        },
+
+        {
+          "id": 5,
+          "title": "Harrier dark edition",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcxpQf-uge3I8-vRIznAiJXUcqmuHgBiQ6aPvrrcsbFVtCbB9ZBVEz7SYPCmg7YCqYV68zR0-qYcr-bRbZjKfeaD_k1RbXnTWh-H5vMgd5&s=10",
+          "video": "https://youtu.be/xPXTID8--R0?si=ueEGrcqOJG6LexJi",
+          "description": "Tata Harrier is a premium mid-size SUV known for its bold design, spacious cabin, and confident road presence.",
+          "brand": "tata",
+          "category": "reviews",
+          "price": "₹15.49 Lakh - ₹26.44 Lakh",
+          "engine": "2.0L Kryotec Turbo Diesel",
+          "topSpeed": "190 km/h",
+          "maxPower": "170 bhp",
+          "power": "170 bhp",
+          "torque": "350 Nm",
+          "acceleration": "10.5s (0-100 km/h)",
+          "transmission": "6-Speed Manual / 6-Speed Automatic"
+        },
+
+        {
+          "id": 6,
+          "title": "saffari dark edition",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdwpnnyeBvSJVvUT4owXLHl03e8unGLDo7ZLDOElWC_g&s=10",
+          "video": "https://youtu.be/4VJjichjljM?si=GN06m2F3KxEtCe9i",
+          "description": "Tata Safari is a premium 7-seater SUV designed for families who want a spacious, comfortable, and feature-rich driving experience.",
+          "brand": "tata",
+          "category": "reviews",
+          "price": "₹15.49 Lakh - ₹27.34 Lakh",
+          "engine": "2.0L Kryotec Turbo Diesel",
+          "topSpeed": "190 km/h",
+          "maxPower": "170 bhp",
+          "power": "170 bhp",
+          "torque": "350 Nm",
+          "acceleration": "10.8s (0-100 km/h)",
+          "transmission": "6-Speed Manual / 6-Speed Automatic"
+        },
+        {
+          "id": 7,
+          "title": "creta 2026",
+          "thumbnail": "https://imgd.aeplcdn.com/1920x1080/n/cw/ec/106815/creta-exterior-right-front-three-quarter-6.png?isig=0&q=80&q=80",
+          "video": "https://youtu.be/cRUY2YQhY0s?si=gsU_pZ_nbD44v-j8",
+          "description": "Hyundai Creta is a popular mid-size SUV that combines stylish design, a comfortable cabin, modern technology, and a confident road presence",
+          "brand": "hyundai",
+          "category": "reviews",
+          "price": "₹11.00 Lakh - ₹20.30 Lakh",
+          "engine": "1.5L MPi Petrol / 1.5L Turbo Petrol / 1.5L CRDi Diesel",
+          "topSpeed": "179 km/h - 190 km/h",
+          "maxPower": "115 bhp - 160 bhp",
+          "power": "115 bhp - 160 bhp",
+          "torque": "144 Nm - 253 Nm",
+          "acceleration": "11.3s (0-100 km/h)",
+          "transmission": "6-Speed Manual / IVT / 7-Speed DCT / 6-Speed Automatic"
+        },
+        {
+          "id": 8,
+          "title": "Hyundai Venue",
+          "thumbnail": "https://stimg.cardekho.com/images/carexteriorimages/630x420/Hyundai/Venue/12999/1771931633886/front-left-side-47.jpg",
+          "video": "https://youtu.be/HFNOyjssa3s?si=HmR5ncDlOTWm2O4a",
+          "description": "Hyundai Venue is a compact SUV that combines a stylish exterior, practical dimensions, modern technology, and a comfortable cabin.",
+          "brand": "hyundai",
+          "category": "reviews",
+          "price": "₹7.94 Lakh - ₹13.48 Lakh",
+          "engine": "1.2L MPi Petrol / 1.0L Turbo Petrol / 1.5L CRDi Diesel",
+          "topSpeed": "180 km/h",
+          "maxPower": "83 bhp - 120 bhp",
+          "power": "83 bhp - 120 bhp",
+          "torque": "114 Nm - 172 Nm",
+          "acceleration": "11.4s (0-100 km/h)",
+          "transmission": "6-Speed Manual / 7-Speed DCT / 6-Speed Automatic"
+        }, {
+          "id": 9,
+          "title": "Hyundai Alcazar",
+          "thumbnail": "https://imgd.aeplcdn.com/1920x1080/n/cw/ec/157825/alcazar-facelift-exterior-right-side-view.jpeg?isig=0&q=80&q=80",
+          "video": "https://youtu.be/hTPo65HBZz4?si=cp8jM8HYHOp9SLCD",
+          "description": "Hyundai Alcazar is a premium 7-seater SUV designed for families seeking spacious interiors, modern features, and a comfortable driving experience.",
+          "brand": "hyundai",
+          "category": "reviews",
+          "price": "₹14.99 Lakh - ₹21.55 Lakh",
+          "engine": "1.5L Turbo Petrol / 1.5L CRDi Diesel",
+          "topSpeed": "190 km/h",
+          "maxPower": "160 bhp - 116 bhp",
+          "power": "160 bhp - 116 bhp",
+          "torque": "253 Nm - 250 Nm",
+          "acceleration": "10.4s (0-100 km/h)",
+          "transmission": "6-Speed Manual / 7-Speed DCT / 6-Speed Automatic"
+        }, {
+          "id": 10,
+          "title": "Hyundai i20",
+          "thumbnail": "https://www.team-bhp.com/news/my-hyundai-i20-petrol-cvt-how-its-going-year-and-12000-km-later",
+          "video": "https://youtu.be/uQEQgJ9S31o?si=huixupuhDwjQvrDJ",
+          "description": "Hyundai i20 is a stylish premium hatchback that combines sporty design, a comfortable interior, modern technology, and practical everyday usability.",
+          "brand": "hyundai",
+          "category": "reviews",
+          "price": "₹7.04 Lakh - ₹11.21 Lakh",
+          "engine": "1.2L Kappa Petrol / 1.0L Turbo GDi Petrol",
+          "topSpeed": "185 km/h",
+          "maxPower": "83 bhp - 120 bhp",
+          "power": "83 bhp - 120 bhp",
+          "torque": "115 Nm - 172 Nm",
+          "acceleration": "10.4s (0-100 km/h)",
+          "transmission": "5-Speed Manual / IVT / 7-Speed DCT"
+        },
+        {
+          "id": 11,
+          "title": "Hyundai Verna",
+          "thumbnail": "https://stimg.cardekho.com/images/carexteriorimages/630x420/Hyundai/Verna-Facelift/13312/1773040519044/front-left-side-47.jpg?imwidth=420&impolicy=resize",
+          "video": "https://youtu.be/vkRRiNTNl0c?si=ur3UXmFtU2m-cDEo",
+          "description": "Hyundai Verna is a premium mid-size sedan that combines a sleek, modern design with a spacious and technology-rich cabin.",
+          "brand": "hyundai",
+          "category": "reviews",
+          "price": "₹11.00 Lakh - ₹17.42 Lakh",
+          "engine": "1.5L MPi Petrol / 1.5L Turbo GDi Petrol / 1.5L CRDi Diesel",
+          "topSpeed": "190 km/h",
+          "maxPower": "115 bhp - 160 bhp",
+          "power": "115 bhp - 160 bhp",
+          "torque": "144 Nm - 253 Nm",
+          "acceleration": "8.1s - 10.5s (0-100 km/h)",
+          "transmission": "6-Speed Manual / IVT / 7-Speed DCT / 6-Speed Automatic"
+        },
+        {
+          "id": 12,
+          "title": "Mahindra Thar",
+          "thumbnail": "https://imgd.aeplcdn.com/664x374/n/cw/ec/219824/thar-facelift-exterior-left-rear-three-quarter.png?isig=0&q=80&q=80",
+          "video": "https://youtu.be/jAFcqkC551Y?si=duBc_pU7sFYDDL1K",
+          "description": "Mahindra Thar is a rugged lifestyle SUV known for its iconic design, strong road presence, and off-road capability.",
+          "brand": "Mahindra",
+          "category": "reviews",
+          "price": "₹11.35 Lakh - ₹17.60 Lakh",
+          "engine": "2.0L Turbo Petrol / 2.2L Turbo Diesel",
+          "topSpeed": "145 km/h - 180 km/h",
+          "maxPower": "150 bhp - 175 bhp",
+          "power": "150 bhp - 175 bhp",
+          "torque": "300 Nm - 350 Nm",
+          "acceleration": "13.2s (0-100 km/h)",
+          "transmission": "6-Speed Manual / 6-Speed Automatic"
+        },
+        {
+          "id": 13,
+          "title": "Mahindra Scorpio",
+          "thumbnail": "https://imgd.aeplcdn.com/1920x1080/n/cw/ec/128413/scorpio-exterior-right-front-three-quarter-2.png?isig=0&q=80&q=80",
+          "video": "https://youtu.be/Ap6Mg7Slieo?si=RzvAvcIC1stjRe1k",
+          "description": "Mahindra Scorpio is a rugged and spacious SUV known for its bold design, strong road presence, and versatile performance.",
+          "brand": "Mahindra",
+          "category": "reviews",
+          "price": "₹13.62 Lakh - ₹17.42 Lakh",
+          "engine": "2.0L Turbo Petrol / 2.2L Turbo Diesel",
+          "topSpeed": "160 km/h - 180 km/h",
+          "maxPower": "150 bhp - 175 bhp",
+          "power": "150 bhp - 175 bhp",
+          "torque": "300 Nm - 350 Nm",
+          "acceleration": "12.0s - 14.5s (0-100 km/h)",
+          "transmission": "6-Speed Manual / 6-Speed Automatic"
+        },
+        {
+          "id": 14,
+          "title": "Mahindra Bolero",
+          "thumbnail": "https://img.gaadicdn.com/images/car-images/large/Mahindra/Bolero/10754/1760013521659/STEALTH-BLACK_282828.jpg",
+          "video": "https://youtu.be/e-O_rr4Ihi0?si=UFzHq9U9AMZDtDy7",
+          "description": "Mahindra Bolero is a rugged and practical SUV known for its strong build, spacious cabin, and dependable performance",
+          "brand": "Mahindra",
+          "category": "reviews",
+          "price": "₹9.79 Lakh - ₹10.91 Lakh",
+          "engine": "1.5L mHawk Turbo Diesel",
+          "topSpeed": "117 km/h",
+          "maxPower": "75 bhp",
+          "power": "75 bhp",
+          "torque": "210 Nm",
+          "acceleration": "30.3s (0-100 km/h)",
+          "transmission": "5-Speed Manual"
+        },
+        {
+          "id": 15,
+          "title": "Maruti Swift",
+          "thumbnail": "https://dvps8uz7lyvra.cloudfront.net/wp-content/uploads/Maruti-Swift-Specifications-653x435.jpg",
+          "video": "https://youtu.be/CAXW999109o?si=sGBZravodv4fWAEz",
+          "description": "Maruti Suzuki Swift is a popular hatchback known for its sporty design, compact dimensions, and easy-to-drive character.",
+          "brand": "Maruti",
+          "category": "reviews",
+          "price": "₹6.49 Lakh - ₹9.64 Lakh",
+          "engine": "1.2L Z-Series Petrol / 1.2L Z-Series CNG",
+          "topSpeed": "180 km/h",
+          "maxPower": "82 bhp - 90 bhp",
+          "power": "82 bhp - 90 bhp",
+          "torque": "112 Nm - 113 Nm",
+          "acceleration": "12.6s (0-100 km/h)",
+          "transmission": "5-Speed Manual / CVT / 5-Speed AMT"
+        },
+        {
+          "id": 16,
+          "title": "Maruti Baleno",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_dj0yUqqtfgg_ZjLpayLU9ds_U3mCfDkidayZjIlP6ULZutVGAlA4U5xDQlRuC4wK-bQfEJBP-9jPsH4UEzuVRbBWSCEIa3oqO3kMOA&s=10",
+          "video": "https://youtu.be/7RRNKUVS7JI?si=YbCPNkA0RugA5uit",
+          "description": "Maruti Suzuki Baleno is a premium hatchback that combines stylish design, a spacious cabin, modern features, and practical everyday usability.",
+          "brand": "Maruti",
+          "category": "reviews",
+          "price": "₹6.66 Lakh - ₹9.88 Lakh",
+          "engine": "1.2L DualJet Petrol / 1.2L DualJet CNG",
+          "topSpeed": "175 km/h",
+          "maxPower": "89 bhp",
+          "power": "89 bhp",
+          "torque": "113 Nm",
+          "acceleration": "12.5s (0-100 km/h)",
+          "transmission": "5-Speed Manual / 5-Speed AMT"
+        },
+        {
+          "id": 17,
+          "title": "Maruti Wagon R",
+          "thumbnail": "https://cdn-s3.autocarindia.com/legacy/cdni/Galleries/20190131113636_2019-Maruti-Wagon-R-front-a.jpg?w=728&q=75&fm=auto",
+          "video": "https://youtu.be/uEVaX_0PRwc?si=rdiyuTFN2zLy2TeO",
+          "description": "Maruti Suzuki WagonR is a practical and spacious hatchback designed for comfortable everyday driving.",
+          "brand": "Maruti",
+          "category": "reviews",
+          "price": "₹5.54 Lakh - ₹7.51 Lakh",
+          "engine": "1.0L K-Series Petrol / 1.2L K-Series Petrol / 1.0L CNG",
+          "topSpeed": "160 km/h",
+          "maxPower": "67 bhp - 89 bhp",
+          "power": "67 bhp - 89 bhp",
+          "torque": "89 Nm - 113 Nm",
+          "acceleration": "13.5s - 14.5s (0-100 km/h)",
+          "transmission": "5-Speed Manual / 5-Speed AMT"
+        },
+        {
+          "id": 18,
+          "title": "Maruti Baleno",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_dj0yUqqtfgg_ZjLpayLU9ds_U3mCfDkidayZjIlP6ULZutVGAlA4U5xDQlRuC4wK-bQfEJBP-9jPsH4UEzuVRbBWSCEIa3oqO3kMOA&s=10",
+          "video": "https://youtu.be/7RRNKUVS7JI?si=YbCPNkA0RugA5uit",
+          "description": "Maruti Suzuki Baleno is a premium hatchback that combines stylish design, a spacious cabin, modern features, and practical everyday usability.",
+          "brand": "Maruti",
+          "category": "reviews",
+          "price": "₹6.66 Lakh - ₹9.88 Lakh",
+          "engine": "1.2L DualJet Petrol / 1.2L DualJet CNG",
+          "topSpeed": "175 km/h",
+          "maxPower": "89 bhp",
+          "power": "89 bhp",
+          "torque": "113 Nm",
+          "acceleration": "12.5s (0-100 km/h)",
+          "transmission": "5-Speed Manual / 5-Speed AMT"
+        },
+        {
+          "id": 19,
+          "title": "Toyota Fortuner",
+          "thumbnail": "https://images.carexpert.com.au/crop/1398/930/cms/v1/media/2025-05-2025-toyota-fortuner-gxlhero-3x2-1.jpg",
+          "video": "https://youtu.be/jwqAjgAxfhM?si=xnb4KPKlLrH2HLZi",
+          "description": "Toyota Fortuner is a premium full-size SUV known for its bold design, commanding road presence, spacious cabin, and rugged character.",
+          "brand": "Toyota",
+          "category": "reviews",
+          "price": "₹33.43 Lakh - ₹51.44 Lakh",
+          "engine": "2.7L Petrol / 2.8L Turbo Diesel",
+          "topSpeed": "190 km/h",
+          "maxPower": "166 bhp - 204 bhp",
+          "power": "166 bhp - 204 bhp",
+          "torque": "245 Nm - 500 Nm",
+          "acceleration": "10.0s - 12.0s (0-100 km/h)",
+          "transmission": "6-Speed Manual / 6-Speed Automatic"
+        },
+        {
+          "id": 20,
+          "title": "Toyota Legender",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQefom-IThrsgVSNHrM1fZ2vranj8CikJe0hcC-hHt8BpkrwZoaAtlgHNs&s=10",
+          "video": "https://youtu.be/JnXLuiqjCLc?si=e3ziKl_TVRKXeIS_",
+          "description": "Toyota Fortuner Legender is a premium SUV that combines the rugged character of the Fortuner with a more distinctive and sophisticated design.",
+          "brand": "Toyota",
+          "category": "reviews",
+          "price": "₹43.00 Lakh - ₹47.00 Lakh",
+          "engine": "2.8L Turbo Diesel",
+          "topSpeed": "190 km/h",
+          "maxPower": "204 bhp",
+          "power": "204 bhp",
+          "torque": "500 Nm",
+          "acceleration": "10.0s (0-100 km/h)",
+          "transmission": "6-Speed Automatic"
+        },
+        {
+          "id": 21,
+          "title": "Maruti Baleno",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_dj0yUqqtfgg_ZjLpayLU9ds_U3mCfDkidayZjIlP6ULZutVGAlA4U5xDQlRuC4wK-bQfEJBP-9jPsH4UEzuVRbBWSCEIa3oqO3kMOA&s=10",
+          "video": "https://youtu.be/7RRNKUVS7JI?si=YbCPNkA0RugA5uit",
+          "description": "Maruti Suzuki Baleno is a premium hatchback that combines stylish design, a spacious cabin, modern features, and practical everyday usability.",
+          "brand": "Maruti",
+          "category": "reviews",
+          "price": "₹6.66 Lakh - ₹9.88 Lakh",
+          "engine": "1.2L DualJet Petrol / 1.2L DualJet CNG",
+          "topSpeed": "175 km/h",
+          "maxPower": "89 bhp",
+          "power": "89 bhp",
+          "torque": "113 Nm",
+          "acceleration": "12.5s (0-100 km/h)",
+          "transmission": "5-Speed Manual / 5-Speed AMT"
+        },
+
+        {
+          "id": 22,
+          "title": "Maruti Suzuki Grand Vitara",
+          "thumbnail": "https://imgd.aeplcdn.com/1280x720/n/cw/ec/134801/maruti-suzuki-grand-vitara-right-front-three-quarter0.jpeg?isig=0&wm=0",
+          "video": "https://youtu.be/YsqphzqUwks?si=FxW1RkP871rBAebB",
+          "description": "Maruti Suzuki Grand Vitara is a stylish mid-size SUV that combines a premium design, comfortable cabin, modern features, and practical everyday usability.",
+          "brand": "Maruti",
+          "category": "reviews",
+          "price": "₹10.99 Lakh - ₹19.99 Lakh",
+          "engine": "1.5L K-Series Petrol / 1.5L Strong Hybrid Petrol / 1.5L CNG",
+          "topSpeed": "180 km/h",
+          "maxPower": "103 bhp - 116 bhp",
+          "power": "103 bhp - 116 bhp",
+          "torque": "137 Nm - 141 Nm",
+          "acceleration": "11.0s - 12.0s (0-100 km/h)",
+          "transmission": "5-Speed Manual / 6-Speed Automatic / e-CVT"
+        },
+        {
+          "id": 23,
+          "title": "Maruti Suzuki Fronx",
+          "thumbnail": "https://imgd.aeplcdn.com/1280x720/n/cw/ec/134801/maruti-suzuki-grand-vitara-right-front-three-quarter0.jpeg?isig=0&wm=0",
+          "video": "https://youtu.be/Xm4EAFIL7LY?si=5mbZdmhZrAMt9ItY",
+          "description": "Maruti Suzuki Fronx is a stylish crossover SUV that combines sporty coupe-inspired design with the practicality of a compact SUV",
+          "brand": "Maruti",
+          "category": "reviews",
+          "price": "₹7.51 Lakh - ₹12.88 Lakh",
+          "engine": "1.2L K-Series Petrol / 1.0L Turbo Boosterjet Petrol / 1.2L CNG",
+          "topSpeed": "180 km/h",
+          "maxPower": "89 bhp - 100 bhp",
+          "power": "89 bhp - 100 bhp",
+          "torque": "113 Nm - 148 Nm",
+          "acceleration": "11.5s - 12.5s (0-100 km/h)",
+          "transmission": "5-Speed Manual / 6-Speed Automatic / 5-Speed AMT"
+        },
+        {
+          "id": 24,
+          "title": "Honda Amaze",
+          "thumbnail": "https://imgd.aeplcdn.com/1280x720/n/cw/ec/134801/maruti-suzuki-grand-vitara-right-front-three-quarter0.jpeg?isig=0&wm=0",
+          "video": "https://youtu.be/qBZSUvXNbgo?si=D7ExXlf2cHIPdO3w",
+          "description": "Honda Amaze is a compact sedan designed for comfortable and practical everyday driving.",
+          "brand": "Honda",
+          "category": "reviews",
+          "price": "₹6.79 Lakh - ₹9.95 Lakh",
+          "engine": "1.2L i-VTEC Petrol / 1.2L i-VTEC CNG",
+          "topSpeed": "160 km/h",
+          "maxPower": "90 bhp",
+          "power": "90 bhp",
+          "torque": "110 Nm",
+          "acceleration": "12.5s (0-100 km/h)",
+          "transmission": "5-Speed Manual / CVT"
+        },
+        {
+          "id": 25,
+          "title": "Mercedes-Benz C-Class",
+          "thumbnail": "https://imgd.aeplcdn.com/1280x720/n/cw/ec/134801/maruti-suzuki-grand-vitara-right-front-three-quarter0.jpeg?isig=0&wm=0",
+          "video": "https://youtu.be/x9xSEOqF6iI?si=vtVD_GT2DAQ04a8Q",
+          "description": "Premium luxury sedan with elegant styling, refined performance, and advanced technology.",
+          "brand": "Mercedes-Benz",
+          "category": "reviews",
+          "price": "₹61.85 Lakh - ₹69.00 Lakh",
+          "engine": "1.5L Turbo Petrol (Mild Hybrid) / 2.0L Turbo Petrol / 2.0L Turbo Diesel",
+          "topSpeed": "240 km/h",
+          "maxPower": "204 bhp - 258 bhp",
+          "power": "204 bhp - 258 bhp",
+          "torque": "300 Nm - 400 Nm",
+          "acceleration": "5.9s - 7.3s (0-100 km/h)",
+          "transmission": "9-Speed Automatic"
+        },
+
+        {
+          "id": 26,
+          "title": "Ford Endeavour",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRl2Le8mUPCx_qSl5EOHiVA2qoZJz1JJ8e9Uu5zwYMk7WSP9UrxrzSQhIuKxbYWSvj5Gn_pwvyfYoIpYMg7NJXubpnqGf-crkYyV9NLiNS&s=10",
+          "video": "https://youtu.be/wryOEnCho8k?si=RDijXU4ZrDBSQ7hd",
+          "description": "Ford Endeavour is a premium full-size SUV known for its powerful performance, spacious cabin, rugged design, and strong road presence.",
+          "brand": "Ford",
+          "category": "Offroad & Drag",
+          "price": "₹35.00 Lakh - ₹45.00 Lakh (approx.)",
+          "engine": "2.0L EcoBlue Turbo Diesel / 3.0L V6 Turbo Diesel",
+          "topSpeed": "180 km/h",
+          "maxPower": "210 bhp - 250 bhp",
+          "power": "210 bhp - 250 bhp",
+          "torque": "500 Nm - 600 Nm",
+          "acceleration": "8.5s - 10.0s (0-100 km/h)",
+          "transmission": "10-Speed Automatic"
+        },
+        {
+          "id": 27,
+          "title": "Mercedes-Benz E-Class",
+          "thumbnail": "https://imgd.aeplcdn.com/1280x720/n/cw/ec/134801/maruti-suzuki-grand-vitara-right-front-three-quarter0.jpeg?isig=0&wm=0",
+          "video": "https://youtu.be/3BT5U9amiqM?si=lT9VQeghUlb0DUvu",
+          "description": "Executive luxury sedan offering a spacious cabin, sophisticated design, and comfortable driving.",
+          "brand": "Mercedes-Benz",
+          "category": "reviews",
+          "price": "₹76.00 Lakh - ₹89.00 Lakh",
+          "engine": "2.0L Turbo Petrol / 2.0L Turbo Diesel / 3.0L Turbo Petrol (AMG)",
+          "topSpeed": "250 km/h",
+          "maxPower": "197 bhp - 435 bhp",
+          "power": "197 bhp - 435 bhp",
+          "torque": "320 Nm - 520 Nm",
+          "acceleration": "5.0s - 7.5s (0-100 km/h)",
+          "transmission": "9-Speed Automatic"
+        },
+        {
+          "id": 28,
+          "title": "Mercedes-Benz A-Class Limousine",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA0QESholDp0xiIrzbR0twfjY_Fp3hLWQ5PJ49D6PpoA&s=10",
+          "video": "https://youtu.be/1PRgjuOh03k?si=MNGyWZS2SSciN6Kx",
+          "description": "Compact luxury sedan with sporty styling, modern features, and premium interiors.",
+          "brand": "Mercedes-Benz",
+          "category": "reviews",
+          "price": "₹45.80 Lakh - ₹48.50 Lakh",
+          "engine": "1.3L Turbo Petrol / 2.0L Turbo Diesel",
+          "topSpeed": "230 km/h",
+          "maxPower": "163 bhp - 150 bhp",
+          "power": "163 bhp - 150 bhp",
+          "torque": "250 Nm - 320 Nm",
+          "acceleration": "7.5s - 8.0s (0-100 km/h)",
+          "transmission": "7-Speed DCT / 8-Speed DCT"
+        },
+        {
+          "id": 29,
+          "title": "Mercedes-AMG G 63",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA0QESholDp0xiIrzbR0twfjY_Fp3hLWQ5PJ49D6PpoA&s=10",
+          "video": "https://youtu.be/3HZs-2AU8Dw?si=5Mxd44p-ztBm3AUy",
+          "description": "High-performance version of the G-Class with powerful performance and distinctive AMG styling.",
+          "brand": "Mercedes-Benz",
+          "category": "reviews",
+          "price": "₹3.30 Crore - ₹3.80 Crore",
+          "engine": "4.0L V8 Bi-Turbo Petrol",
+          "topSpeed": "220 km/h (limited)",
+          "maxPower": "585 bhp",
+          "power": "585 bhp",
+          "torque": "850 Nm",
+          "acceleration": "4.5s (0-100 km/h)",
+          "transmission": "9-Speed Automatic"
+        },
+        {
+          "id": 30,
+          "title": "Mercedes-Benz EQE",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA0QESholDp0xiIrzbR0twfjY_Fp3hLWQ5PJ49D6PpoA&s=10",
+          "video": "https://youtu.be/7haBnctHecM?si=UO4RkHAUB3lStwBc",
+          "description": "Premium electric sedan featuring a futuristic design, advanced technology, and electric performance.",
+          "brand": "Mercedes-Benz",
+          "category": "reviews",
+          "price": "₹1.20 Crore - ₹1.50 Crore",
+          "engine": "Electric Motor (90.6 kWh Battery) / Dual Motor AWD",
+          "topSpeed": "210 km/h",
+          "maxPower": "288 bhp - 402 bhp",
+          "power": "288 bhp - 402 bhp",
+          "torque": "530 Nm - 858 Nm",
+          "acceleration": "5.6s - 6.7s (0-100 km/h)",
+          "transmission": "Single-Speed Automatic"
+        },
+        {
+          "id": 31,
+          "title": "Range Rover Sport",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA0QESholDp0xiIrzbR0twfjY_Fp3hLWQ5PJ49D6PpoA&s=10",
+          "video": "https://youtu.be/ufl4PmP5usk?si=u1Tui-F-NyB_b8yM",
+          "description": "Sportier luxury SUV offering dynamic performance, premium interiors, and strong all-terrain capability.",
+          "brand": "Range Rover",
+          "category": "reviews",
+          "price": "₹1.45 Crore - ₹2.20 Crore",
+          "engine": "3.0L Turbo Petrol / 3.0L Turbo Diesel / 4.4L V8 Twin-Turbo Petrol",
+          "topSpeed": "242 km/h",
+          "maxPower": "355 bhp - 523 bhp",
+          "power": "355 bhp - 523 bhp",
+          "torque": "500 Nm - 750 Nm",
+          "acceleration": "4.5s - 6.2s (0-100 km/h)",
+          "transmission": "8-Speed Automatic"
+        },
+        {
+          "id": 32,
+          "title": "Range Rover Velar",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA0QESholDp0xiIrzbR0twfjY_Fp3hLWQ5PJ49D6PpoA&s=10",
+          "video": "https://youtu.be/U1fvyakdbdg?si=36P3T9OnUNydlrvl",
+          "description": "Stylish mid-size luxury SUV with a minimalist design, sophisticated cabin, and advanced technology.",
+          "brand": "Range Rover",
+          "category": "reviews",
+          "price": "₹94.00 Lakh - ₹1.30 Crore",
+          "engine": "2.0L Turbo Petrol / 3.0L Turbo Petrol / 3.0L Turbo Diesel",
+          "topSpeed": "217 km/h - 250 km/h",
+          "maxPower": "247 bhp - 395 bhp",
+          "power": "247 bhp - 395 bhp",
+          "torque": "365 Nm - 550 Nm",
+          "acceleration": "5.2s - 7.5s (0-100 km/h)",
+          "transmission": "8-Speed Automatic"
+        },
+        {
+          "id": 33,
+          "title": "Range Rover Autobiography",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfSQjn1sKqyPdgts0L0bbW0ieDs0v4f6W0X3kQUPYLcg&s=10",
+          "video": "https://youtu.be/wky7IWyqPZM?si=PaX1qY39f7By78Vo",
+          "description": "The Range Rover Autobiography represents the perfect combination of luxury, performance, comfort, and advanced technology. Designed for those who appreciate refined motoring, it features an elegant exterior, a sophisticated and spacious cabin, premium materials, and a wide range of modern technologies.",
+          "brand": "Range Rover",
+          "category": "reviews",
+          "price": "₹2.20 Crore - ₹2.80 Crore",
+          "engine": "3.0L Turbo Petrol / 3.0L Turbo Diesel / 4.4L V8 Twin-Turbo Petrol",
+          "topSpeed": "242 km/h - 250 km/h",
+          "maxPower": "395 bhp - 523 bhp",
+          "power": "395 bhp - 523 bhp",
+          "torque": "550 Nm - 750 Nm",
+          "acceleration": "4.6s - 6.1s (0-100 km/h)",
+          "transmission": "8-Speed Automatic"
+        },
+
+        {
+          "id": 33,
+          "title": "Range Rover Autobiography",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfSQjn1sKqyPdgts0L0bbW0ieDs0v4f6W0X3kQUPYLcg&s=10",
+          "video": "https://youtu.be/wky7IWyqPZM?si=PaX1qY39f7By78Vo",
+          "description": "The Range Rover Autobiography represents the perfect combination of luxury, performance, comfort, and advanced technology. Designed for those who appreciate refined motoring, it features an elegant exterior, a sophisticated and spacious cabin, premium materials, and a wide range of modern technologies.",
+          "brand": "Range Rover",
+          "category": "reviews",
+          "price": "₹2.20 Crore - ₹2.80 Crore",
+          "engine": "3.0L Turbo Petrol / 3.0L Turbo Diesel / 4.4L V8 Twin-Turbo Petrol",
+          "topSpeed": "242 km/h - 250 km/h",
+          "maxPower": "395 bhp - 523 bhp",
+          "power": "395 bhp - 523 bhp",
+          "torque": "550 Nm - 750 Nm",
+          "acceleration": "4.6s - 6.1s (0-100 km/h)",
+          "transmission": "8-Speed Automatic"
+        },
+
+        {
+          "id": 34,
+          "title": "Audi A4",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFGt95rFOHYcefH8wp9ofIqX1C4Orm1uVoogVJoMHHjg&s=10",
+          "video": "https://youtu.be/1qoHpIWDxCA?si=pfFSF9o0DBAIfm88",
+          "description": "The Audi A4 is a premium mid-size sedan that blends understated elegance with refined performance, a tech-rich cabin, and everyday usability. It is one of the most well-rounded luxury sedans in its class.",
+          "brand": "Audi",
+          "category": "reviews",
+          "price": "₹46.99 Lakh - ₹54.00 Lakh",
+          "engine": "2.0L TFSI Turbo Petrol",
+          "topSpeed": "241 km/h",
+          "maxPower": "190 bhp",
+          "power": "190 bhp",
+          "torque": "320 Nm",
+          "acceleration": "7.3s (0-100 km/h)",
+          "transmission": "7-Speed S-Tronic DCT"
+        },
+        {
+          "id": 35,
+          "title": "Audi Q7",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQG5KC7ZDseoBtrUVTCOc5jKv8wFroO1bajzeVrvx73Uw&s=10",
+          "video": "https://youtu.be/mc8NkIDf6rU?si=kaBfjoGJ0wURiLWQ",
+          "description": "The Audi Q7 is a premium 7-seater luxury SUV offering a commanding road presence, plush interiors, quattro all-wheel drive, and a refined driving experience perfect for families and long journeys.",
+          "brand": "Audi",
+          "category": "reviews",
+          "price": "₹88.66 Lakh - ₹97.84 Lakh",
+          "engine": "3.0L TFSI V6 Turbo Petrol / 3.0L TDI V6 Turbo Diesel",
+          "topSpeed": "250 km/h",
+          "maxPower": "340 bhp (Petrol) / 286 bhp (Diesel)",
+          "power": "286 bhp - 340 bhp",
+          "torque": "500 Nm - 600 Nm",
+          "acceleration": "5.6s - 6.1s (0-100 km/h)",
+          "transmission": "8-Speed Tiptronic Automatic"
+        },
+        {
+          "id": 36,
+          "title": "Audi Q8",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTstvfWC-7pgQ2QYy_yojGYHPIeq120-ccAwetbJ_kglw&s=10",
+          "video": "https://youtu.be/TKKkY-Ly-m0?si=skW8yrsN3UfJbarA",
+          "description": "The Audi Q8 is the flagship coupe-SUV from Audi, combining striking design, a luxurious cabin, quattro AWD, and powerful V6/V8 engine options. It is a statement of style and performance.",
+          "brand": "Audi",
+          "category": "reviews",
+          "price": "₹1.17 Crore - ₹1.45 Crore",
+          "engine": "3.0L TFSI V6 Turbo Petrol / 4.0L TFSI V8 Twin-Turbo",
+          "topSpeed": "250 km/h (limited)",
+          "maxPower": "340 bhp - 507 bhp",
+          "power": "340 bhp - 507 bhp",
+          "torque": "500 Nm - 770 Nm",
+          "acceleration": "4.1s - 5.6s (0-100 km/h)",
+          "transmission": "8-Speed Tiptronic Automatic"
+        },
+        {
+          "id": 37,
+          "title": "Audi RS5 Sportback",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQppp1hC421U-xnqEUmbP_OsNqKK0k575qrDQy5Yub0_g&s=10",
+          "video": "https://youtu.be/EEeuSRb23Vw?si=Q9m9tXLocMCN5VeQ",
+          "description": "The Audi RS5 Sportback is a high-performance four-door coupe powered by a 2.9L twin-turbo V6, delivering blistering acceleration, quattro AWD grip, and everyday practicality with RS-badged aggression.",
+          "brand": "Audi",
+          "category": "reviews",
+          "price": "₹1.15 Crore - ₹1.25 Crore",
+          "engine": "2.9L TFSI V6 Bi-Turbo Petrol",
+          "topSpeed": "280 km/h (limited)",
+          "maxPower": "444 bhp",
+          "power": "444 bhp",
+          "torque": "600 Nm",
+          "acceleration": "3.9s (0-100 km/h)",
+          "transmission": "8-Speed Tiptronic Automatic"
+        },
+        {
+          "id": 38,
+          "title": "Audi e-tron GT",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHd1v9ERi2-PI6goJw_yg3YecrExyGK0-JmbC284rXpA&s=10",
+          "video": "https://youtu.be/Xmi7SORna7A?si=HnEXxMNDqvyditkq",
+          "description": "The Audi e-tron GT is a stunning all-electric grand tourer built on the Porsche Taycan platform. It combines dual-motor AWD, ultra-fast 800V charging, and 0-100 km/h in under 4 seconds with zero emissions.",
+          "brand": "Audi",
+          "category": "Electric & Hybrid",
+          "price": "₹1.80 Crore - ₹2.10 Crore",
+          "engine": "Dual Electric Motor AWD (93.4 kWh Battery)",
+          "topSpeed": "250 km/h (limited)",
+          "maxPower": "476 bhp - 646 bhp",
+          "power": "476 bhp - 646 bhp",
+          "torque": "630 Nm - 830 Nm",
+          "acceleration": "3.3s - 4.5s (0-100 km/h)",
+          "transmission": "2-Speed Automatic (Rear) / Single-Speed (Front)"
+        }
+
+
+
+
+      ]
+    },
+    "message": "Cars fetched successfully",
+    "success": true
+  }
+]
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+const RAW_CARS = allinformation[0]?.data?.data || [];
+
+const extractEmbedId = (url = "") => {
+  if (!url) return "";
+  const patterns = [
+    /youtu\.be\/([^?&]+)/,
+    /youtube\.com\/embed\/([^?&]+)/,
+    /youtube\.com\/watch\?v=([^?&]+)/,
+    /[?&]v=([^?&]+)/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return "";
+};
+
+const detectFuelType = (engineStr = "") => {
+  const e = engineStr.toLowerCase();
+  const hasPetrol = e.includes("petrol") || e.includes("mpi") || e.includes("gdi") || e.includes("vtec") || e.includes("boosterjet");
+  const hasDiesel = e.includes("diesel") || e.includes("crdi") || e.includes("kryotec") || e.includes("mhawk") || e.includes("ecoblue");
+  const hasCNG = e.includes("cng");
+  const hasElectric = e.includes("electric") || e.includes("battery");
+  if (hasElectric) return "Electric";
+  if (hasCNG && !hasPetrol && !hasDiesel) return "CNG";
+  if (hasPetrol && hasDiesel) return "Petrol / Diesel";
+  if (hasPetrol) return "Petrol";
+  if (hasDiesel) return "Diesel";
+  return "Petrol / Diesel";
+};
+
+const detectBodyType = (title = "") => {
+  const t = title.toLowerCase();
+  if (/(defender|thar|endeavour|fortuner|scorpio|bolero|safari|alcazar|g 63|g-class)/.test(t)) return "SUV";
+  if (/(nexon|venue|creta|harrier|sierra|curv|fronx|grand vitara|seltos)/.test(t)) return "SUV";
+  if (/(tiago|swift|baleno|i20|wagon r|altroz|punch)/.test(t)) return "Hatchback";
+  if (/(verna|amaze|city|c-class|e-class|a-class|eqe)/.test(t)) return "Sedan";
+  if (/(range rover|velar|sport|autobiography)/.test(t)) return "SUV";
+  return "SUV";
+};
+
+// ✅ Convert frontend-friendly car object → Mongo schema shape
+const normalizeCar = (c, idx = 0) => ({
+  title: c.title || "Untitled",
+  embedId: extractEmbedId(c.video),
+  youtubeUrl: c.video || "",
+  thumbnailUrl: c.thumbnail || "",
+  channel: c.brand || "AutoCar",
+  brand: c.brand || "Unknown",
+  model: c.title || "",
+  bodyType: detectBodyType(c.title || ""),
+  category: c.category && c.category.trim() ? c.category : "Reviews",
+  duration: "15:00",
+  views: "100K",
+  rating: 4.8,
+  description: c.description || "",
+  blurb: c.description || "",
+  engine: {
+    type: c.engine || "",
+    fuelType: detectFuelType(c.engine || ""),
+    displacement: "",
+    maxPower: c.maxPower || c.power || "",
+    maxTorque: c.torque || "",
+    transmission: c.transmission || "",
+    drivetrain: "FWD",
+  },
+  variants: [{ name: "Base", price: c.price || "Price on request" }],
+  price: c.price || "",
+  topSpeed: c.topSpeed || "",
+  specs: {
+    engine: c.engine || "N/A",
+    power: c.power || "N/A",
+    torque: c.torque || "N/A",
+    price: c.price || "N/A",
+    transmission: c.transmission || "N/A",
+    fuelType: detectFuelType(c.engine || ""),
+    topSpeed: c.topSpeed || "N/A",
+    zeroToHundred: c.acceleration || "N/A",
+  },
+  highlights: [],
+  tags: [c.brand, c.category].filter(Boolean),
+  featured: idx < 6,
+});
+
+/* ============================================================
+   SEED (only if collection is empty)
+   ============================================================ */
+const ensureSeedVideos = async () => {
+  try {
+    const count = await Video.countDocuments();
+    if (count === 0) {
+      const normalized = RAW_CARS.map((c, i) => normalizeCar(c, i));
+      await Video.insertMany(normalized);
+      console.log(`✅ Seeded ${normalized.length} videos into MongoDB`);
     }
-    catch (e) { console.log(e.message) }
-}
+  } catch (err) {
+    console.error("⚠️  Video seed warning:", err.message);
+  }
+};
+
+/* ============================================================
+   CONTROLLER — GET /video
+   ============================================================ */
+export const video = async (req, res) => {
+  try {
+    let videos = [];
+    let dbError = null;
+
+    try {
+      await ensureSeedVideos();
+      videos = await Video.find().sort({ createdAt: -1 }).lean();
+    } catch (dbErr) {
+      dbError = dbErr.message;
+      console.warn("⚠️  MongoDB read failed, using fallback:", dbErr.message);
+    }
+
+    // fallback to in-memory list if DB returned nothing
+    if (!videos || videos.length === 0) {
+      videos = RAW_CARS.map((c, i) => normalizeCar(c, i));
+    }
+
+    return res.status(200).json({
+      status: true,
+      msg: "Video API fetched successfully",
+      message: "Success",
+      count: videos.length,
+      dbConnected: !dbError,
+      data: videos,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      msg: error.message,
+      message: error.message,
+      data: RAW_CARS.map((c, i) => normalizeCar(c, i)),
+    });
+  }
+};

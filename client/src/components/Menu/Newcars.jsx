@@ -5,9 +5,9 @@ import { useTheme } from '../../Context/ThemeContext.jsx';
 import { useWishlist } from '../../Context/WishlistContext.jsx';
 import { API_URL } from '../../config/api.js';
 import {
-  RiCarLine, RiSearchLine, RiInformationLine, RiCloseLine,
-  RiCheckLine, RiStarFill, RiFilter3Line, RiShieldCheckLine,
-  RiCalculatorLine, RiMoneyDollarCircleLine, RiHeartLine, RiHeartFill
+  RiCarLine,  RiCloseLine,
+   RiFilter3Line, RiShieldCheckLine,
+  RiCalculatorLine,  RiHeartLine, RiHeartFill
 } from 'react-icons/ri';
 
 // EMI Calculator Modal Component
@@ -481,9 +481,9 @@ export default function Newcars() {
                 </button>
                 <button
                   onClick={() => setSelectedCar(null)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold uppercase tracking-wider cursor-pointer border-none shadow transition-transform hover:scale-105"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-400 hover:bg-red-700  tracking-wider cursor-pointer border-none shadow transition-transform hover:scale-105"
                 >
-                  <RiCloseLine size={20} /> Close ✕
+                  <RiCloseLine size={20} /> 
                 </button>
               </div>
             </div>

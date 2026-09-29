@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
         type: String, required: [true, 'Email is required'],
         validate: [validemail, 'Invalid Email'], trim: true, unique: true, lowercase: true
     },
-    password: {
+    password: { 
         type: String, required: [true, 'Password is required'],
         validate: [
             (pass) => pass.startsWith('$2b$') || pass.startsWith('$2a$') || validPassword(pass),
