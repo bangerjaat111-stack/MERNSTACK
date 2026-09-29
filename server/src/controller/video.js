@@ -483,7 +483,7 @@ export const allinformation = [
         {
           "id": 27,
           "title": "Mercedes-Benz E-Class",
-          "thumbnail": "https://imgd.aeplcdn.com/1280x720/n/cw/ec/134801/maruti-suzuki-grand-vitara-right-front-three-quarter0.jpeg?isig=0&wm=0",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiodu628gx0F-VYc4F1-C00XmNe1OfScHIk3QFXBke_w&s=10",
           "video": "https://youtu.be/3BT5U9amiqM?si=lT9VQeghUlb0DUvu",
           "description": "Executive luxury sedan offering a spacious cabin, sophisticated design, and comfortable driving.",
           "brand": "Mercedes-Benz",
@@ -517,7 +517,7 @@ export const allinformation = [
         {
           "id": 29,
           "title": "Mercedes-AMG G 63",
-          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA0QESholDp0xiIrzbR0twfjY_Fp3hLWQ5PJ49D6PpoA&s=10",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfe2ibwGXhdfrFqg7pPIk-v6ZwNIOHxCOtri5gtTdRKw&s=10",
           "video": "https://youtu.be/3HZs-2AU8Dw?si=5Mxd44p-ztBm3AUy",
           "description": "High-performance version of the G-Class with powerful performance and distinctive AMG styling.",
           "brand": "Mercedes-Benz",
@@ -534,7 +534,7 @@ export const allinformation = [
         {
           "id": 30,
           "title": "Mercedes-Benz EQE",
-          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA0QESholDp0xiIrzbR0twfjY_Fp3hLWQ5PJ49D6PpoA&s=10",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb9NU17uVuOon6cG5uSHH38f0idkeK4aOAAQooG7UQkA&s=10",
           "video": "https://youtu.be/7haBnctHecM?si=UO4RkHAUB3lStwBc",
           "description": "Premium electric sedan featuring a futuristic design, advanced technology, and electric performance.",
           "brand": "Mercedes-Benz",
@@ -551,7 +551,7 @@ export const allinformation = [
         {
           "id": 31,
           "title": "Range Rover Sport",
-          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA0QESholDp0xiIrzbR0twfjY_Fp3hLWQ5PJ49D6PpoA&s=10",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQr1WkimduQkeHEEXk1yQ8zr__R9NzdB4ZNnxIiKWJ_0A&s=10",
           "video": "https://youtu.be/ufl4PmP5usk?si=u1Tui-F-NyB_b8yM",
           "description": "Sportier luxury SUV offering dynamic performance, premium interiors, and strong all-terrain capability.",
           "brand": "Range Rover",
@@ -568,7 +568,7 @@ export const allinformation = [
         {
           "id": 32,
           "title": "Range Rover Velar",
-          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA0QESholDp0xiIrzbR0twfjY_Fp3hLWQ5PJ49D6PpoA&s=10",
+          "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGxOyZwmQzTAPbwGpBYph91kGJybaD3zkIiGCb5FycYA&s=10",
           "video": "https://youtu.be/U1fvyakdbdg?si=36P3T9OnUNydlrvl",
           "description": "Stylish mid-size luxury SUV with a minimalist design, sophisticated cabin, and advanced technology.",
           "brand": "Range Rover",
