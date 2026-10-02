@@ -9,13 +9,18 @@ import { PiSignOut } from "react-icons/pi";
 
 
 
+import { useWishlist } from '../../Context/WishlistContext.jsx'
+
 export default function Profile() {
   const Navigate = useNavigate()
   const { setsignin } = useAuth()
+  const { clearWishlist } = useWishlist()
 
   const handleLogout = () => {
     localStorage.removeItem('usertoken');
     localStorage.removeItem('userid');
+    localStorage.removeItem('autosyntax_wishlist');
+    clearWishlist();
     setsignin(false);
     Navigate('/signin');
   }

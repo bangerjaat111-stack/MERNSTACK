@@ -6,9 +6,9 @@ import { showSuccessToast } from '../components/Notification/Tost';
 import axios from 'axios';
 import { API_URL } from '../config/api.js';
 import {
-  RiCarLine, RiShieldCheckLine, RiMapPinLine, RiPriceTag3Line,
+ RiShieldCheckLine, RiMapPinLine, 
   RiHeartLine, RiHeartFill, RiShareLine, RiPhoneLine, RiCalendarLine,
-  RiDashboard3Line, RiGasStationLine, RiCompass3Line, RiCalculatorLine,
+  RiDashboard3Line, RiGasStationLine, RiCompass3Line, 
   RiArrowLeftLine, RiCheckDoubleLine
 } from 'react-icons/ri';
 

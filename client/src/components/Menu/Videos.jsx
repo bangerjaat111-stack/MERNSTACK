@@ -5,10 +5,9 @@ import { useTheme } from '../../Context/ThemeContext.jsx';
 import { useWishlist } from '../../Context/WishlistContext.jsx';
 import { API_URL } from '../../config/api.js';
 import {
-  RiVideoLine, RiSearchLine, RiPlayFill, RiCloseLine,
-   RiFilter3Line, RiShieldCheckLine, RiFlashlightLine,
+  RiVideoLine, RiPlayFill, RiCloseLine,RiFilter3Line, 
   RiPriceTag3Line, RiGasStationLine, RiCalculatorLine,
-  RiHeartLine, RiHeartFill
+  RiHeartLine, RiHeartFill, RiAddLine
 } from 'react-icons/ri';
 
 // EMI Calculator Modal Component
@@ -78,7 +77,7 @@ function EmiCalculatorModal({ car, onClose, dark }) {
         </div>
 
         {/* EMI Summary Card */}
-        <div className="p-5 rounded-2xl bg-gradient-to-r from-red-600 via-red-700 to-amber-600 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-5 rounded-2xl bg-linear-to-r from-red-600 via-red-700 to-amber-600 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="text-xs uppercase font-bold text-white/80">Estimated Monthly EMI</span>
             <h3 className="text-3xl font-black mt-0.5">{formatINR(emi)} <span className="text-sm font-normal">/ month</span></h3>
@@ -185,6 +184,360 @@ function EmiCalculatorModal({ car, onClose, dark }) {
   );
 }
 
+// Sample video object (as requested by user)
+const SAMPLE_DEFENDER = {
+  id: 1,
+  title: "Land Rover Defender",
+  thumbnail: "https://cdn-s3.autocarindia.com/Land-Rover/defender/Z62_7431%20copy.jpg?w=728&q=75&fm=auto",
+  video: "https://youtu.be/gxRQ7iXmtnw?si=nVbjI-xddBi5A9Im",
+  description: "Land Rover Defender is a rugged and premium SUV built to combine legendary off-road capability with modern luxury and technology.",
+  brand: "Land Rover",
+  category: "Reviews",
+  price: "₹1.05 Crore - ₹1.50 Crore",
+  engine: "2.0L Turbocharged Petrol / 3.0L Turbocharged Petrol / 5.0L Supercharged V8",
+  topSpeed: "191 km/h",
+  maxPower: "296 bhp - 518 bhp",
+  power: "296 bhp - 518 bhp",
+  torque: "400 Nm - 625 Nm",
+  acceleration: "6.7s - 8.3s (0-100 km/h)",
+  transmission: "8-Speed Automatic"
+};
+
+// Modal component to Add New Video to MongoDB
+function AddVideoModal({ onClose, onVideoAdded, dark }) {
+  const [formData, setFormData] = useState({
+    title: '',
+    video: '',
+    thumbnail: '',
+    brand: '',
+    category: 'Reviews',
+    price: '',
+    engine: '',
+    topSpeed: '',
+    power: '',
+    torque: '',
+    acceleration: '',
+    transmission: '',
+    description: '',
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleAutoFillDefender = () => {
+    setFormData(SAMPLE_DEFENDER);
+    setSuccessMsg('Auto-filled with Land Rover Defender details!');
+    setTimeout(() => setSuccessMsg(''), 3000);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.title || !formData.video) {
+      setErrorMsg('Please enter at least Title and Video YouTube URL.');
+      return;
+    }
+    setLoading(true);
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    try {
+      const payload = {
+        ...formData,
+        maxPower: formData.power || formData.maxPower,
+      };
+
+      const res = await axios.post(`${API_URL}/video`, payload);
+
+      if (res.data?.status || res.status === 201 || res.status === 200) {
+        setSuccessMsg('✅ Video added successfully to MongoDB!');
+        if (onVideoAdded) {
+          onVideoAdded(res.data?.data || payload);
+        }
+        setTimeout(() => {
+          onClose();
+        }, 1200);
+      } else {
+        setErrorMsg(res.data?.msg || 'Failed to save video');
+      }
+    } catch (err) {
+      console.error('Error adding video:', err);
+      setErrorMsg(err.response?.data?.msg || err.message || 'Server error saving video');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn cursor-pointer"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`relative w-full max-w-2xl rounded-3xl border ${
+          dark ? 'bg-[#0D0F16] border-red-900/40 text-white' : 'bg-white border-amber-600/25 text-slate-900'
+        } p-6 shadow-2xl space-y-5 cursor-default max-h-[90vh] overflow-y-auto`}
+      >
+        {/* Modal Header */}
+        <div className="flex items-start justify-between border-b border-white/10 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+             
+              <button
+                type="button"
+                onClick={handleAutoFillDefender}
+                className="px-2.5 py-0.5 rounded text-[10px] font-black uppercase bg-amber-500 hover:bg-amber-400 text-black border-none cursor-pointer shadow transition-transform hover:scale-105"
+              >
+                ✨ Auto-Fill Land Rover Defender
+              </button>
+            </div>
+            <h2 className="text-xl font-black uppercase mt-1">
+              Add New Car Video
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full bg-white/10 hover:bg-red-600 hover:text-white transition-colors cursor-pointer border-none text-slate-300"
+          >
+            <RiCloseLine size={22} />
+          </button>
+        </div>
+
+        {errorMsg && (
+          <div className="p-3 rounded-xl bg-red-600/20 border border-red-500/50 text-red-300 text-xs font-semibold">
+            {errorMsg}
+          </div>
+        )}
+
+        {successMsg && (
+          <div className="p-3 rounded-xl bg-emerald-600/20 border border-emerald-500/50 text-emerald-300 text-xs font-semibold">
+            {successMsg}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4 text-xs font-semibold">
+          {/* Row 1: Title & Brand */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-slate-400 mb-1">Car / Video Title *</label>
+              <input
+                type="text"
+                name="title"
+                required
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="e.g. Land Rover Defender"
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 mb-1">Brand Name *</label>
+              <input
+                type="text"
+                name="brand"
+                required
+                value={formData.brand}
+                onChange={handleChange}
+                placeholder="e.g. Land Rover"
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+          </div>
+
+          {/* Row 2: YouTube Video URL & Thumbnail URL */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-slate-400 mb-1">YouTube Video URL *</label>
+              <input
+                type="url"
+                name="video"
+                required
+                value={formData.video}
+                onChange={handleChange}
+                placeholder="https://youtu.be/..."
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 mb-1">Thumbnail Image URL</label>
+              <input
+                type="url"
+                name="thumbnail"
+                value={formData.thumbnail}
+                onChange={handleChange}
+                placeholder="https://cdn..."
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+          </div>
+
+          {/* Row 3: Category & Price */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-slate-400 mb-1">Category</label>
+              <input
+                type="text"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                placeholder="e.g. Reviews, Offroad & Drag"
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 mb-1">Price Range</label>
+              <input
+                type="text"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                placeholder="e.g. ₹1.05 Crore - ₹1.50 Crore"
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+          </div>
+
+          {/* Row 4: Engine & Power */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-slate-400 mb-1">Engine Specification</label>
+              <input
+                type="text"
+                name="engine"
+                value={formData.engine}
+                onChange={handleChange}
+                placeholder="e.g. 3.0L Turbocharged Petrol"
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 mb-1">Max Power</label>
+              <input
+                type="text"
+                name="power"
+                value={formData.power}
+                onChange={handleChange}
+                placeholder="e.g. 296 bhp - 518 bhp"
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+          </div>
+
+          {/* Row 5: Torque, Top Speed, Acceleration, Transmission */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div>
+              <label className="block text-slate-400 mb-1">Torque</label>
+              <input
+                type="text"
+                name="torque"
+                value={formData.torque}
+                onChange={handleChange}
+                placeholder="e.g. 400 Nm - 625 Nm"
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 mb-1">Top Speed</label>
+              <input
+                type="text"
+                name="topSpeed"
+                value={formData.topSpeed}
+                onChange={handleChange}
+                placeholder="e.g. 191 km/h"
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 mb-1">Acceleration</label>
+              <input
+                type="text"
+                name="acceleration"
+                value={formData.acceleration}
+                onChange={handleChange}
+                placeholder="e.g. 6.7s (0-100 km/h)"
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+            <div>
+              <label className="block text-slate-400 mb-1">Transmission</label>
+              <input
+                type="text"
+                name="transmission"
+                value={formData.transmission}
+                onChange={handleChange}
+                placeholder="e.g. 8-Speed Automatic"
+                className={`w-full px-3 py-2.5 rounded-xl border ${
+                  dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+                } focus:outline-none focus:border-red-500`}
+              />
+            </div>
+          </div>
+
+          {/* Row 6: Description */}
+          <div>
+            <label className="block text-slate-400 mb-1">Car Description</label>
+            <textarea
+              name="description"
+              rows={3}
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Land Rover Defender is a rugged and premium SUV..."
+              className={`w-full px-3 py-2.5 rounded-xl border ${
+                dark ? 'bg-white/5 border-white/10 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'
+              } focus:outline-none focus:border-red-500`}
+            />
+          </div>
+
+          {/* Footer Actions */}
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-2.5 rounded-xl bg-slate-700 text-white font-bold text-xs uppercase tracking-wider border-none cursor-pointer hover:bg-slate-600 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-2.5 rounded-xl bg-red-600 text-white font-bold text-xs uppercase tracking-wider border-none cursor-pointer hover:bg-red-700 transition-colors flex items-center gap-2 shadow-lg shadow-red-950/50"
+            >
+              {loading ? 'Storing in MongoDB...' : 'Save Video to MongoDB'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function Videos() {
   const { dark } = useTheme();
   const { toggleWishlist, isWishlisted } = useWishlist();
@@ -196,6 +549,35 @@ export default function Videos() {
   const [activeBodyType, setActiveBodyType] = useState('All');
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [emiVideo, setEmiVideo] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  // Callback when a video is successfully created in MongoDB
+  const handleVideoAdded = (newVid) => {
+    const normalizedNewVid = {
+      ...newVid,
+      thumbnail: newVid.thumbnailUrl || newVid.thumbnail || newVid.image || '',
+      description: newVid.description || newVid.blurb || '',
+      bodyType: newVid.bodyType || 'SUV',
+      category: newVid.category || 'Reviews',
+      engine:
+        typeof newVid.engine === 'object' && newVid.engine !== null
+          ? newVid.engine
+          : {
+              type: newVid.engine || '',
+              fuelType: newVid.engine?.fuelType || 'Petrol',
+              maxPower: newVid.maxPower || newVid.power || '',
+              maxTorque: newVid.torque || '',
+              transmission: newVid.transmission || '',
+              drivetrain: 'FWD',
+            },
+      variants:
+        Array.isArray(newVid.variants) && newVid.variants.length > 0
+          ? newVid.variants
+          : [{ name: 'Base', price: newVid.price || 'Price on request' }],
+      price: newVid.price || '',
+    };
+    setVideos((prev) => [normalizedNewVid, ...prev]);
+  };
 
   // Sync search query parameter from URL (from Navbar or direct link)
   useEffect(() => {
@@ -246,6 +628,9 @@ export default function Videos() {
             // text
             description: v.description || v.blurb || '',
             // filters
+            brand: v.brand
+              ? v.brand.trim().charAt(0).toUpperCase() + v.brand.trim().slice(1)
+              : 'Unknown',
             bodyType: v.bodyType || 'SUV',
             category: v.category || 'Reviews',
             // engine & variants
@@ -315,6 +700,31 @@ export default function Videos() {
   return (
     <div className={`min-h-screen ${bg} py-8 px-4 transition-colors duration-300 font-sans`}>
       <div className="max-w-7xl mx-auto space-y-6">
+
+        {/* PAGE HEADER WITH ADD VIDEO OPTION */}
+        <div className={`p-6 rounded-2xl border ${border} ${cardBg} flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg`}>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded text-[10px] font-black uppercase bg-red-600 text-white">
+                Video Hub
+              </span>
+           
+            </div>
+            <h1 className={`text-2xl sm:text-3xl font-black uppercase tracking-tight mt-1 ${textHi}`}>
+              Experience Cars Beyond the Specs
+            </h1>
+            <p className={`text-xs mt-1 ${textSb}`}>
+              Discover the world of automobiles through expert car reviews, thrilling test drives, detailed walk-arounds, comparisons, and exclusive video content.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-5 py-3 rounded-xl bg-linear-to-r from-red-600 via-red-700 to-amber-600 text-white font-extrabold text-xs uppercase tracking-wider border-none cursor-pointer hover:opacity-90 shadow-xl shadow-red-950/40 flex items-center gap-2 transition-transform hover:scale-105 shrink-0"
+          >
+            <RiAddLine size={18} />  Add Video
+          </button>
+        </div>
 
         {/* BRAND & BODY TYPE FILTERS */}
         <div className="flex flex-col gap-3">
@@ -676,6 +1086,15 @@ export default function Videos() {
         <EmiCalculatorModal
           car={emiVideo}
           onClose={() => setEmiVideo(null)}
+          dark={dark}
+        />
+      )}
+
+      {/* ADD VIDEO MODAL DIALOG */}
+      {isAddModalOpen && (
+        <AddVideoModal
+          onClose={() => setIsAddModalOpen(false)}
+          onVideoAdded={handleVideoAdded}
           dark={dark}
         />
       )}

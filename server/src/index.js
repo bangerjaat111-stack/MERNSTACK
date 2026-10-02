@@ -24,3 +24,4 @@ mongoose.connect(process.env.MongoDBUrl)
 app.use('/', routes);  
 
 app.listen(PORT, () => console.log(`Server is running on port http://localhost:${PORT}`));
+  

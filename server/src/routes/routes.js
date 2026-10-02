@@ -7,7 +7,7 @@ import {
 } from '../controller/controller.js'
 
 import {car} from '../controller/car.js'
-import {video} from '../controller/video.js'
+import { video, createVideo, deleteVideo } from '../controller/video.js'
 import {
   createUsedCar,
   getPublicUsedCars,
@@ -18,9 +18,14 @@ import {
 } from '../controller/usedCar_controller.js'
 const route = express.Router()
 
-// User Routes
+// Video Routes
 route.get('/video', video)
 route.get('/videos', video)
+route.post('/video', createVideo)
+route.post('/videos', createVideo)
+route.delete('/video/:id', deleteVideo)
+route.delete('/videos/:id', deleteVideo)
+
 route.get('/car', car)
 route.get('/cars', car)
 route.post('/register', register)

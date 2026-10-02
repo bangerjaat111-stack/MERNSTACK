@@ -2,25 +2,37 @@ import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../Context/ThemeContext';
 import { useAuth } from '../../Context/DataContext';
 import { useWishlist } from '../../Context/WishlistContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { API_URL } from '../../config/api.js';
 import { showSuccessToast, showErrorToast } from '../Notification/Tost';
 import {
   RiUser3Line, RiMailLine, RiShieldCheckLine, RiEdit2Line,
-  RiHeartLine, RiCarLine, RiSettings4Line, RiLogoutBoxRLine,
-  RiCheckDoubleLine, RiKey2Line, RiCalendarEventLine
+  RiHeartLine, RiCarLine, RiLogoutBoxRLine,
+  RiKey2Line
 } from 'react-icons/ri';
 
 export default function ProfilePage() {
   const { dark } = useTheme();
   const { signin, setsignin } = useAuth();
-  const { wishlist, toggleWishlist } = useWishlist();
+  const { wishlist, toggleWishlist, clearWishlist } = useWishlist();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('profile');
+  
+  const searchParams = new URLSearchParams(location.search);
+  const initialTab = searchParams.get('tab') || 'profile';
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    const tabParam = new URLSearchParams(location.search).get('tab');
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [location.search]);
+
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({ name: '', gender: '' });
 
@@ -67,8 +79,8 @@ export default function ProfilePage() {
   const handleDeleteListing = async (listingId) => {
     if (!window.confirm('Are you sure you want to delete this car listing?')) return;
     try {
-      await axios.delete(`${API_URL}/used-cars/${listingId}`).catch(() => {});
-      await axios.delete(`${API_URL}/user/${userId}/listings/${listingId}`).catch(() => {});
+      await axios.delete(`${API_URL}/used-cars/${listingId}`).catch(() => { });
+      await axios.delete(`${API_URL}/user/${userId}/listings/${listingId}`).catch(() => { });
       showSuccessToast('Car listing deleted successfully!');
       setUserListings((prev) => prev.filter((item) => String(item._id || item.id) !== String(listingId)));
     } catch (err) {
@@ -124,6 +136,8 @@ export default function ProfilePage() {
   const handleLogout = () => {
     localStorage.removeItem('usertoken');
     localStorage.removeItem('userid');
+    localStorage.removeItem('autosyntax_wishlist');
+    clearWishlist();
     setsignin(false);
     showSuccessToast('Signed out successfully');
     navigate('/signin');
@@ -145,7 +159,7 @@ export default function ProfilePage() {
   return (
     <div className={`min-h-screen ${bg} py-10 px-4 transition-colors duration-300 font-sans`}>
       <div className="max-w-5xl mx-auto space-y-8">
-        
+
         {/* TOP PROFILE BANNER */}
         <div className={`relative overflow-hidden rounded-3xl border ${border} ${cardBg} p-6 sm:p-8 shadow-xl`}>
           <div className="flex flex-col sm:flex-row items-center gap-6 relative z-10">
@@ -259,13 +273,12 @@ export default function ProfilePage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all whitespace-nowrap cursor-pointer border-none ${
-                  active
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all whitespace-nowrap cursor-pointer border-none ${active
                     ? gradBtn
                     : dark
-                    ? 'bg-white/5 text-white/60 hover:text-white'
-                    : 'bg-slate-100 text-slate-600 hover:text-slate-900'
-                }`}
+                      ? 'bg-white/5 text-white/60 hover:text-white'
+                      : 'bg-slate-100 text-slate-600 hover:text-slate-900'
+                  }`}
               >
                 <Icon size={16} /> {tab.label}
               </button>
@@ -280,49 +293,21 @@ export default function ProfilePage() {
               <h3 className={`text-lg font-bold ${textHi}`}>Activity & Stats</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {[
-                  { title: 'Test Drives Booked', val: `${(user?.testDrives || []).length || 2} Booked` },
-                  { title: 'Saved Wishlist', val: `${wishlist ? wishlist.length : 0} Items` },
-                  { title: 'Offers Made', val: `${(user?.offers || []).length || 1} Offers` },
+                  { title: 'Saved Wishlist', val: `${wishlist ? wishlist.length : 0} Items`, tab: 'saved' },
+                  { title: 'Offers Made', val: `${(user?.offers || []).length || 1} Offers`, tab: null },
                 ].map((s, i) => (
-                  <div key={i} className={`p-4 rounded-xl border ${dark ? 'bg-white/4 border-white/5' : 'bg-slate-50 border-slate-200'}`}>
+                  <div
+                    key={i}
+                    onClick={() => s.tab && setActiveTab(s.tab)}
+                    className={`p-4 rounded-xl border transition-all ${s.tab ? 'cursor-pointer hover:border-amber-500/40 hover:scale-[1.02]' : ''} ${dark ? 'bg-white/4 border-white/5' : 'bg-slate-50 border-slate-200'}`}
+                  >
                     <p className={`text-xs font-semibold ${textSb}`}>{s.title}</p>
                     <p className={`text-base font-extrabold mt-1 ${gradText}`}>{s.val}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="space-y-3 pt-2">
-                <h4 className={`text-sm font-bold ${textHi}`}>Recent Account Activity & Login Log</h4>
-                {user?.loginActivity && user.loginActivity.length > 0 ? (
-                  user.loginActivity.map((act, idx) => (
-                    <div key={idx} className={`p-3.5 rounded-xl border ${dark ? 'bg-white/4 border-white/5' : 'bg-slate-50 border-slate-100'} flex items-center justify-between text-xs`}>
-                      <div>
-                        <p className={`font-bold ${textHi}`}>Logged in from {act.location || 'Gurgaon, Haryana, India'}</p>
-                        <p className={`text-[10px] ${textSb}`}>{act.device || 'Chrome Web Browser'}</p>
-                      </div>
-                      <span className={`text-[11px] font-mono ${textSb}`}>
-                        {new Date(act.timestamp).toLocaleString('en-IN', {
-                          day: 'numeric', month: 'short', year: 'numeric',
-                          hour: '2-digit', minute: '2-digit'
-                        })}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <div className={`p-3.5 rounded-xl border ${dark ? 'bg-white/4 border-white/5' : 'bg-slate-50 border-slate-100'} flex items-center justify-between text-xs`}>
-                    <div>
-                      <p className={`font-bold ${textHi}`}>Logged in from Gurgaon, Haryana, India</p>
-                      <p className={`text-[10px] ${textSb}`}>Chrome Browser (Windows)</p>
-                    </div>
-                    <span className={`text-[11px] font-mono ${textSb}`}>
-                      {new Date().toLocaleString('en-IN', {
-                        day: 'numeric', month: 'short', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit'
-                      })}
-                    </span>
-                  </div>
-                )}
-              </div>
+
             </div>
 
             <div className={`p-6 rounded-2xl border ${border} ${cardBg} space-y-4`}>
@@ -345,32 +330,48 @@ export default function ProfilePage() {
         {activeTab === 'saved' && (
           wishlist && wishlist.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {wishlist.map((c, i) => (
-                <div key={i} className={`rounded-2xl border ${border} ${cardBg} overflow-hidden shadow-md flex flex-col justify-between`}>
-                  <img src={c.image || c.img || 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=800&auto=format&fit=crop'} alt={c.name || c.title} className="w-full h-40 object-cover" />
-                  <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
-                    <div>
-                      <h4 className={`font-bold text-base ${textHi}`}>{c.name || c.title}</h4>
-                      <p className={`text-sm font-extrabold ${gradText}`}>
-                        {typeof c.price === 'number' ? `₹${c.price} Lakh` : c.price}
-                      </p>
-                      <p className={`text-xs ${textSb}`}>{c.fuel || c.brand || 'Verified Car'}</p>
-                    </div>
-                    <div className="flex gap-2 pt-2">
-                      <Link to="/new-cars" className={`flex-1 text-center py-2 rounded-xl text-xs font-bold no-underline ${gradBtn}`}>
-                        View Details
-                      </Link>
-                      <button
-                        onClick={() => toggleWishlist(c)}
-                        className="px-3 py-2 rounded-xl text-xs font-bold bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white transition-all border-none cursor-pointer"
-                        title="Remove from Wishlist"
-                      >
-                        Remove
-                      </button>
+              {wishlist.map((c, i) => {
+                const carImage = c.thumbnail || c.thumbnailUrl || c.img || c.image || (Array.isArray(c.images) && c.images[0]) || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop';
+                const carTitle = c.name || c.title || 'Car';
+                const carId = c.id || c._id;
+                const isUsedCar = c.trans || c.owner || c.km || (carId && (typeof carId === 'number' || String(carId).length < 10));
+                const detailLink = isUsedCar && carId ? `/used-cars/${carId}` : `/new-cars?search=${encodeURIComponent(carTitle)}`;
+
+                return (
+                  <div key={i} className={`rounded-2xl border ${border} ${cardBg} overflow-hidden shadow-md flex flex-col justify-between group`}>
+                    <img
+                      src={carImage}
+                      alt={carTitle}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop';
+                      }}
+                      className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="p-4 space-y-2 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h4 className={`font-bold text-base ${textHi}`}>{carTitle}</h4>
+                        <p className={`text-sm font-extrabold ${gradText}`}>
+                          {typeof c.price === 'number' ? `₹${c.price} Lakh` : (c.price || 'Price Available')}
+                        </p>
+                        <p className={`text-xs ${textSb}`}>{c.fuel || c.brand || 'Verified Car'}</p>
+                      </div>
+                      <div className="flex gap-2 pt-2">
+                        <Link to={detailLink} className={`flex-1 text-center py-2 rounded-xl text-xs font-bold no-underline ${gradBtn}`}>
+                          View Details
+                        </Link>
+                        <button
+                          onClick={() => toggleWishlist(c)}
+                          className="px-3 py-2 rounded-xl text-xs font-bold bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white transition-all border-none cursor-pointer"
+                          title="Remove from Wishlist"
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className={`p-12 text-center rounded-2xl border ${border} ${cardBg} space-y-3`}>

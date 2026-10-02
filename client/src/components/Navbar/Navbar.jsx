@@ -8,6 +8,7 @@ import Profile from './Profile.jsx';
 import { useAuth } from '../../Context/DataContext.jsx';
 import axios from 'axios';
 import { API_URL } from '../../config/api.js';
+import { showErrorToast } from '../Notification/Tost';
 import {
   RiCarLine, RiPriceTag3Line, RiNewspaperLine, RiVideoLine,
   RiAuctionLine, RiFireLine, RiMoonLine, RiSunLine,
@@ -315,7 +316,14 @@ export default function Navbar() {
           <motion.button
             whileTap={{ scale: .9 }}
             whileHover={{ scale: 1.08 }}
-            onClick={() => setWishlistOpen(true)}
+            onClick={() => {
+              if (!signin) {
+                showErrorToast('Please sign in to view your saved wishlist');
+                navigate('/signin');
+                return;
+              }
+              setWishlistOpen(true);
+            }}
             className={[
               'hidden md:flex relative w-9 h-9 rounded-[10px] border items-center justify-center cursor-pointer transition-all duration-200',
               dark
@@ -325,9 +333,9 @@ export default function Navbar() {
             title="View Wishlist"
           >
             <RiHeartLine size={17} />
-            {wishlist && wishlist.length > 0 && (
+            {signin && count > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center shadow">
-                {wishlist.length}
+                {count}
               </span>
             )}
           </motion.button>
@@ -707,7 +715,7 @@ export default function Navbar() {
                 <div className="flex gap-[10px]">
                   {[
                     { icon: dark ? RiSunLine : RiMoonLine, label: dark ? 'Light Mode' : 'Dark Mode', action: toggleTheme },
-                    { icon: RiHeartLine, label: `Saved (${count})`, action: () => { setWishlistOpen(true); setMenuOpen(false); } },
+                    { icon: RiHeartLine, label: signin ? `Saved (${count})` : 'Saved', action: () => { if (!signin) { showErrorToast('Please sign in to view your saved wishlist'); navigate('/signin'); setMenuOpen(false); return; } setWishlistOpen(true); setMenuOpen(false); } },
                     { icon: RiShieldCheckLine, label: 'Pro', action: () => { } },
                   ].map((b, i) => {
                     const BIcon = b.icon;
@@ -803,36 +811,55 @@ export default function Navbar() {
                     </Link>
                   </div>
                 ) : (
-                  wishlist.map((car, idx) => (
-                    <div
-                      key={car.id || car.name || idx}
-                      className={['flex items-center gap-3 p-3 rounded-2xl border transition-all', dark ? 'bg-white/4 border-white/5' : 'bg-slate-50 border-slate-200'].join(' ')}
-                    >
-                      <img
-                        src={car.image || 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=800&auto=format&fit=crop'}
-                        alt={car.name || car.title}
-                        className="w-20 h-16 rounded-xl object-cover bg-black/20"
-                      />
+                  wishlist.map((car, idx) => {
+                    const carImage = car.thumbnail || car.thumbnailUrl || car.img || car.image || (Array.isArray(car.images) && car.images[0]) || 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop';
+                    const carTitle = car.title || car.name || 'Car';
+                    const carId = car.id || car._id;
+                    const isUsedCar = car.trans || car.owner || car.km || (carId && (typeof carId === 'number' || String(carId).length < 10));
+                    const detailLink = isUsedCar && carId ? `/used-cars/${carId}` : `/new-cars?search=${encodeURIComponent(carTitle)}`;
 
-                      <div className="flex-1 min-w-0">
-                        <p className={['text-[10px] font-bold uppercase tracking-wider', dark ? 'text-red-400' : 'text-amber-600'].join(' ')}>
-                          {car.brand || 'AutoSyntax'}
-                        </p>
-                        <h4 className="font-bold text-sm truncate">{car.name || car.title}</h4>
-                        <p className="font-extrabold text-xs mt-0.5">
-                          {typeof car.price === 'number' ? `₹${car.price} Lakh` : car.price}
-                        </p>
-                      </div>
-
-                      <button
-                        onClick={() => removeFromWishlist(car.id || car.name || car.title)}
-                        className="p-2 text-red-500 hover:text-red-600 rounded-xl hover:bg-red-500/10 cursor-pointer border-none transition-colors"
-                        title="Remove from wishlist"
+                    return (
+                      <div
+                        key={car.id || car._id || car.name || idx}
+                        onClick={() => {
+                          setWishlistOpen(false);
+                          navigate(detailLink);
+                        }}
+                        className={['flex items-center gap-3 p-3 rounded-2xl border transition-all cursor-pointer group hover:shadow-md', dark ? 'bg-white/4 border-white/5 hover:bg-white/10' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'].join(' ')}
                       >
-                        <RiDeleteBin6Line size={18} />
-                      </button>
-                    </div>
-                  ))
+                        <img
+                          src={carImage}
+                          alt={carTitle}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop';
+                          }}
+                          className="w-20 h-16 rounded-xl object-cover bg-black/20 group-hover:scale-105 transition-transform"
+                        />
+
+                        <div className="flex-1 min-w-0">
+                          <p className={['text-[10px] font-bold uppercase tracking-wider', dark ? 'text-red-400' : 'text-amber-600'].join(' ')}>
+                            {car.brand || 'AutoSyntax'}
+                          </p>
+                          <h4 className="font-bold text-sm truncate group-hover:text-red-500 transition-colors">{carTitle}</h4>
+                          <p className="font-extrabold text-xs mt-0.5">
+                            {typeof car.price === 'number' ? `₹${car.price} Lakh` : (car.price || 'Price Available')}
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFromWishlist(car.id || car._id || car.name || car.title);
+                          }}
+                          className="p-2 text-red-500 hover:text-red-600 rounded-xl hover:bg-red-500/10 cursor-pointer border-none transition-colors"
+                          title="Remove from wishlist"
+                        >
+                          <RiDeleteBin6Line size={18} />
+                        </button>
+                      </div>
+                    );
+                  })
                 )}
               </div>
 
@@ -847,7 +874,7 @@ export default function Navbar() {
                       Clear All
                     </button>
                     <Link
-                      to="/profile"
+                      to="/profile?tab=saved"
                       onClick={() => setWishlistOpen(false)}
                       className={[
                         'flex-1 text-center py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white no-underline',

@@ -1,8 +1,6 @@
 import Video from "../model/video_model.js";
 
-/* ============================================================
-   RAW DATA (your 33 cars — keep this exactly as you had it)
-   ============================================================ */
+
 export const allinformation = [
 
   {
@@ -758,59 +756,121 @@ const detectBodyType = (title = "") => {
   return "SUV";
 };
 
+const formatBrand = (b = "") => {
+  if (!b) return "Unknown";
+  const trimmed = b.trim();
+  const lower = trimmed.toLowerCase();
+  if (lower === "tata") return "Tata";
+  if (lower === "hyundai") return "Hyundai";
+  if (lower === "mahindra") return "Mahindra";
+  if (lower === "maruti" || lower === "maruti suzuki") return "Maruti";
+  if (lower === "toyota") return "Toyota";
+  if (lower === "honda") return "Honda";
+  if (lower === "ford") return "Ford";
+  if (lower === "audi") return "Audi";
+  if (lower === "mercedes" || lower === "mercedes-benz") return "Mercedes-Benz";
+  if (lower === "land rover") return "Land Rover";
+  if (lower === "range rover") return "Range Rover";
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+};
+
 // ✅ Convert frontend-friendly car object → Mongo schema shape
-const normalizeCar = (c, idx = 0) => ({
-  title: c.title || "Untitled",
-  embedId: extractEmbedId(c.video),
-  youtubeUrl: c.video || "",
-  thumbnailUrl: c.thumbnail || "",
-  channel: c.brand || "AutoCar",
-  brand: c.brand || "Unknown",
-  model: c.title || "",
-  bodyType: detectBodyType(c.title || ""),
-  category: c.category && c.category.trim() ? c.category : "Reviews",
-  duration: "15:00",
-  views: "100K",
-  rating: 4.8,
-  description: c.description || "",
-  blurb: c.description || "",
-  engine: {
-    type: c.engine || "",
-    fuelType: detectFuelType(c.engine || ""),
-    displacement: "",
-    maxPower: c.maxPower || c.power || "",
-    maxTorque: c.torque || "",
-    transmission: c.transmission || "",
-    drivetrain: "FWD",
-  },
-  variants: [{ name: "Base", price: c.price || "Price on request" }],
-  price: c.price || "",
-  topSpeed: c.topSpeed || "",
-  specs: {
-    engine: c.engine || "N/A",
-    power: c.power || "N/A",
-    torque: c.torque || "N/A",
-    price: c.price || "N/A",
-    transmission: c.transmission || "N/A",
-    fuelType: detectFuelType(c.engine || ""),
-    topSpeed: c.topSpeed || "N/A",
-    zeroToHundred: c.acceleration || "N/A",
-  },
-  highlights: [],
-  tags: [c.brand, c.category].filter(Boolean),
-  featured: idx < 6,
-});
+const normalizeCar = (c, idx = 0) => {
+  const videoUrl = c.video || c.youtubeUrl || "";
+  const embedId = c.embedId || extractEmbedId(videoUrl);
+  const title = c.title || "Untitled";
+  const brand = formatBrand(c.brand);
+  const category = c.category && c.category.trim() ? c.category : "Reviews";
+  const priceStr = c.price || "";
+  const engineStr = typeof c.engine === "string" ? c.engine : c.engine?.type || "";
+  const maxPowerStr = c.maxPower || c.power || c.engine?.maxPower || "";
+  const torqueStr = c.torque || c.engine?.maxTorque || "";
+  const transmissionStr = c.transmission || c.engine?.transmission || "";
+  const topSpeedStr = c.topSpeed || "";
+  const accelerationStr = c.acceleration || c.specs?.zeroToHundred || "";
+
+  return {
+    title,
+    embedId,
+    youtubeUrl: videoUrl,
+    thumbnailUrl: c.thumbnail || c.thumbnailUrl || "",
+    channel: brand || "AutoCar",
+    brand,
+    model: c.model || title,
+    bodyType: c.bodyType || detectBodyType(title),
+    category,
+    duration: c.duration || "15:00",
+    views: c.views || "100K",
+    rating: c.rating || 4.8,
+    description: c.description || c.blurb || "",
+    blurb: c.description || c.blurb || "",
+    engine:
+      typeof c.engine === "object" && c.engine !== null
+        ? c.engine
+        : {
+            type: engineStr,
+            fuelType: detectFuelType(engineStr),
+            displacement: c.displacement || "",
+            maxPower: maxPowerStr,
+            maxTorque: torqueStr,
+            transmission: transmissionStr,
+            drivetrain: c.drivetrain || "FWD",
+          },
+    variants:
+      Array.isArray(c.variants) && c.variants.length > 0
+        ? c.variants
+        : [{ name: "Base", price: priceStr || "Price on request" }],
+    price: priceStr,
+    topSpeed: topSpeedStr,
+    specs:
+      typeof c.specs === "object" && c.specs !== null
+        ? c.specs
+        : {
+            engine: engineStr || "N/A",
+            power: maxPowerStr || "N/A",
+            torque: torqueStr || "N/A",
+            price: priceStr || "N/A",
+            transmission: transmissionStr || "N/A",
+            fuelType: detectFuelType(engineStr),
+            topSpeed: topSpeedStr || "N/A",
+            zeroToHundred: accelerationStr || "N/A",
+          },
+    highlights: c.highlights || [],
+    tags: c.tags || [brand, category].filter(Boolean),
+    featured: c.featured !== undefined ? c.featured : idx < 6,
+  };
+};
 
 /* ============================================================
-   SEED (only if collection is empty)
+   SEED (Sync all default videos into MongoDB if missing)
    ============================================================ */
 const ensureSeedVideos = async () => {
   try {
-    const count = await Video.countDocuments();
-    if (count === 0) {
-      const normalized = RAW_CARS.map((c, i) => normalizeCar(c, i));
-      await Video.insertMany(normalized);
-      console.log(`✅ Seeded ${normalized.length} videos into MongoDB`);
+    const normalized = RAW_CARS.map((c, i) => normalizeCar(c, i));
+
+    // Deduplicate normalized array by title + youtubeUrl
+    const uniqueNormalizedMap = new Map();
+    for (const item of normalized) {
+      const key = `${(item.title || '').toLowerCase().trim()}|${(item.youtubeUrl || '').trim()}`;
+      if (!uniqueNormalizedMap.has(key)) {
+        uniqueNormalizedMap.set(key, item);
+      }
+    }
+    const uniqueNormalized = Array.from(uniqueNormalizedMap.values());
+
+    const existingVideos = await Video.find({}, 'title youtubeUrl').lean();
+
+    const existingKeys = new Set(
+      existingVideos.map(v => `${(v.title || '').toLowerCase().trim()}|${(v.youtubeUrl || '').trim()}`)
+    );
+
+    const missingVideos = uniqueNormalized.filter(
+      v => !existingKeys.has(`${(v.title || '').toLowerCase().trim()}|${(v.youtubeUrl || '').trim()}`)
+    );
+
+    if (missingVideos.length > 0) {
+      await Video.insertMany(missingVideos);
+      console.log(`✅ Seeded ${missingVideos.length} missing videos into MongoDB`);
     }
   } catch (err) {
     console.error("⚠️  Video seed warning:", err.message);
@@ -852,6 +912,71 @@ export const video = async (req, res) => {
       msg: error.message,
       message: error.message,
       data: RAW_CARS.map((c, i) => normalizeCar(c, i)),
+    });
+  }
+};
+
+/* ============================================================
+   CONTROLLER — POST /video (Create & Store Video in MongoDB)
+   ============================================================ */
+export const createVideo = async (req, res) => {
+  try {
+    const videoData = req.body;
+    if (!videoData || !videoData.title) {
+      return res.status(400).json({
+        status: false,
+        msg: "Video title is required",
+        message: "Video title is required",
+      });
+    }
+
+    const normalized = normalizeCar(videoData);
+    const newVideo = new Video(normalized);
+    await newVideo.save();
+
+    console.log(`✅ Video created in MongoDB: ${newVideo.title} (ID: ${newVideo._id})`);
+
+    return res.status(201).json({
+      status: true,
+      msg: "Video added successfully and stored in MongoDB",
+      message: "Video added successfully and stored in MongoDB",
+      data: newVideo,
+    });
+  } catch (error) {
+    console.error("❌ Error adding video to MongoDB:", error);
+    return res.status(500).json({
+      status: false,
+      msg: error.message,
+      message: error.message,
+    });
+  }
+};
+
+/* ============================================================
+   CONTROLLER — DELETE /video/:id
+   ============================================================ */
+export const deleteVideo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Video.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({
+        status: false,
+        msg: "Video not found",
+        message: "Video not found",
+      });
+    }
+    return res.status(200).json({
+      status: true,
+      msg: "Video deleted successfully",
+      message: "Video deleted successfully",
+      data: deleted,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      msg: error.message,
+      message: error.message,
     });
   }
 };

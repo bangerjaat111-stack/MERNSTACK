@@ -16,14 +16,6 @@ const videoSchema = new mongoose.Schema(
     category: {
       type: String,
       default: 'Reviews',
-      enum: [
-        'Reviews',
-        'Offroad & Drag',
-        'Electric & Hybrid',
-        'Supercars & Luxury',
-        'Deliveries & Ownership',
-        'Modifications & Tuning',
-      ],
     },
     duration: { type: String, default: '15:00' },
     views: { type: String, default: '100K' },

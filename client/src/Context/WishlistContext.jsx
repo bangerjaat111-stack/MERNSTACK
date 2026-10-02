@@ -1,13 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '../config/api.js';
-import { showSuccessToast } from '../components/Notification/Tost';
+import { showSuccessToast, showErrorToast } from '../components/Notification/Tost';
 
 const WishlistContext = createContext();
 
 export function WishlistProvider({ children }) {
   const [wishlist, setWishlist] = useState(() => {
     try {
+      const activeUserId = localStorage.getItem('userid');
+      if (!activeUserId) return [];
       const saved = localStorage.getItem('autosyntax_wishlist');
       return saved ? JSON.parse(saved) : [];
     } catch {
@@ -19,7 +21,8 @@ export function WishlistProvider({ children }) {
 
   // Helper function to check if car is in wishlist (deduplicated by ID or Title)
   const isWishlisted = (carOrId) => {
-    if (!carOrId) return false;
+    const activeUserId = localStorage.getItem('userid');
+    if (!activeUserId || !carOrId) return false;
     const targetId = typeof carOrId === 'object' ? (carOrId.id || carOrId._id) : carOrId;
     const targetTitle = typeof carOrId === 'object' ? (carOrId.title || carOrId.name) : carOrId;
 
@@ -42,10 +45,17 @@ export function WishlistProvider({ children }) {
 
   // Load wishlist from DB on mount/login and remove any duplicate records
   useEffect(() => {
-    if (!userId) return;
+    const activeUserId = localStorage.getItem('userid');
+    if (!activeUserId) {
+      setWishlist([]);
+      try {
+        localStorage.removeItem('autosyntax_wishlist');
+      } catch (e) {}
+      return;
+    }
     const fetchUserWishlist = async () => {
       try {
-        const res = await axios.get(`${API_URL}/user/${userId}/wishlist`);
+        const res = await axios.get(`${API_URL}/user/${activeUserId}/wishlist`);
         if (res.data?.status && Array.isArray(res.data?.wishlist)) {
           const uniqueList = [];
           res.data.wishlist.forEach((item) => {
@@ -74,6 +84,13 @@ export function WishlistProvider({ children }) {
 
   // Persist to localStorage
   useEffect(() => {
+    const activeUserId = localStorage.getItem('userid');
+    if (!activeUserId) {
+      try {
+        localStorage.removeItem('autosyntax_wishlist');
+      } catch (e) {}
+      return;
+    }
     try {
       localStorage.setItem('autosyntax_wishlist', JSON.stringify(wishlist));
     } catch (e) {
@@ -82,6 +99,11 @@ export function WishlistProvider({ children }) {
   }, [wishlist]);
 
   const toggleWishlist = async (car) => {
+    const activeUserId = localStorage.getItem('userid');
+    if (!activeUserId) {
+      showErrorToast('Please sign in to save cars to your wishlist');
+      return;
+    }
     if (!car) return;
     const carId = car.id || car._id;
     const carName = car.title || car.name || 'Car';
@@ -128,9 +150,9 @@ export function WishlistProvider({ children }) {
     }
 
     // Sync with DB if logged in
-    if (userId) {
+    if (activeUserId) {
       try {
-        await axios.post(`${API_URL}/user/${userId}/wishlist`, { car });
+        await axios.post(`${API_URL}/user/${activeUserId}/wishlist`, { car });
       } catch (err) {
         console.error('Failed to sync wishlist with DB:', err);
       }
@@ -138,6 +160,8 @@ export function WishlistProvider({ children }) {
   };
 
   const removeFromWishlist = async (carIdOrTitle) => {
+    const activeUserId = localStorage.getItem('userid');
+    if (!activeUserId) return;
     const targetStr = carIdOrTitle ? String(carIdOrTitle).toLowerCase().trim() : '';
 
     setWishlist((prev) =>
@@ -152,9 +176,9 @@ export function WishlistProvider({ children }) {
 
     showSuccessToast('Car removed from wishlist');
 
-    if (userId) {
+    if (activeUserId) {
       try {
-        await axios.post(`${API_URL}/user/${userId}/wishlist`, { car: { id: carIdOrTitle, title: carIdOrTitle } });
+        await axios.post(`${API_URL}/user/${activeUserId}/wishlist`, { car: { id: carIdOrTitle, title: carIdOrTitle } });
       } catch (err) {
         console.error('Failed to remove item from DB wishlist:', err);
       }
@@ -169,13 +193,13 @@ export function WishlistProvider({ children }) {
   return (
     <WishlistContext.Provider
       value={{
-        wishlist,
+        wishlist: userId ? wishlist : [],
         toggleWishlist,
         removeFromWishlist,
         isWishlisted,
         isInWishlist: isWishlisted,
         clearWishlist,
-        count: wishlist.length,
+        count: userId ? wishlist.length : 0,
       }}
     >
       {children}
