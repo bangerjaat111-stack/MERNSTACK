@@ -40,7 +40,7 @@ export default function App() {
           <Route path='/verify_otp/:id' element={<Otp/>}/>
 
           {/* NAVBAR MENU ROUTES */}
-          <Route path='/' element={<ProtectedRoute><Home/></ProtectedRoute>}/>
+          <Route path='/' element={<Home />} />w
           <Route path='/new-cars' element={<ProtectedRoute><Newcars /></ProtectedRoute>} />
           <Route path='/newcars' element={<ProtectedRoute><Newcars /></ProtectedRoute>} />
           <Route path='/used-cars' element={<ProtectedRoute><UsedCars /></ProtectedRoute>} />
